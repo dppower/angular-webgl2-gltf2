@@ -3,23 +3,48 @@ import {Component, ViewChild, AfterViewInit} from "angular2/core";
 @Component({
     selector: 'my-app',
     template: `
-        <canvas #canvas [width]="canvasWidth" [height]="canvasHeight"></canvas>
-    `
+        <div #frame class="frame">
+            <canvas #canvas [width]="canvasWidth" [height]="canvasHeight"></canvas>
+        </div>
+    `,
+    styles: [`
+        .frame {
+            height: 20%;
+            width: 20%;
+        }
+    `]
 })
 export class AppComponent implements AfterViewInit {
-    @ViewChild("canvas") canvasElement: any;
-    canvasWidth: number = 600;
-    canvasHeight: number = 600;
+    @ViewChild("canvas") canvasRef: any;
+    @ViewChild("frame") frameRef: any;
+    canvas: HTMLCanvasElement;
+    frame: HTMLDivElement;
+    canvasWidth: number;
+    canvasHeight: number;
 
     ngAfterViewInit() {
-        var canvas: HTMLCanvasElement = this.canvasElement.nativeElement;
-        var context = canvas.getContext("2d");
+        this.canvas = this.canvasRef.nativeElement;
+        this.frame = this.frameRef.nativeElement;
+        var context = this.canvas.getContext("2d");
+
+        this.canvasWidth = this.frame.clientWidth;
+        this.canvasHeight = this.frame.clientHeight;
+        // Handle resizing the canvas
+        window.onresize = () => {
+            this.resizeCanvas();
+            context.drawImage(img, 0, 0, this.canvasWidth, this.canvasHeight);
+        }
 
         var img = new Image();
         img.src = "./images/skeleton.png";
-        img.onload = function () {
-            context.drawImage(img, 0, 0);
+        img.onload = () => {
+            context.drawImage(img, 0, 0, this.canvasWidth, this.canvasHeight);
         }
+    }
+
+    resizeCanvas() {
+        this.canvasWidth = this.frame.clientWidth;
+        this.canvasHeight = this.frame.clientHeight;
     }
 
 }
