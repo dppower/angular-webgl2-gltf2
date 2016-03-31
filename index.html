@@ -1,9 +1,9 @@
+<!doctype html>
 <html>
 <head>
     <base href="/">
-    <title>Angular 2 QuickStart</title>
+    <title>Angular 2 Canvas</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css">
 
     <!-- 1. Load libraries -->
     <!-- IE required polyfills, in this exact order -->
@@ -14,22 +14,14 @@
     <script src="node_modules/systemjs/dist/system.src.js"></script>
     <script src="node_modules/rxjs/bundles/Rx.js"></script>
     <script src="node_modules/angular2/bundles/angular2.dev.js"></script>
-    <script src="node_modules/angular2/bundles/router.dev.js"></script>
 
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="normalize.css">
     <!-- 2. Configure SystemJS -->
+    <script src="./system-config.js"></script>
     <script>
-      System.config({
-        packages: {
-          build: {
-            format: 'register',
-            defaultExtension: 'js'
-          }
-        }
-      });
-      System.import('build/main')
-            .then(null, console.error.bind(console));
+      System.import('build/main').then(null, console.error.bind(console));
     </script>
-
 </head>
 
 <!-- 3. Display the application -->
