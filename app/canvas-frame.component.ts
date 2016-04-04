@@ -5,7 +5,7 @@ import {ResizableCanvasComponent} from "./resizable-canvas.component";
 @Component({
     selector: "canvas-frame",
     template: `
-    <div #frame id="frame" canvasFrame [inHeight]="frame.clientHeight" [inWidth]="frame.clientWidth" [inTop]="frame.offsetTop" [inLeft]="frame.offsetLeft"></div>
+    <div #frame id="frame" canvasFrame [inHeight]="frame.offsetHeight" [inWidth]="frame.offsetWidth" [inTop]="frame.offsetTop" [inLeft]="frame.offsetLeft"></div>
     <ng-content></ng-content>
     `,
     styles: [`
