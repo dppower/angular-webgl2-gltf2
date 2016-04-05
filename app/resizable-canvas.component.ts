@@ -1,4 +1,8 @@
 import {Component, ViewChild, ElementRef, AfterViewInit, OnDestroy} from "angular2/core";
+import {WebGLContextService} from "./webgl-context";
+import {WebGLProgramService} from "./webgl-program";
+import {FragmentShader} from "./fragment-shader";
+import {VertexShader} from "./vertex-shader";
 
 @Component({
     selector: 'resizable-canvas',
@@ -10,7 +14,8 @@ import {Component, ViewChild, ElementRef, AfterViewInit, OnDestroy} from "angula
         position: absolute;
         z-index: 0;
     }
-    `]
+    `],
+    providers: [WebGLContextService, WebGLProgramService, FragmentShader, VertexShader]
 })
 export class ResizableCanvasComponent implements OnDestroy {
     @ViewChild("canvas") canvasRef: ElementRef;
@@ -24,18 +29,14 @@ export class ResizableCanvasComponent implements OnDestroy {
 
     cancelToken: number;
 
-    ngAfterViewInit() {
-        let canvas: HTMLCanvasElement = this.canvasRef.nativeElement;
-        this.gl_ = <WebGLRenderingContext>canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-        let gl = this.gl_;
+    constructor(private context_: WebGLContextService, private program_: WebGLProgramService) { };
 
+    ngAfterViewInit() {
+        let gl = this.context_.create(this.canvasRef.nativeElement);
+        
         if (gl) {
-            this.initShaders(gl);
-            this.initBuffers(gl);
-            gl.clearColor(0.0, 0.0, 1.0, 1.0);
-            gl.enable(gl.DEPTH_TEST);
-            gl.depthFunc(gl.LEQUAL);
-            this.tick(gl);
+            this.program_.initWebGl();
+            this.tick();
         }
         else {
             console.log("Unable to initialise WebGL.");
@@ -45,24 +46,15 @@ export class ResizableCanvasComponent implements OnDestroy {
         }
     }
 
-    tick(gl: WebGLRenderingContext) {
+    tick() {
         this.cancelToken = requestAnimationFrame(() => {
-            this.tick(gl);
+            this.tick();
         });
-        gl.viewport(0, 0, this.canvasWidth, this.canvasHeight);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        this.program_.draw(this.canvasWidth, this.canvasHeight);
     };
 
     ngOnDestroy() {
         cancelAnimationFrame(this.cancelToken);
     }
 
-    initShaders(gl: WebGLRenderingContext) {
-        
-    };
-
-    initBuffers(gl: WebGLRenderingContext) {
-    };
-
-    private gl_: WebGLRenderingContext;
 }
