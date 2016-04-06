@@ -2,6 +2,8 @@ import {Injectable, OnDestroy} from "angular2/core";
 import {WebGLContextService} from "./webgl-context";
 import {FragmentShader} from "./fragment-shader";
 import {VertexShader} from "./vertex-shader";
+import {Camera} from "./game-camera";
+import {GameObject} from "./game-object";
 
 @Injectable()
 export class WebGLProgramService implements OnDestroy {
@@ -9,7 +11,9 @@ export class WebGLProgramService implements OnDestroy {
     constructor(
         private context_: WebGLContextService,
         private fragShader_: FragmentShader,
-        private vertShader_: VertexShader
+        private vertShader_: VertexShader,
+        private camera_: Camera,
+        private cube_: GameObject
     ) { };
 
     ngOnDestroy() {
@@ -20,7 +24,8 @@ export class WebGLProgramService implements OnDestroy {
         let gl = this.context_.get;
         
         this.initProgram(gl);
-        this.initBuffer(gl);
+        this.cube_.initBuffers(this.context_.get);
+        this.initVertexArrays(gl);
         gl.clearColor(0.0, 0.0, 1.0, 1.0);
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LEQUAL);
@@ -36,11 +41,12 @@ export class WebGLProgramService implements OnDestroy {
         gl.linkProgram(this.program_);
 
         if (!gl.getProgramParameter(this.program_, gl.LINK_STATUS)) {
-            console.log("Unable to initialize the shader program.");
             gl.deleteProgram(this.program_);
 
             gl.deleteShader(vertShader);
             gl.deleteShader(fragShader);
+
+            alert("Unable to initialize the shader program."); 
         }
 
         gl.detachShader(this.program_, vertShader);
@@ -50,58 +56,52 @@ export class WebGLProgramService implements OnDestroy {
         gl.deleteShader(fragShader);
 
         gl.useProgram(this.program_);
-        // TODO Add a "addAttribute" method.
-        this.vertexPositionAttrib_ = gl.getAttribLocation(this.program_, "aVertexPosition");        
+
+        this.vUniform_ = gl.getUniformLocation(this.program_, "uView");
+        this.pUniform_ = gl.getUniformLocation(this.program_, "uProjection");
+        this.mUniform_ = gl.getUniformLocation(this.program_, "uModel");
+                
     };
 
-    initBuffer(gl: WebGLRenderingContext) {
-        this.squareVerticesBuffer_ = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.squareVerticesBuffer_);
+    initVertexArrays(gl: WebGLRenderingContext) {
 
-        let vertices = [
-            1.0, 1.0, 0.0,
-            -1.0, 1.0, 0.0,
-            1.0, -1.0, 0.0,
-            -1.0, -1.0, 0.0
-        ];
+        let vertexPosition = gl.getAttribLocation(this.program_, "aVertexPosition");
+        let vertexColor= gl.getAttribLocation(this.program_, "aVertexColor");
 
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.cube_.cubeVerticesBuffer_);
+        gl.vertexAttribPointer(vertexPosition, 3, gl.FLOAT, false, 0, 0);
+        
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.cube_.cubeColorsBuffer_);
+        gl.vertexAttribPointer(vertexColor, 4, gl.FLOAT, false, 0, 0);
+
+        gl.enableVertexAttribArray(vertexPosition);
+        gl.enableVertexAttribArray(vertexColor);
     };
 
     draw(width: number, height: number) {
         let gl = this.context_.get;
 
-        gl.viewport(0, 0, width, height);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-        gl.enableVertexAttribArray(this.vertexPositionAttrib_);
-        gl.vertexAttribPointer(this.vertexPositionAttrib_, 3, gl.FLOAT, false, 0, 0);
-
-        let mvUniform = gl.getUniformLocation(this.program_, "uMVMatrix");
+        gl.viewport(0, 0, width, height);
         
-        // Reset to the identity matrix
-        let mvMatrix = mat4.create()
-        mat4.identity(mvMatrix);
-
-        // mvMatrix will move model 6 units away from camera (camera looks in -z direction)
-        mat4.translate(mvMatrix, mvMatrix, vec3.fromValues(0.2, -0.2, -0.2));
-        mat4.scale(mvMatrix, mvMatrix, vec3.fromValues(0.5, 0.5, 1.0));
-        
-        gl.uniformMatrix4fv(mvUniform, false, mvMatrix);
-
-        // Add perspective view, near things appear larger
-        let pUniform = gl.getUniformLocation(this.program_, "uPMatrix");
-
         let aspect = gl.drawingBufferWidth / gl.drawingBufferHeight;
-        let pMatrix = mat4.create();
-        mat4.perspective(pMatrix, 60, aspect, 0.1, 100.0);
+        this.camera_.aspect = aspect;
 
-        gl.uniformMatrix4fv(pUniform, false, pMatrix);
+        gl.uniformMatrix4fv(this.vUniform_, false, this.camera_.vMatrix);
 
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        gl.uniformMatrix4fv(this.pUniform_, false, this.camera_.pMatrix);
+
+        gl.uniformMatrix4fv(this.mUniform_, false, this.cube_.mMatrix);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.cube_.cubeIndexBuffer_);
+
+        gl.drawElements(gl.TRIANGLES, 36, gl.UNSIGNED_SHORT, 0);
+
     };
-    
+
+    private vUniform_: WebGLUniformLocation;
+    private pUniform_: WebGLUniformLocation;
+    private mUniform_: WebGLUniformLocation;
+
     private program_: WebGLProgram;
-    private squareVerticesBuffer_: WebGLBuffer;
-    private vertexPositionAttrib_: number;
 }

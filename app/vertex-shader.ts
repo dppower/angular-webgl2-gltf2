@@ -12,6 +12,7 @@ export class VertexShader {
         gl.compileShader(this.shader_);
 
         if (!gl.getShaderParameter(this.shader_, gl.COMPILE_STATUS)) {
+            console.log("Vertex shader compilation error: " + gl.getShaderInfoLog(this.shader_));
             return null;
         }
         return this.shader_;
@@ -19,12 +20,17 @@ export class VertexShader {
 
     private source_: string = `
     attribute vec3 aVertexPosition;
+    attribute vec4 aVertexColor;
 
-    uniform mat4 uMVMatrix;
-    uniform mat4 uPMatrix;
+    uniform mat4 uView;
+    uniform mat4 uProjection;
+    uniform mat4 uModel;
     
+    varying vec4 vColor;
+
     void main(void) {
-        gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+        gl_Position = uProjection * uView * uModel * vec4(aVertexPosition, 1.0);
+        vColor = aVertexColor;
     }
     `;
 

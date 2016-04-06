@@ -3,6 +3,8 @@ import {WebGLContextService} from "./webgl-context";
 import {WebGLProgramService} from "./webgl-program";
 import {FragmentShader} from "./fragment-shader";
 import {VertexShader} from "./vertex-shader";
+import {Camera} from "./game-camera";
+import {GameObject} from "./game-object";
 
 @Component({
     selector: 'resizable-canvas',
@@ -15,7 +17,7 @@ import {VertexShader} from "./vertex-shader";
         z-index: 0;
     }
     `],
-    providers: [WebGLContextService, WebGLProgramService, FragmentShader, VertexShader]
+    providers: [WebGLContextService, WebGLProgramService, FragmentShader, VertexShader, Camera, GameObject]
 })
 export class ResizableCanvasComponent implements OnDestroy {
     @ViewChild("canvas") canvasRef: ElementRef;
