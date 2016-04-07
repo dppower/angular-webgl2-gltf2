@@ -1,5 +1,4 @@
-public/
-images/
+assets/
 build/
 node_modules/
 typings/

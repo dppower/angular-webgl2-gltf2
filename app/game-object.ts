@@ -8,10 +8,11 @@ export class GameObject {
     cubeColorsBuffer_: WebGLBuffer;
     cubeIndexBuffer_: WebGLBuffer;
 
-    get mMatrix() {
+    getmMatrix(dt: number) {
         mat4.identity(this.mMatrix_);
         mat4.translate(this.mMatrix_, this.mMatrix_, vec3.fromValues(0.0, 0.0, -6.0));
-        mat4.rotateY(this.mMatrix_, this.mMatrix_, this.getAngle());
+        mat4.rotateX(this.mMatrix_, this.mMatrix_, 45.0 * Math.PI / 180);
+        mat4.rotateY(this.mMatrix_, this.mMatrix_, this.getAngle(dt));
         return this.mMatrix_;
     };
 
@@ -34,12 +35,12 @@ export class GameObject {
         gl.bindBuffer(gl.ARRAY_BUFFER, this.cubeColorsBuffer_);
 
         let colors = [
-            1.0, 0.0, 0.6, 1.0, 1.0, 0.0, 0.6, 1.0, 1.0, 0.0, 0.6, 1.0, 1.0, 0.0, 0.6, 1.0,
-            0.1, 0.8, 0.7, 1.0, 0.1, 0.8, 0.7, 1.0, 0.1, 0.8, 0.7, 1.0, 0.1, 0.8, 0.7, 1.0,
-            0.2, 0.6, 0.1, 1.0, 0.2, 0.6, 0.1, 1.0, 0.2, 0.6, 0.1, 1.0, 0.2, 0.6, 0.1, 1.0,
-            0.9, 0.7, 0.6, 1.0, 0.9, 0.7, 0.6, 1.0, 0.9, 0.7, 0.6, 1.0, 0.9, 0.7, 0.6, 1.0,
-            1.0, 1.0, 0.9, 1.0, 1.0, 1.0, 0.9, 1.0, 1.0, 1.0, 0.9, 1.0, 1.0, 1.0, 0.9, 1.0,
-            1.0, 0.3, 0.6, 1.0, 1.0, 0.3, 0.6, 1.0, 1.0, 0.3, 0.6, 1.0, 1.0, 0.3, 0.6, 1.0,
+            1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
+            0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0, 0.0, 1.0,
+            0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0,
+            0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0,
+            1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0,
+            1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0,
         ];
 
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
@@ -59,13 +60,8 @@ export class GameObject {
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
     };
 
-    getAngle() {
-        let time = new Date().getMilliseconds();
-
-        let elapsed = time - this.lastTime_;
-        this.currentAngle_ += (90 * elapsed) / 1000.0;
-
-        this.lastTime_ = time;
+    getAngle(dt: number) {
+        this.currentAngle_ += 0.04 * dt;
 
         if (this.currentAngle_ >= 360) {
             this.currentAngle_ = 0;

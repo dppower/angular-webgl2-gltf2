@@ -26,7 +26,8 @@ export class WebGLProgramService implements OnDestroy {
         this.initProgram(gl);
         this.cube_.initBuffers(this.context_.get);
         this.initVertexArrays(gl);
-        gl.clearColor(0.0, 0.0, 1.0, 1.0);
+        gl.clearColor(0.5, 0.5, 0.5, 1.0);
+        gl.clearDepth(1.0);
         gl.enable(gl.DEPTH_TEST);
         gl.depthFunc(gl.LEQUAL);
     };
@@ -78,7 +79,7 @@ export class WebGLProgramService implements OnDestroy {
         gl.enableVertexAttribArray(vertexColor);
     };
 
-    draw(width: number, height: number) {
+    draw(dt: number, width: number, height: number) {
         let gl = this.context_.get;
 
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
@@ -91,7 +92,7 @@ export class WebGLProgramService implements OnDestroy {
 
         gl.uniformMatrix4fv(this.pUniform_, false, this.camera_.pMatrix);
 
-        gl.uniformMatrix4fv(this.mUniform_, false, this.cube_.mMatrix);
+        gl.uniformMatrix4fv(this.mUniform_, false, this.cube_.getmMatrix(dt));
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.cube_.cubeIndexBuffer_);
 

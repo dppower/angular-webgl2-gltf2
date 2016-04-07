@@ -14,7 +14,7 @@ import {ResizableCanvasComponent} from "./resizable-canvas.component";
         width: 100%;
         position: relative;
         z-index: 10;
-        border: 0.25em dashed red;
+        border: 0.25em dashed white;
     }
     `],
     directives: [CanvasFrameDirective, ResizableCanvasComponent]

@@ -49,14 +49,19 @@ export class ResizableCanvasComponent implements OnDestroy {
     }
 
     tick() {
+        let timeNow = window.performance.now();
+        let dt = timeNow - this.previousTime_; 
         this.cancelToken = requestAnimationFrame(() => {
             this.tick();
         });
-        this.program_.draw(this.canvasWidth, this.canvasHeight);
+        this.program_.draw(dt, this.canvasWidth, this.canvasHeight);
+        this.previousTime_ = timeNow;
     };
 
     ngOnDestroy() {
         cancelAnimationFrame(this.cancelToken);
     }
+
+    private previousTime_: number = 0;
 
 }
