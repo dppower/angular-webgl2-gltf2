@@ -9,7 +9,7 @@ import {GameObject} from "./game-object";
 @Component({
     selector: 'resizable-canvas',
     template: `
-    <canvas #canvas id="canvas" [width]="canvasWidth" [height]="canvasHeight" [style.top]="canvasTop" [style.left]="canvasLeft"><p>{{fallbackText}}</p></canvas>
+    <canvas #canvas id="canvas" [width]="canvasWidth" [height]="canvasHeight" [style.width]="canvasWidth" [style.height]="canvasHeight" [style.top]="canvasTop" [style.left]="canvasLeft"><p>{{fallbackText}}</p></canvas>
     `,
     styles: [`
     #canvas {
@@ -24,6 +24,8 @@ export class ResizableCanvasComponent implements OnDestroy {
     
     fallbackText: string = "Loading Canvas...";
 
+    // TODO If the client could change resolution, the binding to canvas height and width (dimensions of drawing buffer),
+    // would be different to the style.height and style.width of the canvas.
     canvasWidth: number;
     canvasHeight: number;
     canvasTop: string;

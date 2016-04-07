@@ -83,9 +83,11 @@ export class WebGLProgramService implements OnDestroy {
         let gl = this.context_.get;
 
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        gl.viewport(0, 0, width, height);
+        // Use the viewport to display all of the buffer
+        gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
         
-        let aspect = gl.drawingBufferWidth / gl.drawingBufferHeight;
+        // Aspect depends on the display size of the canvas, not drawing buffer.
+        let aspect = width / height;
         this.camera_.aspect = aspect;
 
         gl.uniformMatrix4fv(this.vUniform_, false, this.camera_.vMatrix);
