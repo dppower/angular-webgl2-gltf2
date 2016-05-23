@@ -1,4 +1,4 @@
-import {Component, ViewChild, AfterViewInit} from "angular2/core";
+import {Component, ViewChild, AfterViewInit} from "@angular/core";
 import {CanvasFrameComponent} from "./canvas-frame.component";
 import {ResizableCanvasComponent} from "./resizable-canvas.component";
 

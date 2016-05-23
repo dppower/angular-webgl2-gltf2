@@ -1,4 +1,4 @@
-import {Injectable} from "angular2/core";
+import {Injectable} from "@angular/core";
 import {WebGLContextService} from "./webgl-context";
 
 @Injectable()
@@ -21,10 +21,11 @@ export class FragmentShader {
     private source_: string = `
     precision mediump float;
 
-    varying vec4 vColor;
+    uniform sampler2D uSampler;
+    varying vec2 vTextureCoords;
 
     void main(void) {
-        gl_FragColor = vColor;
+        gl_FragColor = texture2D(uSampler, vTextureCoords);
     }
     `;
 

@@ -1,4 +1,4 @@
-import {Injectable} from "angular2/core";
+import {Injectable} from "@angular/core";
 import {WebGLContextService} from "./webgl-context";
 
 @Injectable()
@@ -20,17 +20,18 @@ export class VertexShader {
 
     private source_: string = `
     attribute vec3 aVertexPosition;
-    attribute vec4 aVertexColor;
+    attribute vec3 aNormals;
+    attribute vec2 aTextureCoords;
 
     uniform mat4 uView;
     uniform mat4 uProjection;
     uniform mat4 uModel;
     
-    varying vec4 vColor;
+    varying vec2 vTextureCoords;
 
     void main(void) {
         gl_Position = uProjection * uView * uModel * vec4(aVertexPosition, 1.0);
-        vColor = aVertexColor;
+        vTextureCoords = aTextureCoords;
     }
     `;
 

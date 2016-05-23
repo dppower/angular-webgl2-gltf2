@@ -1,4 +1,4 @@
-import {Component, ViewChild, ContentChild, AfterViewChecked, AfterContentChecked} from "angular2/core";
+import {Component, ViewChild, ContentChild, AfterViewChecked, AfterContentChecked} from "@angular/core";
 import {CanvasFrameDirective} from "./canvas-frame.directive";
 import {ResizableCanvasComponent} from "./resizable-canvas.component";
 
