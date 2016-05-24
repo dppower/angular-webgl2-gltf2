@@ -1,15 +1,16 @@
-import {Injectable} from "@angular/core";
-import {WebGLContextService} from "./webgl-context";
-import {FragmentShader} from "./fragment-shader";
-import {VertexShader} from "./vertex-shader";
+import {Injectable, provide, OpaqueToken} from "@angular/core";
+import {RenderContext} from "./render-context";
+import {ShaderType, compileShader} from "./shader";
+import frag_diffuse from "./fragment-diffuse-lambert";
+import vert_source from "./vertex-source";
 
 @Injectable()
-export class WebGLProgramService {
+export class ShaderProgram {
     
     constructor(
-        private context_: WebGLContextService,
-        private fragShader_: FragmentShader,
-        private vertShader_: VertexShader
+        private context_: RenderContext,
+        private vertSource_: string,
+        private fragSource_: string
     ) { };
 
     dispose() {
@@ -28,8 +29,8 @@ export class WebGLProgramService {
     };
 
     initProgram(gl: WebGLRenderingContext) {
-        let vertShader = this.vertShader_.getShader();
-        let fragShader = this.fragShader_.getShader();
+        let vertShader = compileShader(gl, ShaderType.Vertex, this.vertSource_);
+        let fragShader = compileShader(gl, ShaderType.Fragment, this.fragSource_);
 
         this.program_ = gl.createProgram();
         gl.attachShader(this.program_, vertShader);
@@ -56,7 +57,7 @@ export class WebGLProgramService {
         this.uView = gl.getUniformLocation(this.program_, "uView");
         this.uProjection = gl.getUniformLocation(this.program_, "uProjection");
         this.uModel = gl.getUniformLocation(this.program_, "uModel");
-        this.uSampler = gl.getUniformLocation(this.program_, "uSampler");               
+        this.uSampler = gl.getUniformLocation(this.program_, "uBaseTexture");               
     };
 
     initVertexArrays(gl: WebGLRenderingContext) {
@@ -81,3 +82,13 @@ export class WebGLProgramService {
 
     private program_: WebGLProgram;
 }
+
+var shaderProgramFactory = (vert_source: string, frag_source: string) => {
+    return (context: RenderContext) => {
+        return new ShaderProgram(context, vert_source, frag_source)
+    }
+};
+
+export const BASIC_SHADER = new OpaqueToken("basic-diffuse-shader");
+
+export const SHADER_PROVIDERS = [provide(BASIC_SHADER, { useFactory: shaderProgramFactory(vert_source, frag_diffuse), deps: [RenderContext] })]

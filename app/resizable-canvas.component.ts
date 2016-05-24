@@ -1,8 +1,6 @@
-import {Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone} from "@angular/core";
-import {WebGLContextService} from "./webgl-context";
-import {WebGLProgramService} from "./webgl-program";
-import {FragmentShader} from "./fragment-shader";
-import {VertexShader} from "./vertex-shader";
+import {Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone, Inject} from "@angular/core";
+import {RenderContext} from "./render-context";
+import {SHADER_PROVIDERS, BASIC_SHADER, ShaderProgram} from "./shader-program";
 import {Camera} from "./game-camera";
 import {Cube} from "./cube";
 
@@ -24,7 +22,7 @@ import {Cube} from "./cube";
         z-index: 0;
     }
     `],
-    providers: [WebGLContextService, WebGLProgramService, FragmentShader, VertexShader, Camera, Cube]
+    providers: [RenderContext, SHADER_PROVIDERS, Camera, Cube]
 })
 export class ResizableCanvasComponent implements OnDestroy {
     @ViewChild("canvas") canvasRef: ElementRef;
@@ -40,7 +38,7 @@ export class ResizableCanvasComponent implements OnDestroy {
 
     cancelToken: number;
 
-    constructor(private context_: WebGLContextService, private program_: WebGLProgramService, private cube_: Cube, private zone_: NgZone, private camera_: Camera) { };
+    constructor(private context_: RenderContext, @Inject(BASIC_SHADER) private program_: ShaderProgram, private cube_: Cube, private zone_: NgZone, private camera_: Camera) { };
     
     getCanvasWidth() {
         let width = this.canvasWidth > 1920 ? 1920 : this.canvasWidth;

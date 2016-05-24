@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {Transform} from "./transform";
 import {Vec3} from "./vec3";
 import {CubeMesh} from "./cube-mesh";
-import {WebGLProgramService} from "./webgl-program";
+import {ShaderProgram} from "./shader-program";
 
 @Injectable()
 export class Cube {
@@ -48,7 +48,7 @@ export class Cube {
         this.transform_.rotate(new Vec3(0.0, 1.0, 0.0), 0.02 * dt);
     };
 
-    draw(program: WebGLProgramService, gl: WebGLRenderingContext) {
+    draw(program: ShaderProgram, gl: WebGLRenderingContext) {
 
         if (!this.textureLoaded_) return;
 
