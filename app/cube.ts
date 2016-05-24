@@ -41,7 +41,7 @@ export class Cube {
             gl.bindTexture(gl.TEXTURE_2D, null);
             this.textureLoaded_ = true;
         };
-        texture.src = "cube-texture.png";
+        texture.src = "textures/cube-texture.png";
     };
 
     update(dt: number) {

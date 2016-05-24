@@ -64,7 +64,7 @@ export class WebGLProgramService {
         this.aVertexPosition = gl.getAttribLocation(this.program_, "aVertexPosition");
         this.aNormals = gl.getAttribLocation(this.program_, "aNormals");
         this.aTextureCoords = gl.getAttribLocation(this.program_, "aTextureCoords");
-
+        
         gl.enableVertexAttribArray(this.aVertexPosition);
         gl.enableVertexAttribArray(this.aNormals);
         gl.enableVertexAttribArray(this.aTextureCoords);

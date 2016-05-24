@@ -28,10 +28,12 @@ export class VertexShader {
     uniform mat4 uModel;
     
     varying vec2 vTextureCoords;
+    varying vec3 vNormals;
 
     void main(void) {
         gl_Position = uProjection * uView * uModel * vec4(aVertexPosition, 1.0);
         vTextureCoords = aTextureCoords;
+        vNormals = aNormals;
     }
     `;
 

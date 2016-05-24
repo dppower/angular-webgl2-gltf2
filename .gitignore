@@ -1,5 +1,5 @@
-assets/
-build/
+build/app
+build/textures
 node_modules/
 typings/
 typings.json

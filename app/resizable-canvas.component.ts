@@ -9,7 +9,14 @@ import {Cube} from "./cube";
 @Component({
     selector: 'resizable-canvas',
     template: `
-    <canvas #canvas id="canvas" [width]="getCanvasWidth()" [height]="getCanvasHeight()" [style.width]="canvasWidth" [style.height]="canvasHeight" [style.top]="canvasTop" [style.left]="canvasLeft"><p>{{fallbackText}}</p></canvas>
+    <canvas #canvas id="canvas" 
+        [width]="getCanvasWidth()" 
+        [height]="getCanvasHeight()" 
+        [style.width]="canvasWidth" 
+        [style.height]="canvasHeight" 
+        [style.top]="canvasTop" 
+        [style.left]="canvasLeft"
+    ><p>{{fallbackText}}</p></canvas>
     `,
     styles: [`
     #canvas {
@@ -92,7 +99,7 @@ export class ResizableCanvasComponent implements OnDestroy {
         let aspect = this.canvasWidth / this.canvasHeight;
         this.camera_.aspect = aspect;
 
-        gl.uniformMatrix4fv(this.program_.uView, false, this.camera_.vMatrix);
+        gl.uniformMatrix4fv(this.program_.uView, false, this.camera_.getvMatrix(5.0));
 
         gl.uniformMatrix4fv(this.program_.uProjection, false, this.camera_.pMatrix);
 

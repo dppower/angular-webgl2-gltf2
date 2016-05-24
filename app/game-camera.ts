@@ -5,12 +5,13 @@ export class Camera {
 
     set aspect(inAspect: number) { this.aspect_ = inAspect; };
     
-    get vMatrix() {
+    getvMatrix(zoomLevel: number) {
         // TODO Need to determine how the world should be transformed in relationship to the camera i.e. does the camera zoom or pan?
         this.vMatrix_[0] = 1.0;
         this.vMatrix_[5] = 1.0;
         this.vMatrix_[10] = 1.0;
-        this.vMatrix_[14] = -6.0;
+        this.vMatrix_[14] = -zoomLevel;
+        this.vMatrix_[15] = 1.0;
         return this.vMatrix_;
     };
 
@@ -31,8 +32,8 @@ export class Camera {
 
     };
 
-    private near_ = 1.0;
-    private far_ = 50.0;
+    private near_ = 0.1;
+    private far_ = 100.0;
 
     private aspect_;
 

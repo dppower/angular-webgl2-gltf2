@@ -1,9 +1,9 @@
-import {Component, ViewChild, AfterViewInit} from "@angular/core";
+import {Component} from "@angular/core";
 import {CanvasFrameComponent} from "./canvas-frame.component";
 import {ResizableCanvasComponent} from "./resizable-canvas.component";
 
 @Component({
-    selector: 'my-app',
+    selector: "app-component",
     template: `
     <canvas-frame>
         <resizable-canvas></resizable-canvas>
