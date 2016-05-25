@@ -45,7 +45,7 @@ export class Cube {
     };
 
     update(dt: number) {
-        this.transform_.rotate(new Vec3(0.0, 1.0, 0.0), 0.02 * dt);
+        this.transform_.rotate(new Vec3(0.0, 1.0, 0.0), 0.05 * dt);
     };
 
     draw(program: ShaderProgram, gl: WebGLRenderingContext) {
@@ -54,18 +54,18 @@ export class Cube {
 
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, this.texture_);
-        gl.uniform1i(program.uSampler, 0);
+        gl.uniform1i(program.getUniform("uBaseTexture"), 0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices_);
-        gl.vertexAttribPointer(program.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(program.getAttribute("aVertexPosition"), 3, gl.FLOAT, false, 0, 0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.normals_);
-        gl.vertexAttribPointer(program.aNormals, 3, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(program.getAttribute("aNormals"), 3, gl.FLOAT, false, 0, 0);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoords_);
-        gl.vertexAttribPointer(program.aTextureCoords, 2, gl.FLOAT, false, 0, 0);
+        gl.vertexAttribPointer(program.getAttribute("aTextureCoords"), 2, gl.FLOAT, false, 0, 0);
 
-        gl.uniformMatrix4fv(program.uModel, false, this.transform_.transform);
+        gl.uniformMatrix4fv(program.getUniform("uTransform"), false, this.transform_.transform);
 
         gl.drawArrays(gl.TRIANGLES, 0, 36);
     };

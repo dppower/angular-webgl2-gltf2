@@ -32,3 +32,9 @@ export function compileShader(gl: WebGLRenderingContext, type: ShaderType, sourc
 
     return shader; 
 };
+
+export interface ShaderSource {
+    uniforms: string[],
+    attributes: string[],
+    source: string
+}

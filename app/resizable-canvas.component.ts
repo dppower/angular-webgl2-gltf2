@@ -56,6 +56,7 @@ export class ResizableCanvasComponent implements OnDestroy {
         
         if (gl) {
             this.program_.initWebGl();
+            this.program_.use();
             this.cube_.initialise(this.context_.get);
             this.zone_.runOutsideAngular(() => {
                 this.cancelToken = requestAnimationFrame(() => {
@@ -97,9 +98,9 @@ export class ResizableCanvasComponent implements OnDestroy {
         let aspect = this.canvasWidth / this.canvasHeight;
         this.camera_.aspect = aspect;
 
-        gl.uniformMatrix4fv(this.program_.uView, false, this.camera_.getvMatrix(5.0));
+        gl.uniformMatrix4fv(this.program_.getUniform("uView"), false, this.camera_.getvMatrix(5.0));
 
-        gl.uniformMatrix4fv(this.program_.uProjection, false, this.camera_.pMatrix);
+        gl.uniformMatrix4fv(this.program_.getUniform("uProjection"), false, this.camera_.pMatrix);
 
         this.cube_.draw(this.program_, gl);
     };
