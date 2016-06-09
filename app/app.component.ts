@@ -1,14 +1,14 @@
 import {Component} from "@angular/core";
-import {CanvasFrameComponent} from "./canvas-frame.component";
-import {ResizableCanvasComponent} from "./resizable-canvas.component";
+import {CanvasController} from "./canvas-controller.component";
+import {MainCanvas} from "./main-canvas.component";
 
 @Component({
     selector: "app-component",
     template: `
-    <canvas-frame>
-        <resizable-canvas></resizable-canvas>
-    </canvas-frame>
+    <canvas-controller>
+        <main-canvas></main-canvas>
+    </canvas-controller>
     `,
-    directives: [CanvasFrameComponent, ResizableCanvasComponent]
+    directives: [CanvasController, MainCanvas]
 })
 export class AppComponent { }

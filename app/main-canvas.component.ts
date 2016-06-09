@@ -1,11 +1,14 @@
 import {Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone, Inject} from "@angular/core";
 import {RenderContext} from "./render-context";
-import {SHADER_PROVIDERS, BASIC_SHADER, ShaderProgram} from "./shader-program";
+import {SHADER_PROVIDERS, DIFFUSE_SHADER, ShaderProgram, SKYBOX_SHADER} from "./shader-program";
 import {Camera} from "./game-camera";
-import {Cube} from "./cube";
+import {CUBE_MESH_PROVIDER} from "./cube-mesh";
+import {InputManager, InputState} from "./input-manager";
+import {Cube, CUBES, CUBE_1, CUBE_2, CUBE_3} from "./cube";
+import {Skybox} from "./skybox";
 
 @Component({
-    selector: 'resizable-canvas',
+    selector: 'main-canvas',
     template: `
     <canvas #canvas id="canvas" 
         [width]="getCanvasWidth()" 
@@ -22,12 +25,12 @@ import {Cube} from "./cube";
         z-index: 0;
     }
     `],
-    providers: [RenderContext, SHADER_PROVIDERS, Camera, Cube]
+    providers: [RenderContext, SHADER_PROVIDERS, Camera, CUBES, Skybox, CUBE_MESH_PROVIDER]
 })
-export class ResizableCanvasComponent implements OnDestroy {
+export class MainCanvas implements OnDestroy {
     @ViewChild("canvas") canvasRef: ElementRef;
     
-    fallbackText: string = "Loading Canvas...";
+    fallbackText = "Loading Canvas...";
 
     // TODO If the client could change resolution, the binding to canvas height and width (dimensions of drawing buffer),
     // would be different to the style.height and style.width of the canvas.
@@ -38,7 +41,18 @@ export class ResizableCanvasComponent implements OnDestroy {
 
     cancelToken: number;
 
-    constructor(private context_: RenderContext, @Inject(BASIC_SHADER) private program_: ShaderProgram, private cube_: Cube, private zone_: NgZone, private camera_: Camera) { };
+    constructor(
+        private context_: RenderContext,
+        @Inject(DIFFUSE_SHADER) private program_: ShaderProgram,
+        @Inject(SKYBOX_SHADER) private skyboxProgram_: ShaderProgram,
+        @Inject(CUBE_1) private cube1: Cube,
+        @Inject(CUBE_2) private cube2: Cube,
+        @Inject(CUBE_3) private cube3: Cube,
+        private skybox_: Skybox,
+        private zone_: NgZone,
+        private camera_: Camera,
+        private inputManager_: InputManager
+    ) { };
     
     getCanvasWidth() {
         let width = this.canvasWidth > 1920 ? 1920 : this.canvasWidth;
@@ -55,12 +69,16 @@ export class ResizableCanvasComponent implements OnDestroy {
         let gl = this.context_.create(this.canvasRef.nativeElement);
         
         if (gl) {
-            this.program_.initWebGl();
-            this.program_.use();
-            this.cube_.initialise(this.context_.get);
+            this.context_.initialise();
+            this.program_.initialise(gl);
+            this.skyboxProgram_.initialise(gl);
+            this.cube1.initialise(gl);
+            this.cube2.initialise(gl);
+            this.cube3.initialise(gl);
+            this.skybox_.initialise(gl);
             this.zone_.runOutsideAngular(() => {
                 this.cancelToken = requestAnimationFrame(() => {
-                    this.mainloop();
+                    this.update();
                 });
             });
         }
@@ -72,18 +90,27 @@ export class ResizableCanvasComponent implements OnDestroy {
         }
     }
 
-    mainloop() {
+    update() {
         this.cancelToken = requestAnimationFrame(() => {
-            this.mainloop();
+            this.update();
         });
+
+        // Aspect depends on the display size of the canvas, not drawing buffer.
+        let aspect = this.canvasWidth / this.canvasHeight;
+        let inputs = this.inputManager_.inputs;
+        inputs.aspect = aspect;
+        this.camera_.update(inputs, this.canvasWidth, this.canvasHeight);
 
         let timeNow = window.performance.now();
         this.dt_ += (timeNow - this.previousTime_); 
         while (this.dt_ > this.timeStep_) {
-            this.cube_.update(this.timeStep_);
+            this.cube1.update(this.timeStep_);
+            this.cube2.update(this.timeStep_);
+            this.cube3.update(this.timeStep_);
             this.dt_ -= this.timeStep_;
         }
         this.draw(this.dt_);
+        this.inputManager_.Update();
         this.previousTime_ = timeNow;
     };
 
@@ -94,20 +121,16 @@ export class ResizableCanvasComponent implements OnDestroy {
         // Use the viewport to display all of the buffer
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
 
-        // Aspect depends on the display size of the canvas, not drawing buffer.
-        let aspect = this.canvasWidth / this.canvasHeight;
-        this.camera_.aspect = aspect;
-
-        gl.uniformMatrix4fv(this.program_.getUniform("uView"), false, this.camera_.getvMatrix(5.0));
-
-        gl.uniformMatrix4fv(this.program_.getUniform("uProjection"), false, this.camera_.pMatrix);
-
-        this.cube_.draw(this.program_, gl);
+        this.skybox_.draw(this.skyboxProgram_, gl, this.camera_);
+        this.cube1.draw(this.program_, gl, this.camera_);
+        this.cube2.draw(this.program_, gl, this.camera_);
+        this.cube3.draw(this.program_, gl, this.camera_);
     };
 
     ngOnDestroy() {
         cancelAnimationFrame(this.cancelToken);
         this.program_.dispose();
+        this.skyboxProgram_.dispose();
     }
 
     private previousTime_: number = 0;

@@ -1,5 +1,6 @@
 build/app
 build/textures
+glsl/
 node_modules/
 typings/
 typings.json

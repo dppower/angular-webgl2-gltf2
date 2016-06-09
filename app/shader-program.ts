@@ -1,13 +1,15 @@
 import {Injectable, provide, OpaqueToken} from "@angular/core";
 import {RenderContext} from "./render-context";
 import {ShaderType, compileShader, ShaderSource} from "./shader";
-import frag_diffuse from "./fragment-diffuse-lambert";
-import vert_simple from "./vertex-simple";
+import frag_diffuse from "./shaders/f-diffuse";
+import vert_diffuse from "./shaders/v-diffuse";
+import frag_skybox from "./shaders/f-skybox";
+import vert_skybox from "./shaders/v-skybox";
 
 @Injectable()
 export class ShaderProgram {
 
-    private attributes_= new Map<string, WebGLUniformLocation>();
+    private attributes_= new Map<string, number>();
     private uniforms_ = new Map<string, WebGLUniformLocation>();
 
     constructor(private context_: RenderContext, private vertSource_: ShaderSource, private fragSource_: ShaderSource) { };
@@ -24,19 +26,7 @@ export class ShaderProgram {
         return this.uniforms_[name];
     };
 
-    initWebGl() {
-        let gl = this.context_.get;
-        
-        this.initProgram(gl);
-        this.initialiseVertexArrays(gl);
-        this.locateUniforms(gl);
-        gl.clearColor(0.5, 0.5, 0.5, 1.0);
-        gl.clearDepth(1.0);
-        gl.enable(gl.DEPTH_TEST);
-        gl.depthFunc(gl.LEQUAL);
-    };
-
-    initProgram(gl: WebGLRenderingContext) {
+    initialise(gl: WebGLRenderingContext) {
         let vertShader = compileShader(gl, ShaderType.Vertex, this.vertSource_.source);
         let fragShader = compileShader(gl, ShaderType.Fragment, this.fragSource_.source);
 
@@ -46,11 +36,14 @@ export class ShaderProgram {
         gl.linkProgram(this.program_);
 
         if (!gl.getProgramParameter(this.program_, gl.LINK_STATUS)) {
+            console.log("Program link error: " + gl.getProgramInfoLog(this.program_));
+
             gl.deleteProgram(this.program_);
 
             gl.deleteShader(vertShader);
             gl.deleteShader(fragShader);
 
+            
             alert("Unable to initialize the shader program."); 
         }
 
@@ -58,7 +51,10 @@ export class ShaderProgram {
         gl.detachShader(this.program_, fragShader);
 
         gl.deleteShader(vertShader);
-        gl.deleteShader(fragShader);               
+        gl.deleteShader(fragShader);
+
+        this.initialiseVertexArrays(gl);
+        this.locateUniforms(gl);
     };
 
     use() {
@@ -88,6 +84,10 @@ var shaderProgramFactory = (vert_source: ShaderSource, frag_source: ShaderSource
     }
 };
 
-export const BASIC_SHADER = new OpaqueToken("basic-diffuse-shader");
+export const DIFFUSE_SHADER = new OpaqueToken("diffuse-shader");
+export const SKYBOX_SHADER = new OpaqueToken("skybox-shader");
 
-export const SHADER_PROVIDERS = [provide(BASIC_SHADER, { useFactory: shaderProgramFactory(vert_simple, frag_diffuse), deps: [RenderContext] })]
+export const SHADER_PROVIDERS = [
+    provide(DIFFUSE_SHADER, { useFactory: shaderProgramFactory(vert_diffuse, frag_diffuse), deps: [RenderContext] }),
+    provide(SKYBOX_SHADER, { useFactory: shaderProgramFactory(vert_skybox, frag_skybox), deps: [RenderContext] })
+]

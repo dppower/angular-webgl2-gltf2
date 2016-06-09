@@ -26,7 +26,7 @@ export function compileShader(gl: WebGLRenderingContext, type: ShaderType, sourc
 
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
         let shader_type = (type == 0) ? "Vertex" : "Fragment";
-        console.log(shader_type + " shader compilation error: " + gl.getShaderInfoLog(shader));
+        console.log(shader_type + ", name: " + source + ", shader compilation error: " + gl.getShaderInfoLog(shader));
         return null;
     }
 

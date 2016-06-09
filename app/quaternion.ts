@@ -1,11 +1,42 @@
 import {Vec3} from "./vec3";
 
 export class Quaternion {
-    constructor(axis = new Vec3(), angle = 0.0) {
+    constructor(x = 0.0, y = 0.0, z = 0.0, w = 1.0) {
+        this.v_ = new Vec3(x, y, z);
+        this.w_ = w;
+    };
+
+    static fromAxisAngle(axis = new Vec3(), angle = 0.0) {
+        let q = new Quaternion();
         let phi = angle * Math.PI / 360.0;
-        this.v_ = new Vec3();
-        Vec3.scale(Math.sin(phi), axis, this.v_);
-        this.w_ = Math.cos(phi);     
+        q.v = axis.scale(Math.sin(phi));
+        q.w = Math.cos(phi);
+
+        return q;
+    };
+
+    static fromAngleBetweenVectors(u: Vec3, v: Vec3, normalized = false) {
+        //let cos_theta = u.normalise().dot(v.normalise());
+        //let angle = -1.0 * Math.acos(cos_theta);
+        //let axis = u.cross(v).normalise();
+        //let q = Quaternion.fromAxisAngle(axis, angle);
+
+        let norm_u_norm_v = normalized ? 1.0 : Math.sqrt(u.squaredLength * v.squaredLength);
+        let w = norm_u_norm_v + u.dot(v);
+        let p: Vec3;
+
+        if (w < 0.000001 * norm_u_norm_v) {
+            // Checking if u and v are exactly opposite
+            w = 0.0;
+            p = u.orthogonal;
+        }
+        else {
+            p = u.cross(v);
+        }
+
+        let q = new Quaternion(p.x, p.y, p.z, w);
+        q.normalise();
+        return q;
     };
 
     get x() {
@@ -42,7 +73,7 @@ export class Quaternion {
 
     conjugate() {
         let c = new Quaternion();
-        Vec3.scale(-1.0, this.v_, c.v);
+        c.v = this.v_.scale(-1.0);
         c.w = this.w_
         return c;
     };
@@ -51,38 +82,44 @@ export class Quaternion {
         let p = new Quaternion();
         p.w = 0.0;
         p.v = v;
-
-        let r = this.multiply(p).multiply(this.conjugate());
-        return r;
+        
+        let qp = this.multiply(p);
+        let c = this.conjugate();
+        let qp_c = qp.multiply(c);
+        return qp_c.v;
     };
 
     normalise() {
         let factor = 1.0 / this.length;
 
-        Vec3.scale(factor, this.v, this.v);
-        this.w *= factor;
+        this.v_.copy(this.v_.scale(factor));
+        this.w_ *= factor;
     }
 
     multiply(q: Quaternion) {
         this.normalise();
         q.normalise();
         let r = new Quaternion();
-        r.w = this.w * q.w - Vec3.dot(this.v_, q.v);
-        let v = new Vec3();
-        Vec3.scale(q.w, this.v_, v);
-        Vec3.add(r.v, v, r.v);
-        Vec3.scale(this.w, q.v, v);
-        Vec3.add(r.v, v, r.v);
-        Vec3.cross(this.v_, q.v, v);
-        Vec3.add(r.v, v, r.v);
+        r.w = this.w_ * q.w - this.v_.dot(q.v);
+        r.v = this.v_.scale(q.w).add(q.v.scale(this.w_)).add(this.v_.cross(q.v));
 
         // Above is equivalent to this calculation:
+        //r.w = this.w * q.w - (this.x * q.x + this.y * q.y + this.z * q.z);
         //r.x = (this.x * q.w) + (this.w * q.x) + (this.y * q.z) - (this.z * q.y);
         //r.y = (this.y * q.w) + (this.w * q.y) + (this.z * q.x) - (this.x * q.z);
         //r.z = (this.z * q.w) + (this.w * q.z) + (this.x * q.y) - (this.y * q.x);
         
         return r;
 
+    };
+
+    copy(q: Quaternion) {
+        this.v_.copy(q.v);
+        this.w_ = q.w;
+    };
+
+    toString() {
+        return "x: " + this.x + ", y: " + this.y + ", z: " + this.z + ", w: " + this.w;
     };
 
     private w_: number;
