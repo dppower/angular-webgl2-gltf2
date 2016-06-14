@@ -3,11 +3,7 @@ import {Quaternion} from "./quaternion";
 
 export class Mat4 {
 
-    constructor(array?: Float32Array) {
-        if (array) {
-            this.matrix_.set(array);
-        }
-    };
+    constructor() { };
 
     get array() {
         return this.matrix_;
@@ -48,10 +44,9 @@ export class Mat4 {
         }
     };
 
-    rotate(q: Quaternion) {
-        let r = new Mat4();
+    static fromQuaternion(q: Quaternion, out: Mat4) {
         q.normalise();
-        const n = 2.0;
+        const n = 2;
         let wx = n * q.w * q.x;
         let wy = n * q.w * q.y;
         let wz = n * q.w * q.z;
@@ -62,40 +57,28 @@ export class Mat4 {
         let xz = n * q.x * q.z;
         let yz = n * q.y * q.z;
 
-        r.array[0] = 1.0 - (yy + zz);
-        r.array[1] = xy + wz;
-        r.array[2] = xz - wy;
+        out.array[0] = 1.0 - (yy + zz);
+        out.array[1] = xy + wz;
+        out.array[2] = xz - wy;
 
-        r.array[4] = xy - wz;
-        r.array[5] = 1.0 - (xx + zz);
-        r.array[6] = yz + wx;
+        out.array[4] = xy - wz;
+        out.array[5] = 1.0 - (xx + zz);
+        out.array[6] = yz + wx;
 
-        r.array[8] = xz + wy;
-        r.array[9] = yz - wx;
-        r.array[10] = 1.0 - (xx + yy);
+        out.array[8] = xz + wy;
+        out.array[9] = yz - wx;
+        out.array[10] = 1.0 - (xx + yy);
 
-        r.array[15] = 1.0;
-        Mat4.multiply(this, r, this);
+        out.array[3] = 0;
+        out.array[7] = 0;
+        out.array[11] = 0;
+        out.array[15] = 1;
     };
 
-    scale(v: Vec3) {
-        let s = new Mat4();
-        s.identity();
-        s.array[0] = v.x;
-        s.array[5] = v.y;
-        s.array[10] = v.z;
-
-        Mat4.multiply(this, s, this);
-    };
-
-    translate(v: Vec3) {
-        let t = new Mat4();
-        t.identity();
-        t.array[12] = v.x;
-        t.array[13] = v.y;
-        t.array[14] = v.z;
-        
-        Mat4.multiply(this, t, this);
+    static fromTranslation(translation: Vec3, out: Mat4) {
+        out.array[12] = translation.x;
+        out.array[13] = translation.y;
+        out.array[14] = translation.z;
     };
 
     /* This is a shortcut method to find the inverse:
@@ -129,14 +112,25 @@ export class Mat4 {
     };
 
     toString() {
-        return "[" + this.matrix_[0] + ", " + this.matrix_[4] + ", " + this.matrix_[8] + ", " + this.matrix_[12] + ",\n" +
+        return "\n[" + this.matrix_[0] + ", " + this.matrix_[4] + ", " + this.matrix_[8] + ", " + this.matrix_[12] + ",\n" +
             this.matrix_[1] + ", " + this.matrix_[5] + ", " + this.matrix_[9] + ", " + this.matrix_[13] + ",\n" +
             this.matrix_[2] + ", " + this.matrix_[6] + ", " + this.matrix_[10] + ", " + this.matrix_[14] + ",\n" +
             this.matrix_[3] + ", " + this.matrix_[7] + ", " + this.matrix_[11] + ", " + this.matrix_[15] + "]";
     };
 
+    transformPoint(vec: Vec3) {
+        let x = vec.x, y = vec.y, z = vec.z, w = 1.0;
+
+        let r = new Vec3();
+        r.x = this.matrix_[0] * x + this.matrix_[4] * y + this.matrix_[8] * z + this.matrix_[12] * w;
+        r.y = this.matrix_[1] * x + this.matrix_[5] * y + this.matrix_[9] * z + this.matrix_[13] * w;
+        r.z = this.matrix_[2] * x + this.matrix_[6] * y + this.matrix_[10] * z + this.matrix_[14] * w;
+
+        return r;
+    };
+
     transformDirection(vec: Vec3) {
-        let x = vec.x, y = vec.y, z = vec.z, w = 0.0;
+        let x = vec.x, y = vec.y, z = vec.z, w = 0;
 
         let r = new Vec3();
         r.x = this.matrix_[0] * x + this.matrix_[4] * y + this.matrix_[8] * z + this.matrix_[12] * w;

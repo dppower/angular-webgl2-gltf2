@@ -99,7 +99,7 @@ export class MainCanvas implements OnDestroy {
         let aspect = this.canvasWidth / this.canvasHeight;
         let inputs = this.inputManager_.inputs;
         inputs.aspect = aspect;
-        this.camera_.update(inputs, this.canvasWidth, this.canvasHeight);
+        this.camera_.Update(inputs);
 
         let timeNow = window.performance.now();
         this.dt_ += (timeNow - this.previousTime_); 

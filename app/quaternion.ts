@@ -25,15 +25,15 @@ export class Quaternion {
         let w = norm_u_norm_v + u.dot(v);
         let p: Vec3;
 
-        if (w < 0.000001 * norm_u_norm_v) {
+        if (w < 0.000000001 * norm_u_norm_v) {
             // Checking if u and v are exactly opposite
-            w = 0.0;
+            //q = Quaternion.fromAxisAngle(u.orthogonal, 180.0);
+            w = 0;
             p = u.orthogonal;
         }
         else {
-            p = u.cross(v);
+            p = u.cross(v);            
         }
-
         let q = new Quaternion(p.x, p.y, p.z, w);
         q.normalise();
         return q;
@@ -86,6 +86,7 @@ export class Quaternion {
         let qp = this.multiply(p);
         let c = this.conjugate();
         let qp_c = qp.multiply(c);
+        qp_c.normalise();
         return qp_c.v;
     };
 

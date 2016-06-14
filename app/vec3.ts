@@ -49,11 +49,12 @@ export class Vec3 {
 
     normalise() {
         let length = this.length;
+        let n = new Vec3();
         if (length > 0) {
             let factor = 1.0 / length;
-            this.scale(factor);
+            n = this.scale(factor);
         }
-        return this;   
+        return n;   
     };
 
     add(a: Vec3) {

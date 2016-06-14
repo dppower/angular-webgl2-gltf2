@@ -2,31 +2,21 @@ import {Injectable, Inject} from "@angular/core";
 import {Transform} from "./transform";
 import {Quaternion} from "./quaternion";
 import {InputState} from "./input-manager";
-import {Vec3} from "./vec3";
+import {Vec3, VEC3_UP, VEC3_FORWARD, VEC3_RIGHT} from "./vec3";
 import {Mat4} from "./mat4";
 import {Cube, CUBE_1, CUBE_2, CUBE_3} from "./cube";
 
 @Injectable()
 export class Camera {
 
-    private initialDistanceToTarget_: number;
+    private initialPosition_: Vec3;
     private minDistanceToTarget_ = 3.0;
     private maxDistanceToTarget_ = 15.0;
     private zoomSpeed_ = 0.1;
 
-    constructor(@Inject(CUBE_1) private target_: Cube) {
+    constructor(@Inject(CUBE_3) private target_: Cube) {
         let initial_position = new Vec3(0.0, 0.0, 8.0);
         this.transform_.setTranslation(this.target_.transform.position.add(initial_position));
-        this.transform_.update();
-    };
-    
-    get matrix() {
-        Mat4.multiply(this.projection_, this.view_, this.matrix_);       
-        return this.matrix_.array;
-    };
-
-    get inverseView() {        
-        return this.transform_.transform.array;
     };
 
     get view() {
@@ -35,6 +25,16 @@ export class Camera {
 
     get projection() {
         return this.projection_.array;
+    };
+
+    get projectionView() {
+        Mat4.multiply(this.projection_, this.view_, this.projectionView_);       
+        return this.projectionView_.array;
+    };
+
+    get inverseView() {      
+        this.view_.inverse(this.inverseView_);
+        return this.inverseView_.array;
     };
 
     get inverseProjection() {
@@ -46,44 +46,85 @@ export class Camera {
         return this.inverseProjection_.array;
     };
 
-    Start(initialDistance: number) {
-        //let z = (startDistance < this.minZoom_) ? this.minZoom_ : ((startDistance > this.maxZoom_) ? this.maxZoom_ : startDistance);
-        this.initialDistanceToTarget_ = initialDistance;
-        let initial_position = new Vec3(0.0, 0.0, initialDistance);
-        this.transform_.setTranslation(this.target_.transform.position.add(initial_position));
-        this.transform_.update();
+    set target(cube: Cube) {
+        this.target_ = cube;
     };
 
-    update(inputs: InputState, canvasWidth: number, canvasHeight: number) {
+    Start(initialPosition: Vec3) {
+        this.initialPosition_ = initialPosition;
+        this.transform_.setTranslation(this.target_.transform.position.add(initialPosition));
+    };
+
+    Update(inputs: InputState) {
 
         // Handle zooming
         let zoom = inputs.zoom * this.zoomSpeed_;
-        let toTarget = this.transform_.position.subtract(this.target_.transform.position);
-        let currentDistanceToTarget = toTarget.length;
+        let fromTarget = this.transform_.position.subtract(this.target_.transform.position);
+        let currentDistanceToTarget = fromTarget.length;
 
         let desiredDistance = zoom + currentDistanceToTarget;
-        let newDistanceToTarget = (desiredDistance <= this.minDistanceToTarget_) ? this.minDistanceToTarget_ : ((desiredDistance >= this.maxDistanceToTarget_) ? this.maxDistanceToTarget_ : desiredDistance);
+        let allowedDistance = (desiredDistance <= this.minDistanceToTarget_) ? this.minDistanceToTarget_ : ((desiredDistance >= this.maxDistanceToTarget_) ? this.maxDistanceToTarget_ : desiredDistance);
 
         // Rotate camera around target
-        let qx = Quaternion.fromAxisAngle(new Vec3(0.0, 1.0, 0.0), -0.5 * inputs.mouseDx);
-        //let qy = Quaternion.fromAxisAngle(new Vec3(1.0, 0.0, 0.0), 0.5 * inputs.mouseDy);
+        //let qx = Quaternion.fromAxisAngle(new Vec3(0.0, 1.0, 0.0), -0.5 * inputs.mouseDx);
+        //let qy = Quaternion.fromAxisAngle(new Vec3(1.0, 0.0, 0.0), -0.5 * inputs.mouseDy);
+        let mouseDelta = new Vec3(inputs.mouseDx, inputs.mouseDy, 0);
+        let rotationAxis = mouseDelta.cross(VEC3_FORWARD).normalise();
+        let xyRotation = Quaternion.fromAxisAngle(rotationAxis, 1.2);
 
-        //let rotation = qx.multiply(qy);
-        let rotatedDirection = this.transform_.rotateAround(this.target_.transform.position, qx);
+        // Clamp vertical rotation
+        let rotatedY = xyRotation.rotate(fromTarget.normalise()).y;
+        
+        if (rotatedY > 0.85 || rotatedY < 0.0) {
+            xyRotation = new Quaternion();
+        }
+        //else {
+        //    xyRotation = new Quaternion();
+        //}
+        //let isJumpPressed = (key: string) => {
+        //    if (key === "jump") return true;
 
-        let rotatedPoint = rotatedDirection.scale(newDistanceToTarget);
+        //    return false;
+        //};
 
-        let translation = this.target_.transform.position.add(rotatedPoint);
-        this.transform_.setTranslation(translation);
+        //if (inputs.keyPressed.find(isJumpPressed)) {
+        //    console.log("=======");
+        //    console.log("rotated from target vector: " + rotatedY);
+        //    if (inputs.mouseDx != 0 && inputs.mouseDy != 0) {
+                
+        //        console.log("mouseDx: " + inputs.mouseDx + ", mouseDy: " + inputs.mouseDy);
+        //    }
+        //};
+
+        let rotatedDirection = this.transform_.rotateAround(this.target_.transform.position, xyRotation);
+        let rotatedPoint = rotatedDirection.scale(allowedDistance);
+        let updatedPosition = this.target_.transform.position.add(rotatedPoint);
+        this.transform_.setTranslation(updatedPosition);
 
         // Rotate camera to face target
         let lookAtRotaion = this.transform_.lookAt(this.target_.transform.position);
-        this.transform_.addRotation(lookAtRotaion);
+        this.transform_.setOrientation(lookAtRotaion);
         
         // Update matrices after transformations
         this.transform_.update();
+        let rotation = this.transform_.rotation;
+        let translation = this.transform_.translation;
+        this.matrix_.identity();
+        this.matrix_.array[0] = rotation.array[0];
+        this.matrix_.array[1] = rotation.array[1];
+        this.matrix_.array[2] = rotation.array[2];
+        this.matrix_.array[4] = rotation.array[4];
+        this.matrix_.array[5] = rotation.array[5];
+        this.matrix_.array[6] = rotation.array[6];
+        this.matrix_.array[8] = rotation.array[8];
+        this.matrix_.array[9] = rotation.array[9];
+        this.matrix_.array[10] = rotation.array[10];
+        this.matrix_.array[12] = translation.array[12];
+        this.matrix_.array[13] = translation.array[13];
+        this.matrix_.array[14] = translation.array[14];
 
-        this.transform_.transform.inverse(this.view_);
+        this.matrix_.inverse(this.view_);
+
         this.setProjection(inputs.aspect);
     };
 
@@ -103,8 +144,10 @@ export class Camera {
 
     private view_ = new Mat4();
     private projection_ = new Mat4();
+    private projectionView_ = new Mat4();
     private matrix_ = new Mat4();
     private inverseProjection_ = new Mat4();
+    private inverseView_ = new Mat4();
 
     // TODO Should the FoV be adjustable by user?
     private vFieldOfView_ = 60.0 * Math.PI / 180;

@@ -16,6 +16,8 @@ export class Transform {
     ) {
         this.transform_.identity();
         this.inverse_.identity();
+        this.rotation_.identity();
+        this.translation_.identity();
     };
 
     get position() {
@@ -24,6 +26,14 @@ export class Transform {
 
     get orientation() {
         return this.orientation_;
+    };
+
+    get rotation() {
+        return this.rotation_;
+    };
+
+    get translation() {
+        return this.translation_;
     };
 
     get transform() {
@@ -38,16 +48,19 @@ export class Transform {
         return this.forward_;
     };
 
-    get inverse() {      
+    get right() {
+        return this.right_;
+    };
+
+    get inverse() {
+        this.transform_.inverse(this.inverse_);
         return this.inverse_;
     };
 
-    update() {
-        this.transform_.identity();
-        this.transform_.rotate(this.orientation_);
-        this.transform_.translate(this.position_);
-
-        this.transform_.inverse(this.inverse_);
+    update(log: boolean = false) {
+        Mat4.fromQuaternion(this.orientation_, this.rotation_);
+        Mat4.fromTranslation(this.position_, this.translation_);
+        Mat4.multiply(this.rotation_, this.translation_, this.transform_);      
     };
 
     lookAt(target: Vec3) {
@@ -55,20 +68,25 @@ export class Transform {
         let toTarget = target.subtract(this.position_);
         toTarget = toTarget.normalise();
         
-        let q1 = Quaternion.fromAngleBetweenVectors(this.forward_, toTarget);
-        this.forward_ = q1.rotate(this.forward_);
+        let q1 = Quaternion.fromAngleBetweenVectors(VEC3_FORWARD, toTarget, true);
+        //this.forward_ = q1.rotate(VEC3_FORWARD);
+        //let forward = q1.rotate(VEC3_FORWARD);
+        let up = q1.rotate(VEC3_UP);
+        let right = toTarget.cross(VEC3_UP);
+        let up_w = right.cross(toTarget);
 
-        let q2 = Quaternion.fromAngleBetweenVectors(VEC3_FORWARD, this.forward_);
-        return q2;
+        let q2 = Quaternion.fromAngleBetweenVectors(up, up_w);
+        let lookAtRotation = q2.multiply(q1);
+        return lookAtRotation;
     };
 
     /*
     * Returns a unit vector representing a direction that has been rotated.
     */
     rotateAround(target: Vec3, rotation: Quaternion) {
-        let toTarget = this.position_.subtract(target);
-        toTarget = toTarget.normalise();
-        let v = rotation.rotate(toTarget);
+        let fromTarget = this.position_.subtract(target);
+        fromTarget = fromTarget.normalise();
+        let v = rotation.rotate(fromTarget);
         return v;
     };
 
@@ -81,15 +99,11 @@ export class Transform {
     };
     
     addRotation(rotation: Quaternion) {
-        this.orientation_ = this.orientation_.multiply(rotation);
-        //this.up_ = this.orientation_.rotate(this.up_);
-        //this.forward_ = rotation.rotate(this.forward_);
-        //this.right_ = this.orientation_.rotate(this.right_);   
+        this.orientation_ = this.orientation_.multiply(rotation); 
     };
 
     setOrientation(orientation: Quaternion) {
         this.orientation_ = orientation;
-        this.forward_ = orientation.rotate(this.forward_);
     };
 
     private up_ = new Vec3(0.0, 1.0, 0.0);
@@ -98,4 +112,6 @@ export class Transform {
 
     private transform_ = new Mat4();
     private inverse_ = new Mat4();
+    private rotation_ = new Mat4();
+    private translation_ = new Mat4();
 };

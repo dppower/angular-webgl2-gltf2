@@ -59,12 +59,10 @@ export class Skybox {
         fetchTextures.subscribe(
             (data) => {
                 let i = skyboxTextures[data.label];
-                console.log("name: " + data.label + ", number: " + i + ".");
                 gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, data.texture);
             },
             () => { },
             () => {
-                console.log("all textures loaded.");
                 this.texturesLoaded_ = true;
             }
         );        
