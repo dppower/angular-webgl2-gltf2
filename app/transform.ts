@@ -69,8 +69,7 @@ export class Transform {
         toTarget = toTarget.normalise();
         
         let q1 = Quaternion.fromAngleBetweenVectors(VEC3_FORWARD, toTarget, true);
-        //this.forward_ = q1.rotate(VEC3_FORWARD);
-        //let forward = q1.rotate(VEC3_FORWARD);
+        this.forward_ = q1.rotate(VEC3_FORWARD);
         let up = q1.rotate(VEC3_UP);
         let right = toTarget.cross(VEC3_UP);
         let up_w = right.cross(toTarget);
@@ -84,10 +83,12 @@ export class Transform {
     * Returns a unit vector representing a direction that has been rotated.
     */
     rotateAround(target: Vec3, rotation: Quaternion) {
+
         let fromTarget = this.position_.subtract(target);
         fromTarget = fromTarget.normalise();
-        let v = rotation.rotate(fromTarget);
-        return v;
+
+        let r = rotation.rotate(fromTarget);
+        return r;
     };
 
     addTranslation(move: Vec3) {

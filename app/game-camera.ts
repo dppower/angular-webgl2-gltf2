@@ -15,7 +15,7 @@ export class Camera {
     private zoomSpeed_ = 0.1;
 
     constructor(@Inject(CUBE_3) private target_: Cube) {
-        let initial_position = new Vec3(0.0, 0.0, 8.0);
+        let initial_position = new Vec3(0.0, 1.0, 8.0);
         this.transform_.setTranslation(this.target_.transform.position.add(initial_position));
     };
 
@@ -66,39 +66,26 @@ export class Camera {
         let allowedDistance = (desiredDistance <= this.minDistanceToTarget_) ? this.minDistanceToTarget_ : ((desiredDistance >= this.maxDistanceToTarget_) ? this.maxDistanceToTarget_ : desiredDistance);
 
         // Rotate camera around target
-        //let qx = Quaternion.fromAxisAngle(new Vec3(0.0, 1.0, 0.0), -0.5 * inputs.mouseDx);
-        //let qy = Quaternion.fromAxisAngle(new Vec3(1.0, 0.0, 0.0), -0.5 * inputs.mouseDy);
-        let mouseDelta = new Vec3(inputs.mouseDx, inputs.mouseDy, 0);
-        let rotationAxis = mouseDelta.cross(VEC3_FORWARD).normalise();
-        let xyRotation = Quaternion.fromAxisAngle(rotationAxis, 1.2);
-
-        // Clamp vertical rotation
-        let rotatedY = xyRotation.rotate(fromTarget.normalise()).y;
-        
-        if (rotatedY > 0.85 || rotatedY < 0.0) {
-            xyRotation = new Quaternion();
-        }
-        //else {
-        //    xyRotation = new Quaternion();
-        //}
-        //let isJumpPressed = (key: string) => {
-        //    if (key === "jump") return true;
-
-        //    return false;
-        //};
-
-        //if (inputs.keyPressed.find(isJumpPressed)) {
-        //    console.log("=======");
-        //    console.log("rotated from target vector: " + rotatedY);
-        //    if (inputs.mouseDx != 0 && inputs.mouseDy != 0) {
-                
-        //        console.log("mouseDx: " + inputs.mouseDx + ", mouseDy: " + inputs.mouseDy);
-        //    }
-        //};
+        let currentRight = VEC3_UP.cross(fromTarget).normalise();
+        let currentUp = fromTarget.cross(currentRight).normalise();
+        let mouseDy = currentUp.scale(inputs.mouseDy);
+        let mouseDx = currentRight.scale(inputs.mouseDx);
+        let mouseDelta = mouseDy.add(mouseDx);
+        let rotationAxis = mouseDelta.cross(fromTarget).normalise();
+        let xyRotation = Quaternion.fromAxisAngle(rotationAxis, 1.1);
 
         let rotatedDirection = this.transform_.rotateAround(this.target_.transform.position, xyRotation);
         let rotatedPoint = rotatedDirection.scale(allowedDistance);
-        let updatedPosition = this.target_.transform.position.add(rotatedPoint);
+
+        // Clamp vertical rotation
+        let updatedPosition: Vec3;
+        if (rotatedDirection.y >= 0.75 || rotatedDirection.y <= 0.0) {
+            updatedPosition = this.transform_.position;
+        }
+        else {
+            updatedPosition = this.target_.transform.position.add(rotatedPoint);
+        }
+        
         this.transform_.setTranslation(updatedPosition);
 
         // Rotate camera to face target
