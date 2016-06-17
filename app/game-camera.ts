@@ -65,7 +65,7 @@ export class Camera {
         let desiredDistance = zoom + currentDistanceToTarget;
         let allowedDistance = (desiredDistance <= this.minDistanceToTarget_) ? this.minDistanceToTarget_ : ((desiredDistance >= this.maxDistanceToTarget_) ? this.maxDistanceToTarget_ : desiredDistance);
 
-        // Rotate camera around target
+        // Orbit camera around target
         let currentRight = VEC3_UP.cross(fromTarget).normalise();
         let currentUp = fromTarget.cross(currentRight).normalise();
         let mouseDy = currentUp.scale(inputs.mouseDy);

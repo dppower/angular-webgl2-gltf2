@@ -5,6 +5,8 @@ import frag_diffuse from "./shaders/f-diffuse";
 import vert_diffuse from "./shaders/v-diffuse";
 import frag_skybox from "./shaders/f-skybox";
 import vert_skybox from "./shaders/v-skybox";
+import frag_basic from "./shaders/f-basic";
+import vert_basic from "./shaders/v-basic";
 
 @Injectable()
 export class ShaderProgram {
@@ -19,11 +21,11 @@ export class ShaderProgram {
     };
 
     getAttribute(name: string): number {
-        return this.attributes_[name];
+        return this.attributes_.get(name);
     };
 
     getUniform(name: string): WebGLUniformLocation {
-        return this.uniforms_[name];
+        return this.uniforms_.get(name);
     };
 
     initialise(gl: WebGLRenderingContext) {
@@ -63,14 +65,23 @@ export class ShaderProgram {
 
     locateUniforms(gl: WebGLRenderingContext) {
         this.vertSource_.uniforms.forEach((uniform_name) => {
-            this.uniforms_[uniform_name] = gl.getUniformLocation(this.program_, uniform_name);
+            let uniform_location = gl.getUniformLocation(this.program_, uniform_name)
+            console.log("uniform name: " + uniform_name + ", uniform location: " + uniform_location);
+            this.uniforms_.set(uniform_name, uniform_location);
+        });
+
+        this.fragSource_.uniforms.forEach((uniform_name) => {
+            let uniform_location = gl.getUniformLocation(this.program_, uniform_name)
+            console.log("uniform name: " + uniform_name + ", uniform location: " + uniform_location);
+            this.uniforms_.set(uniform_name, uniform_location);
         });
     };
 
     initialiseVertexArrays(gl: WebGLRenderingContext) {
         this.vertSource_.attributes.forEach((attribute_name) => {
             let attrib_location = gl.getAttribLocation(this.program_, attribute_name);
-            this.attributes_[attribute_name] = attrib_location;
+            console.log("attribute name: " + attribute_name + ", location: " + attrib_location);
+            this.attributes_.set(attribute_name, attrib_location);
             gl.enableVertexAttribArray(attrib_location);
         });
     };
@@ -84,10 +95,12 @@ var shaderProgramFactory = (vert_source: ShaderSource, frag_source: ShaderSource
     }
 };
 
+export const BASIC_SHADER = new OpaqueToken("basic-shader");
 export const DIFFUSE_SHADER = new OpaqueToken("diffuse-shader");
 export const SKYBOX_SHADER = new OpaqueToken("skybox-shader");
 
 export const SHADER_PROVIDERS = [
+    provide(BASIC_SHADER, { useFactory: shaderProgramFactory(vert_basic, frag_basic), deps: [RenderContext] }),
     provide(DIFFUSE_SHADER, { useFactory: shaderProgramFactory(vert_diffuse, frag_diffuse), deps: [RenderContext] }),
     provide(SKYBOX_SHADER, { useFactory: shaderProgramFactory(vert_skybox, frag_skybox), deps: [RenderContext] })
 ]

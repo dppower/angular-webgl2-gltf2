@@ -13,7 +13,8 @@ import {InputManager, InputState} from "./input-manager";
         [inLeft]="frame.offsetLeft" 
         (mousemove)="onMouseMove($event)" 
         (wheel)="onMouseWheel($event)"
-        (click)="setFocus($event)" 
+        (click)="onMouseClick($event)" 
+        (mouseenter)="setFocus($event)"
         (keydown)="onKeyDown($event)" 
         (keyup)="onKeyUp($event)" 
         (contextmenu)="false"  
@@ -71,6 +72,14 @@ export class CanvasController implements AfterViewInit, AfterViewChecked, AfterC
         return false;
     };
 
+    onMouseClick(event: MouseEvent) {
+        this.setFocus(event);
+        if (event.button == 0) {
+            console.log("left-click");
+            this.inputManager_.setMouseCoords(event.clientX, event.clientY);
+        } 
+    };
+
     onKeyDown(event: KeyboardEvent) {
         this.inputManager_.setKeyDown(event);
         return false;
@@ -83,8 +92,8 @@ export class CanvasController implements AfterViewInit, AfterViewChecked, AfterC
 
     onMouseMove(event: MouseEvent) {
         if (event.buttons == 2) {
-            this.inputManager_.setMouseCoords(event.clientX, event.clientY, this.dimensions.inWidth, this.dimensions.inHeight);
-        }        
+            this.inputManager_.setCenteredCoords(event.clientX, event.clientY, this.dimensions.inWidth, this.dimensions.inHeight);
+        }     
         return false;
     };
 }

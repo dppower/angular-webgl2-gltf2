@@ -69,12 +69,11 @@ export class Transform {
         toTarget = toTarget.normalise();
         
         let q1 = Quaternion.fromAngleBetweenVectors(VEC3_FORWARD, toTarget, true);
-        this.forward_ = q1.rotate(VEC3_FORWARD);
-        let up = q1.rotate(VEC3_UP);
+        let rotatedUp = q1.rotate(VEC3_UP);
         let right = toTarget.cross(VEC3_UP);
-        let up_w = right.cross(toTarget);
+        let desiredUp = right.cross(toTarget);
 
-        let q2 = Quaternion.fromAngleBetweenVectors(up, up_w);
+        let q2 = Quaternion.fromAngleBetweenVectors(rotatedUp, desiredUp);
         let lookAtRotation = q2.multiply(q1);
         return lookAtRotation;
     };
@@ -105,6 +104,7 @@ export class Transform {
 
     setOrientation(orientation: Quaternion) {
         this.orientation_ = orientation;
+        this.forward_ = orientation.rotate(VEC3_FORWARD);
     };
 
     private up_ = new Vec3(0.0, 1.0, 0.0);

@@ -1,11 +1,13 @@
 import {Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone, Inject} from "@angular/core";
 import {RenderContext} from "./render-context";
-import {SHADER_PROVIDERS, DIFFUSE_SHADER, ShaderProgram, SKYBOX_SHADER} from "./shader-program";
+import {SHADER_PROVIDERS, DIFFUSE_SHADER, ShaderProgram, SKYBOX_SHADER, BASIC_SHADER} from "./shader-program";
 import {Camera} from "./game-camera";
 import {CUBE_MESH_PROVIDER} from "./cube-mesh";
 import {InputManager, InputState} from "./input-manager";
-import {Cube, CUBES, CUBE_1, CUBE_2, CUBE_3} from "./cube";
+import {CUBES} from "./cube";
 import {Skybox} from "./skybox";
+import {SceneRenderer} from "./scene-renderer";
+import {PickingRenderer} from "./picking-renderer";
 
 @Component({
     selector: 'main-canvas',
@@ -25,7 +27,7 @@ import {Skybox} from "./skybox";
         z-index: 0;
     }
     `],
-    providers: [RenderContext, SHADER_PROVIDERS, Camera, CUBES, Skybox, CUBE_MESH_PROVIDER]
+    providers: [RenderContext, SHADER_PROVIDERS, Camera, CUBES, Skybox, CUBE_MESH_PROVIDER, SceneRenderer, PickingRenderer]
 })
 export class MainCanvas implements OnDestroy {
     @ViewChild("canvas") canvasRef: ElementRef;
@@ -43,11 +45,10 @@ export class MainCanvas implements OnDestroy {
 
     constructor(
         private context_: RenderContext,
-        @Inject(DIFFUSE_SHADER) private program_: ShaderProgram,
+        @Inject(DIFFUSE_SHADER) private diffuseProgram_: ShaderProgram,
         @Inject(SKYBOX_SHADER) private skyboxProgram_: ShaderProgram,
-        @Inject(CUBE_1) private cube1: Cube,
-        @Inject(CUBE_2) private cube2: Cube,
-        @Inject(CUBE_3) private cube3: Cube,
+        private sceneRenderer_: SceneRenderer,
+        private pickingRenderer_: PickingRenderer,
         private skybox_: Skybox,
         private zone_: NgZone,
         private camera_: Camera,
@@ -69,16 +70,14 @@ export class MainCanvas implements OnDestroy {
         let gl = this.context_.create(this.canvasRef.nativeElement);
         
         if (gl) {
-            this.context_.initialise();
-            this.program_.initialise(gl);
+            this.diffuseProgram_.initialise(gl);
             this.skyboxProgram_.initialise(gl);
-            this.cube1.initialise(gl);
-            this.cube2.initialise(gl);
-            this.cube3.initialise(gl);
+            this.sceneRenderer_.Start(gl);
+            this.pickingRenderer_.Start();
             this.skybox_.initialise(gl);
             this.zone_.runOutsideAngular(() => {
                 this.cancelToken = requestAnimationFrame(() => {
-                    this.update();
+                    this.Update();
                 });
             });
         }
@@ -90,9 +89,9 @@ export class MainCanvas implements OnDestroy {
         }
     }
 
-    update() {
+    Update() {
         this.cancelToken = requestAnimationFrame(() => {
-            this.update();
+            this.Update();
         });
 
         // Aspect depends on the display size of the canvas, not drawing buffer.
@@ -101,35 +100,38 @@ export class MainCanvas implements OnDestroy {
         inputs.aspect = aspect;
         this.camera_.Update(inputs);
 
+        if (inputs.mouseX != 0 && inputs.mouseY != 0) {
+
+            let mousePositionX = (inputs.mouseX / this.canvasWidth) * this.pickingRenderer_.width;
+            let mousePositonY = this.pickingRenderer_.height - ((inputs.mouseY / this.canvasHeight) * this.pickingRenderer_.height);
+            this.pickingRenderer_.GetMouseTarget(mousePositionX, mousePositonY);
+        }
+
         let timeNow = window.performance.now();
         this.dt_ += (timeNow - this.previousTime_); 
         while (this.dt_ > this.timeStep_) {
-            this.cube1.update(this.timeStep_);
-            this.cube2.update(this.timeStep_);
-            this.cube3.update(this.timeStep_);
+            this.sceneRenderer_.UpdateScene(this.timeStep_);
             this.dt_ -= this.timeStep_;
         }
-        this.draw(this.dt_);
+        this.Draw(this.dt_);
         this.inputManager_.Update();
         this.previousTime_ = timeNow;
     };
 
 
-    draw(dt: number) {
+    Draw(dt: number) {
         let gl = this.context_.get;
+        this.pickingRenderer_.DrawOffscreen(this.camera_);
+        
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        // Use the viewport to display all of the buffer
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-
-        this.skybox_.draw(this.skyboxProgram_, gl, this.camera_);
-        this.cube1.draw(this.program_, gl, this.camera_);
-        this.cube2.draw(this.program_, gl, this.camera_);
-        this.cube3.draw(this.program_, gl, this.camera_);
+        this.skybox_.draw(this.skyboxProgram_, this.context_.get, this.camera_);
+        this.sceneRenderer_.DrawAll(this.diffuseProgram_, this.camera_);
     };
 
     ngOnDestroy() {
         cancelAnimationFrame(this.cancelToken);
-        this.program_.dispose();
+        this.diffuseProgram_.dispose();
         this.skyboxProgram_.dispose();
     }
 

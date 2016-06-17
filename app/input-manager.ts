@@ -13,6 +13,8 @@ const actionSet = ["jump"];
 export class InputState {
     aspect = 1.78;
     zoom = 0.0;
+    mouseX = 0.0;
+    mouseY = 0.0;
     mouseDx = 0.0;
     mouseDy = 0.0;
     keyDown: string[] = [];
@@ -27,12 +29,20 @@ export class InputManager {
     previousMouseX = 0.0;
     previousMouseY = 0.0;
 
+    centeredMouseX = 0.0;
+    centeredMouseY = 0.0;
+
     currentMouseX = 0.0;
     currentMouseY = 0.0;
 
-    setMouseCoords(x: number, y: number, canvasWidth: number, canvasHeight: number) {
-        this.currentMouseX = 2 * (x / canvasWidth) - 1;
-        this.currentMouseY = 2 * (y / canvasHeight) - 1;
+    setMouseCoords(x: number, y: number) {
+        this.currentMouseX = x;
+        this.currentMouseY = y;
+    };
+
+    setCenteredCoords(x: number, y: number, canvasWidth: number, canvasHeight: number) {
+        this.centeredMouseX = 2 * (x / canvasWidth) - 1;
+        this.centeredMouseY = 2 * (y / canvasHeight) - 1;
     };
 
     previousKeyMap = new Map<number, boolean>();
@@ -70,8 +80,10 @@ export class InputManager {
     get inputs() {
         let currentState = new InputState();
         currentState.zoom = this.zoom_;
-        currentState.mouseDx = this.currentMouseX - this.previousMouseX;
-        currentState.mouseDy = this.currentMouseY - this.previousMouseY;
+        currentState.mouseX = this.currentMouseX;
+        currentState.mouseY = this.currentMouseY;
+        currentState.mouseDx = this.centeredMouseX - this.previousMouseX;
+        currentState.mouseDy = this.centeredMouseY - this.previousMouseY;
 
         for (let i in moveSet) {
             let move = moveSet[i];
@@ -103,8 +115,11 @@ export class InputManager {
     Update() {
         this.zoom_ = 0.0;
 
-        this.previousMouseX = this.currentMouseX;
-        this.previousMouseY = this.currentMouseY;
+        this.previousMouseX = this.centeredMouseX;
+        this.previousMouseY = this.centeredMouseY;
+
+        this.currentMouseX = 0;
+        this.currentMouseY = 0;
 
         this.currentKeyMap.forEach((value, key, map) => {
             this.previousKeyMap.set(key, value);
