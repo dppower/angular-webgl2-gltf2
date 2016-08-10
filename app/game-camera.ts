@@ -14,7 +14,7 @@ export class Camera {
     private maxDistanceToTarget_ = 15.0;
     private zoomSpeed_ = 0.1;
 
-    constructor(@Inject(CUBE_3) private target_: Cube) {
+    constructor(@Inject(CUBE_1) private target_: Cube) {
         let initial_position = new Vec3(0.0, 1.0, 8.0);
         this.transform_.setTranslation(this.target_.transform.position.add(initial_position));
     };

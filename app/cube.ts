@@ -65,7 +65,7 @@ export class Cube {
 
         if (!this.textureLoaded_) return;
 
-        program.use();
+        program.use(gl);
 
         // Attributes
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices_);
@@ -84,7 +84,7 @@ export class Cube {
 
         if (!this.textureLoaded_) return;
 
-        program.use();
+        program.use(gl);
 
         // Texture
         gl.activeTexture(gl.TEXTURE0);

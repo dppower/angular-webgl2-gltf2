@@ -71,7 +71,7 @@ export class Skybox {
     draw(program: ShaderProgram, gl: WebGLRenderingContext, camera: Camera) {
         if (!this.texturesLoaded_) return;
 
-        program.use();
+        program.use(gl);
        
         gl.depthMask(false);
         gl.activeTexture(gl.TEXTURE0);

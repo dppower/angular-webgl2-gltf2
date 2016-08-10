@@ -8,6 +8,7 @@ import {CUBES} from "./cube";
 import {Skybox} from "./skybox";
 import {SceneRenderer} from "./scene-renderer";
 import {PickingRenderer} from "./picking-renderer";
+import {AtmosphereModel} from "./sky-model";
 
 @Component({
     selector: 'main-canvas',
@@ -27,7 +28,7 @@ import {PickingRenderer} from "./picking-renderer";
         z-index: 0;
     }
     `],
-    providers: [RenderContext, SHADER_PROVIDERS, Camera, CUBES, Skybox, CUBE_MESH_PROVIDER, SceneRenderer, PickingRenderer]
+    providers: [RenderContext, SHADER_PROVIDERS, Camera, CUBES, Skybox, CUBE_MESH_PROVIDER, SceneRenderer, PickingRenderer, AtmosphereModel]
 })
 export class MainCanvas implements OnDestroy {
     @ViewChild("canvas") canvasRef: ElementRef;
@@ -50,6 +51,7 @@ export class MainCanvas implements OnDestroy {
         private sceneRenderer_: SceneRenderer,
         private pickingRenderer_: PickingRenderer,
         private skybox_: Skybox,
+        private atmosphere_: AtmosphereModel, 
         private zone_: NgZone,
         private camera_: Camera,
         private inputManager_: InputManager
@@ -67,14 +69,15 @@ export class MainCanvas implements OnDestroy {
 
 
     ngAfterViewInit() {
-        let gl = this.context_.create(this.canvasRef.nativeElement);
+        let gl = this.context_.createContext(this.canvasRef.nativeElement);
         
         if (gl) {
             this.diffuseProgram_.initialise(gl);
             this.skyboxProgram_.initialise(gl);
             this.sceneRenderer_.Start(gl);
             this.pickingRenderer_.Start();
-            this.skybox_.initialise(gl);
+            //this.skybox_.initialise(gl);
+            this.atmosphere_.Start(gl);
             this.zone_.runOutsideAngular(() => {
                 this.cancelToken = requestAnimationFrame(() => {
                     this.Update();
@@ -125,7 +128,8 @@ export class MainCanvas implements OnDestroy {
         
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.viewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
-        this.skybox_.draw(this.skyboxProgram_, this.context_.get, this.camera_);
+        this.atmosphere_.RenderSky(gl);
+        //this.skybox_.draw(this.skyboxProgram_, this.context_.get, this.camera_);
         this.sceneRenderer_.DrawAll(this.diffuseProgram_, this.camera_);
     };
 
