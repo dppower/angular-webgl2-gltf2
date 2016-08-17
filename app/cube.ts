@@ -1,131 +1,83 @@
-import {Injectable, Inject, provide, OpaqueToken, Injector} from "@angular/core";
-import {Transform} from "./transform";
-import {Vec3} from "./vec3";
-import {Quaternion} from "./quaternion";
-import {Mesh, CUBE_MESH} from "./cube-mesh";
-import {ShaderProgram} from "./shader-program";
-import {Camera} from "./game-camera";
+import { Injectable, Inject, provide, OpaqueToken, Injector } from "@angular/core";
+
+import { Transform } from "./transform";
+import { Vec3 } from "./vec3";
+import { Quaternion } from "./quaternion";
+import { CubeMesh } from "./cube-mesh";
+import { ShaderProgram } from "./shader-program";
+import { Camera } from "./game-camera";
 
 @Injectable()
 export class Cube {
 
-    constructor(
-        @Inject(CUBE_MESH) private mesh_: Mesh,
-        position = new Vec3(0.0, 0.0, 0.0),
-        private colour_: Float32Array,
-        private token_: OpaqueToken
-    ) {
-        this.transform_ = new Transform("cube", position);
+    get name() {
+        return this.token_.toString();
     };
-    
-    vertices_: WebGLBuffer;
-    normals_: WebGLBuffer;
-    texture_: WebGLTexture;
-    textureCoords_: WebGLBuffer;
-    textureLoaded_ = false;
 
     get transform() {
         return this.transform_;
     };
 
+    private transform_: Transform;
+    private uniform_colour_ = new Float32Array([1.0, 1.0, 1.0, 1.0]);
+
+    constructor(private token_: OpaqueToken, position = new Vec3(0.0, 0.0, 0.0)) {
+
+        this.transform_ = new Transform(position);
+    };
+
+    /**
+     * Set a unique uniform color for use in the picking renderer, override default color of white.
+     */
+    setUniformColor(color: Float32Array) {
+        this.uniform_colour_.set(color);
+    };
+
+
     Start(gl: WebGLRenderingContext) {
 
-        this.vertices_ = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices_);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.mesh_.vertices), gl.STATIC_DRAW);
 
-        this.normals_ = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.normals_);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.mesh_.normals), gl.STATIC_DRAW);
 
-        this.textureCoords_ = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoords_);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.mesh_.UVMap), gl.STATIC_DRAW);
-
-        this.texture_ = gl.createTexture();
-        let texture = new Image();
-        texture.onload = () => {
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, this.texture_);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-            gl.generateMipmap(gl.TEXTURE_2D);
-            gl.bindTexture(gl.TEXTURE_2D, null);
-            this.textureLoaded_ = true;
-        };
-        texture.src = "textures/cube-texture.png";
+        //this.texture_ = gl.createTexture();
+        //let texture = new Image();
+        //texture.onload = () => {
+        //    gl.activeTexture(gl.TEXTURE0);
+        //    gl.bindTexture(gl.TEXTURE_2D, this.texture_);
+        //    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture);
+        //    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        //    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+        //    gl.generateMipmap(gl.TEXTURE_2D);
+        //    gl.bindTexture(gl.TEXTURE_2D, null);
+        //    this.textureLoaded_ = true;
+        //};
+        //texture.src = "textures/cube-texture.png";
     };
 
     Update(dt: number) {
         this.transform_.update();
     };
 
-    DrawBasic(program: ShaderProgram, gl: WebGLRenderingContext, camera: Camera) {
-
-        if (!this.textureLoaded_) return;
-
-        program.use(gl);
-
-        // Attributes
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices_);
-        gl.vertexAttribPointer(program.getAttribute("aVertexPosition"), 3, gl.FLOAT, false, 0, 0);
-
-        // Uniforms
-        gl.uniformMatrix4fv(program.getUniform("uView"), false, camera.view);
-        gl.uniformMatrix4fv(program.getUniform("uProjection"), false, camera.projection);
-        gl.uniformMatrix4fv(program.getUniform("uTransform"), false, this.transform_.transform.array);
-        gl.uniform4fv(program.getUniform("uColour"), this.colour_);
-
-        gl.drawArrays(gl.TRIANGLES, 0, 36);
-    };
-
-    Draw(program: ShaderProgram, gl: WebGLRenderingContext, camera: Camera) {
-
-        if (!this.textureLoaded_) return;
-
-        program.use(gl);
-
-        // Texture
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, this.texture_);
-        gl.uniform1i(program.getUniform("uBaseTexture"), 0);
-
-        // Attributes
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices_);
-        gl.vertexAttribPointer(program.getAttribute("aVertexPosition"), 3, gl.FLOAT, false, 0, 0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.normals_);
-        gl.vertexAttribPointer(program.getAttribute("aNormals"), 3, gl.FLOAT, false, 0, 0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoords_);
-        gl.vertexAttribPointer(program.getAttribute("aTextureCoords"), 2, gl.FLOAT, false, 0, 0);
-
-        // Uniforms
-        gl.uniformMatrix4fv(program.getUniform("uView"), false, camera.view);
-        gl.uniformMatrix4fv(program.getUniform("uProjection"), false, camera.projection);
-        gl.uniformMatrix4fv(program.getUniform("uTransform"), false, this.transform_.transform.array);
-
-        gl.drawArrays(gl.TRIANGLES, 0, 36);
-    };
-
-    private transform_: Transform;
 };
 
-export const CUBE_1 = new OpaqueToken("cube-1");
-export const CUBE_2 = new OpaqueToken("cube-2");
-export const CUBE_3 = new OpaqueToken("cube-3");
+//const cubes = new Map<OpaqueToken, Cube>();
 
-const cubeFactory = (position: Vec3, colour: Float32Array, token: OpaqueToken) => {
-    let createCube = (injector: Injector) => {
-        let mesh = injector.get(CUBE_MESH);
-        return new Cube(mesh, position, colour, token);
-    };
-    return createCube;
-};
+const cubes = new OpaqueToken("cubes");
 
-export const CUBES = [
-    provide(CUBE_1, { useFactory: cubeFactory(new Vec3(0.0, 0.0, 0.0), new Float32Array([1.0, 0.0, 0.0, 1.0]), CUBE_1), deps: [Injector, CUBE_MESH] }),
-    provide(CUBE_2, { useFactory: cubeFactory(new Vec3(2.0, 0.0, -1.0), new Float32Array([0.0, 1.0, 0.0, 1.0]), CUBE_2), deps: [Injector, CUBE_MESH] }),
-    provide(CUBE_3, { useFactory: cubeFactory(new Vec3(-2.0, 1.0, -3.0), new Float32Array([0.0, 0.0, 1.0, 1.0]), CUBE_3), deps: [Injector, CUBE_MESH] })
-];
+const cube_001 = new OpaqueToken("cube-001");
+const cube_002 = new OpaqueToken("cube-002");
+const cube_003 = new OpaqueToken("cube-003");
+
+export const cubes_provider = provide(cubes, { useValue: [cube_001, cube_002, cube_003] });
+
+//const cube_factory = (position: Vec3, colour: Float32Array, token: OpaqueToken) => {
+//    return (injector: Injector) => {
+//        let mesh = injector.get(CUBE_MESH);
+//        return new Cube(mesh, colour, token, position);
+//    };
+//};
+
+//export const cubes = [
+//    provide(cube_001, { useFactory: cube_factory(new Vec3(0.0, 0.0, 0.0), new Float32Array([1.0, 0.0, 0.0, 1.0]), cube_001), deps: [Injector, CUBE_MESH] }),
+//    provide(cube_002, { useFactory: cube_factory(new Vec3(2.0, 0.0, -1.0), new Float32Array([0.0, 1.0, 0.0, 1.0]), cube_002), deps: [Injector, CUBE_MESH] }),
+//    provide(cube_003, { useFactory: cube_factory(new Vec3(-2.0, 1.0, -3.0), new Float32Array([0.0, 0.0, 1.0, 1.0]), cube_003), deps: [Injector, CUBE_MESH] })
+//];

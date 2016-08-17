@@ -1,9 +1,19 @@
 import {Injectable, Inject} from "@angular/core";
 import {ShaderProgram, INSCATTER_SHADER, TRANSMITTANCE_SHADER, SKYQUAD_SHADER} from "./shader-program";
 import {Camera} from "./game-camera";
+import {Vec3} from "./vec3";
 
 const TRANSMITTANCE_RESOLUTION = { width: 256, height: 256 };
 const INSCATTER_RESOLUTION = 256;
+
+
+// For solar noon at summer solstice:
+const sun_angle = 14.3828;
+const noon_position = new Vec3(0, Math.sin(sun_angle), Math.cos(sun_angle));
+// axis of rotaion
+const axial_tilt = 23.4371;
+const latitude = 52.1801;
+const rotation_axis = new Vec3(0, -Math.sin(latitude), Math.cos(latitude));
 
 enum FramebufferStatus {
     FRAMEBUFFER_COMPLETE = 0x8CD5,
@@ -32,7 +42,7 @@ export class AtmosphereModel {
     private inscatterTexture_: WebGLTexture;
     private transmittanceTexture_: WebGLTexture;
 
-    Start(gl: WebGLRenderingContext) {
+    start(gl: WebGLRenderingContext) {
 
         this.inscatterProgram_.initialise(gl);
         this.transmittanceProgram_.initialise(gl);
@@ -70,7 +80,7 @@ export class AtmosphereModel {
             alert("Sky model transmittance frame buffer is not complete.");
         }
 
-        this.CreateTransmittanceTexture(gl);
+        this.createTransmittanceTexture(gl);
 
         gl.finish();
 
@@ -124,7 +134,7 @@ export class AtmosphereModel {
                 console.log("Inscatter frame buffer, " + i + ", is not complete: " + FramebufferStatus[status_code]);
             }
 
-            this.CreateInscatterTexture(gl, i);
+            this.createInscatterTexture(gl, i);
         }
 
         gl.finish();
@@ -132,7 +142,7 @@ export class AtmosphereModel {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     };
 
-    CreateTransmittanceTexture(gl: WebGLRenderingContext) {
+    createTransmittanceTexture(gl: WebGLRenderingContext) {
         
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.viewport(0, 0, TRANSMITTANCE_RESOLUTION.width, TRANSMITTANCE_RESOLUTION.height);
@@ -146,7 +156,7 @@ export class AtmosphereModel {
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
 
-    CreateInscatterTexture(gl: WebGLRenderingContext, cubeFace: number) {
+    createInscatterTexture(gl: WebGLRenderingContext, cubeFace: number) {
         
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.viewport(0, 0, INSCATTER_RESOLUTION, INSCATTER_RESOLUTION);
@@ -166,7 +176,7 @@ export class AtmosphereModel {
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
 
-    RenderSky(gl: WebGLRenderingContext) {
+    renderSky(gl: WebGLRenderingContext) {
         this.skyquadProgram_.use(gl);
 
         gl.depthMask(false);

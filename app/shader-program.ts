@@ -1,24 +1,27 @@
-import {Injectable, provide, OpaqueToken} from "@angular/core";
-import {RenderContext} from "./render-context";
-import {ShaderType, compileShader, ShaderSource} from "./shader";
-import frag_diffuse from "./shaders/f-diffuse";
-import vert_diffuse from "./shaders/v-diffuse";
-import frag_skybox from "./shaders/f-skybox";
-import vert_skybox from "./shaders/v-skybox";
-import frag_basic from "./shaders/f-basic";
-import vert_basic from "./shaders/v-basic";
-import sky_quad_vs from "./shaders/sky-quad.vs";
-import sky_quad_fs from "./shaders/sky-quad.fs";
-import texture_2d_vs from "./shaders/texture-2d.vs";
-import texture_cube_vs from "./shaders/texture-cube.vs";
-import transmittance_fs from "./shaders/transmittance.fs";
-import inscatter_fs from "./shaders/inscattering.fs";
+import { Inject, Injectable, Injector, provide, OpaqueToken } from "@angular/core";
 
-@Injectable()
-export class ActiveProgramAttributes {
+import { webgl2_context } from "./render-context";
+import { ShaderType, compileShader, VertexShaderSource, FragmentShaderSource } from "./shader";
+
+import diffuse_uniform_color_fs from "./shaders/diffuse-uniform-color.fs";
+import diffuse_uniform_color_vs from "./shaders/diffuse-uniform-color.vs";
+
+import uniform_color_fs from "./shaders/uniform-color.fs";
+import uniform_color_vs from "./shaders/uniform-color.vs";
+
+//import sky_quad_vs from "./shaders/sky-quad.vs";
+//import sky_quad_fs from "./shaders/sky-quad.fs";
+//import texture_2d_vs from "./shaders/texture-2d.vs";
+//import texture_cube_vs from "./shaders/texture-cube.vs";
+//import transmittance_fs from "./shaders/transmittance.fs";
+//import inscatter_fs from "./shaders/inscattering.fs";
+
+
+// This is required when VertexArrayObjects are not available.
+class ActiveProgramAttributes {
     private active_attribute_count = 0;
 
-    CheckAttributeCount(attribute_count: number, gl: WebGLRenderingContext) {
+    checkAttributeCount(attribute_count: number, gl: WebGLRenderingContext) {
         let actives_difference = attribute_count - this.active_attribute_count;
 
         if (actives_difference > 0) {
@@ -38,14 +41,22 @@ export class ActiveProgramAttributes {
 @Injectable()
 export class ShaderProgram {
 
+    get attribute_count() { return this.attribute_count_; };
+
     private attribute_count_: number;
     private attributes_= new Map<string, number>();
     private uniforms_ = new Map<string, WebGLUniformLocation>();
+    private program_: WebGLProgram;
 
-    constructor(private context_: RenderContext, private vertSource_: ShaderSource, private fragSource_: ShaderSource, private active_attribute_counter_: ActiveProgramAttributes) { };
+    constructor(
+        @Inject(webgl2_context) private gl: WebGL2RenderingContext,
+        private vertex_shader_source: VertexShaderSource,
+        private fragment_shader_source: FragmentShaderSource,
+        private active_attribute_counter: ActiveProgramAttributes
+    ) { };
 
-    dispose() {
-        this.context_.get.deleteProgram(this.program_);
+    deleteProgram() {
+        this.gl.deleteProgram(this.program_);
     };
 
     getAttribute(name: string): number {
@@ -56,84 +67,83 @@ export class ShaderProgram {
         return this.uniforms_.get(name);
     };
 
-    initialise(gl: WebGLRenderingContext) {
-        let vertShader = compileShader(gl, ShaderType.Vertex, this.vertSource_.source);
-        let fragShader = compileShader(gl, ShaderType.Fragment, this.fragSource_.source);
+    initProgram() {
+        let compiled_vertex_shader = compileShader(this.gl, ShaderType.Vertex, this.vertex_shader_source.source);
+        let fragShader = compileShader(this.gl, ShaderType.Fragment, this.fragment_shader_source.source);
 
-        this.program_ = gl.createProgram();
-        gl.attachShader(this.program_, vertShader);
-        gl.attachShader(this.program_, fragShader);
-        gl.linkProgram(this.program_);
+        this.program_ = this.gl.createProgram();
+        this.gl.attachShader(this.program_, compiled_vertex_shader);
+        this.gl.attachShader(this.program_, fragShader);
+        this.gl.linkProgram(this.program_);
 
-        if (!gl.getProgramParameter(this.program_, gl.LINK_STATUS)) {
-            console.log("Program link error: " + gl.getProgramInfoLog(this.program_));
+        if (!this.gl.getProgramParameter(this.program_, this.gl.LINK_STATUS)) {
+            console.log("Program link error: " + this.gl.getProgramInfoLog(this.program_));
 
-            gl.deleteProgram(this.program_);
+            this.gl.deleteProgram(this.program_);
 
-            gl.deleteShader(vertShader);
-            gl.deleteShader(fragShader);
+            this.gl.deleteShader(compiled_vertex_shader);
+            this.gl.deleteShader(fragShader);
 
             alert("Unable to initialize the shader program."); 
         }
 
-        gl.detachShader(this.program_, vertShader);
-        gl.detachShader(this.program_, fragShader);
+        this.gl.detachShader(this.program_, compiled_vertex_shader);
+        this.gl.detachShader(this.program_, fragShader);
 
-        gl.deleteShader(vertShader);
-        gl.deleteShader(fragShader);
+        this.gl.deleteShader(compiled_vertex_shader);
+        this.gl.deleteShader(fragShader);
 
-        this.initialiseVertexArrays(gl);
-        this.locateUniforms(gl);
+        this.setAttributeIds(this.gl);
+        this.locateUniforms(this.gl);
     };
 
-    use(gl: WebGLRenderingContext) {
-        this.context_.get.useProgram(this.program_);
-        this.active_attribute_counter_.CheckAttributeCount(this.attribute_count_, gl);
+    useProgram(gl: WebGLRenderingContext) {
+        this.gl.useProgram(this.program_);
+        //this.active_attribute_counter.checkAttributeCount(this.attribute_count_, this.gl);
     };
 
-    locateUniforms(gl: WebGLRenderingContext) {
-        this.vertSource_.uniforms.forEach((uniform_name) => {
-            let uniform_location = gl.getUniformLocation(this.program_, uniform_name);
+    private locateUniforms(gl: WebGLRenderingContext) {
+        this.vertex_shader_source.uniforms.forEach((uniform_name) => {
+            let uniform_location = this.gl.getUniformLocation(this.program_, uniform_name);
             this.uniforms_.set(uniform_name, uniform_location);
         });
 
-        this.fragSource_.uniforms.forEach((uniform_name) => {
-            let uniform_location = gl.getUniformLocation(this.program_, uniform_name);
+        this.fragment_shader_source.uniforms.forEach((uniform_name) => {
+            let uniform_location = this.gl.getUniformLocation(this.program_, uniform_name);
             this.uniforms_.set(uniform_name, uniform_location);
         });
     };
 
-    initialiseVertexArrays(gl: WebGLRenderingContext) {
-        this.vertSource_.attributes.forEach((attribute_name) => {
-            let attrib_location = gl.getAttribLocation(this.program_, attribute_name);
-            this.attributes_.set(attribute_name, attrib_location);
+    private setAttributeIds(gl: WebGLRenderingContext) {
+        this.vertex_shader_source.attributes.forEach((attribute_name) => {
+            let attrib_id = this.gl.getAttribLocation(this.program_, attribute_name);
+            this.attributes_.set(attribute_name, attrib_id);
 
             this.attribute_count_ = this.attributes_.size;
         });
     };
-
-    private program_: WebGLProgram;
 }
 
-var shaderProgramFactory = (vert_source: ShaderSource, frag_source: ShaderSource) => {
-    return (context: RenderContext, counter: ActiveProgramAttributes) => {
-        return new ShaderProgram(context, vert_source, frag_source, counter);
+let shader_program_factory = (vertex_source: VertexShaderSource, fragment_source: FragmentShaderSource) => {
+    return (injector: Injector, counter: ActiveProgramAttributes) => {
+        let gl = injector.get(webgl2_context);
+        return new ShaderProgram(gl, vertex_source, fragment_source, counter);
     }
 };
 
-export const BASIC_SHADER = new OpaqueToken("basic-shader");
-export const DIFFUSE_SHADER = new OpaqueToken("diffuse-shader");
-export const SKYBOX_SHADER = new OpaqueToken("skybox-shader");
-export const TRANSMITTANCE_SHADER = new OpaqueToken("transmittance-shader");
-export const INSCATTER_SHADER = new OpaqueToken("inscatter-shader");
-export const SKYQUAD_SHADER = new OpaqueToken("skyquad-shader");
+export const diffuse_uniform_shader = new OpaqueToken("diffuse-uniform-color-shader");
+export const uniform_color_shader = new OpaqueToken("diffuse-uniform-color-shader");
+//export const SKYBOX_SHADER = new OpaqueToken("skybox-shader");
+//export const TRANSMITTANCE_SHADER = new OpaqueToken("transmittance-shader");
+//export const INSCATTER_SHADER = new OpaqueToken("inscatter-shader");
+//export const SKYQUAD_SHADER = new OpaqueToken("skyquad-shader");
 
-export const SHADER_PROVIDERS = [
+export const shader_providers = [
     ActiveProgramAttributes,
-    provide(BASIC_SHADER, { useFactory: shaderProgramFactory(vert_basic, frag_basic), deps: [RenderContext, ActiveProgramAttributes] }),
-    provide(DIFFUSE_SHADER, { useFactory: shaderProgramFactory(vert_diffuse, frag_diffuse), deps: [RenderContext, ActiveProgramAttributes] }),
-    provide(SKYBOX_SHADER, { useFactory: shaderProgramFactory(vert_skybox, frag_skybox), deps: [RenderContext, ActiveProgramAttributes] }),
-    provide(TRANSMITTANCE_SHADER, { useFactory: shaderProgramFactory(texture_2d_vs, transmittance_fs), deps: [RenderContext, ActiveProgramAttributes] }),
-    provide(INSCATTER_SHADER, { useFactory: shaderProgramFactory(texture_cube_vs, inscatter_fs), deps: [RenderContext, ActiveProgramAttributes] }),
-    provide(SKYQUAD_SHADER, { useFactory: shaderProgramFactory(sky_quad_vs, sky_quad_fs), deps: [RenderContext, ActiveProgramAttributes] })
+    provide(uniform_color_shader, { useFactory: shader_program_factory(uniform_color_vs, uniform_color_fs), deps: [Injector, webgl2_context, ActiveProgramAttributes] }),
+    provide(diffuse_uniform_shader, { useFactory: shader_program_factory(uniform_color_vs, diffuse_uniform_color_fs), deps: [Injector, webgl2_context, ActiveProgramAttributes] }),
+    //provide(SKYBOX_SHADER, { useFactory: shaderProgramFactory(vert_skybox, frag_skybox), deps: [RenderContext, ActiveProgramAttributes] }),
+    //provide(TRANSMITTANCE_SHADER, { useFactory: shaderProgramFactory(texture_2d_vs, transmittance_fs), deps: [RenderContext, ActiveProgramAttributes] }),
+    //provide(INSCATTER_SHADER, { useFactory: shaderProgramFactory(texture_cube_vs, inscatter_fs), deps: [RenderContext, ActiveProgramAttributes] }),
+    //provide(SKYQUAD_SHADER, { useFactory: shaderProgramFactory(sky_quad_vs, sky_quad_fs), deps: [RenderContext, ActiveProgramAttributes] })
 ]

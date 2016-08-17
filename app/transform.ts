@@ -1,6 +1,6 @@
-import {Vec3, VEC3_FORWARD, VEC3_UP} from "./vec3";
-import {Quaternion} from "./quaternion";
-import {Mat4} from "./mat4";
+import { Vec3, VEC3_FORWARD, VEC3_UP, VEC3_RIGHT } from "./vec3";
+import { Quaternion } from "./quaternion";
+import { Mat4 } from "./mat4";
 
 export enum TransformSpace {
     Local,
@@ -9,52 +9,36 @@ export enum TransformSpace {
 
 export class Transform {
 
-    constructor(
-        private name_: string,
-        private position_ = new Vec3(),
-        private orientation_ = new Quaternion()        
-    ) {
-        this.transform_.identity();
-        this.inverse_.identity();
-        this.rotation_.identity();
-        this.translation_.identity();
-    };
+    get position() { return this.position_; };
+    get orientation() { return this.orientation_; };
 
-    get position() {
-        return this.position_;
-    };
+    get rotation() { return this.rotation_; };
+    get translation() { return this.translation_; };
+    get transform() { return this.transform_.array; };
 
-    get orientation() {
-        return this.orientation_;
-    };
-
-    get rotation() {
-        return this.rotation_;
-    };
-
-    get translation() {
-        return this.translation_;
-    };
-
-    get transform() {
-        return this.transform_;
-    };
-
-    get up() {
-        return this.up_;
-    };
-
-    get forward() {
-        return this.forward_;
-    };
-
-    get right() {
-        return this.right_;
-    };
+    get up() { return this.up_; };
+    get forward() { return this.forward_; };
+    get right() { return this.right_; };
 
     get inverse() {
         this.transform_.inverse(this.inverse_);
         return this.inverse_;
+    };
+
+    private up_ = new Vec3(0.0, 1.0, 0.0);
+    private forward_ = new Vec3(0.0, 0.0, -1.0);
+    private right_ = new Vec3(1.0, 0.0, 0.0);
+
+    private transform_ = new Mat4();
+    private inverse_ = new Mat4();
+    private rotation_ = new Mat4();
+    private translation_ = new Mat4();
+
+    constructor(private position_ = new Vec3(), private orientation_ = new Quaternion()) {
+        this.transform_.identity();
+        this.inverse_.identity();
+        this.rotation_.identity();
+        this.translation_.identity();
     };
 
     update(log: boolean = false) {
@@ -78,9 +62,6 @@ export class Transform {
         return lookAtRotation;
     };
 
-    /*
-    * Returns a unit vector representing a direction that has been rotated.
-    */
     rotateAround(target: Vec3, rotation: Quaternion) {
 
         let fromTarget = this.position_.subtract(target);
@@ -106,13 +87,4 @@ export class Transform {
         this.orientation_ = orientation;
         this.forward_ = orientation.rotate(VEC3_FORWARD);
     };
-
-    private up_ = new Vec3(0.0, 1.0, 0.0);
-    private forward_ = new Vec3(0.0, 0.0, -1.0);
-    private right_ = new Vec3(1.0, 0.0, 0.0);
-
-    private transform_ = new Mat4();
-    private inverse_ = new Mat4();
-    private rotation_ = new Mat4();
-    private translation_ = new Mat4();
 };

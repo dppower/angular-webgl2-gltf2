@@ -1,7 +1,8 @@
 import {Injectable, Inject} from "@angular/core";
 import {Transform} from "./transform";
 import {Observable, Observer} from "rxjs/Rx";
-import {ShaderProgram} from "./shader-program";
+import {ShaderProgram, SKYBOX_SHADER} from "./shader-program";
+import {webgl2_context} from "./render-context";
 import {Camera} from "./game-camera";
 import {Mesh, CUBE_MESH} from "./cube-mesh";
 
@@ -18,27 +19,30 @@ type LabelledTexture = { label: string, texture: HTMLImageElement };
 @Injectable()
 export class Skybox {
 
-    constructor() { };
+    constructor(
+        @Inject(webgl2_context) private gl: WebGL2RenderingContext,
+        @Inject(SKYBOX_SHADER) private shader_program: ShaderProgram
+    ) { };
 
     private vertices_: WebGLBuffer;
     private texture_: WebGLTexture;
     private texturesLoaded_ = false;
 
-    initialise(gl: WebGLRenderingContext) {
+    initialise() {
 
-        this.vertices_ = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices_);
+        this.vertices_ = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertices_);
         let vertices = [-1.0, -1.0, 1.0, -1.0, -1.0, 1.0, 1.0, 1.0];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices), this.gl.STATIC_DRAW);
 
-        this.texture_ = gl.createTexture();
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture_);
+        this.texture_ = this.gl.createTexture();
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, this.texture_);
 
-        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        this.gl.texParameteri(this.gl.TEXTURE_CUBE_MAP, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
+        this.gl.texParameteri(this.gl.TEXTURE_CUBE_MAP, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+        this.gl.texParameteri(this.gl.TEXTURE_CUBE_MAP, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+        this.gl.texParameteri(this.gl.TEXTURE_CUBE_MAP, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
         
         let fetchTextures = new Observable<LabelledTexture>((observer: Observer<LabelledTexture>) => {
             let count = 0;
@@ -59,7 +63,7 @@ export class Skybox {
         fetchTextures.subscribe(
             (data) => {
                 let i = skyboxTextures[data.label];
-                gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, data.texture);
+                this.gl.texImage2D(this.gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, data.texture);
             },
             () => { },
             () => {
@@ -68,26 +72,30 @@ export class Skybox {
         );        
     };
 
-    draw(program: ShaderProgram, gl: WebGLRenderingContext, camera: Camera) {
+    disposeShaderProgram() {
+        this.shader_program.dispose();
+    };
+
+    draw(camera: Camera) {
         if (!this.texturesLoaded_) return;
 
-        program.use(gl);
+        this.shader_program.use(this.gl);
        
-        gl.depthMask(false);
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, this.texture_);
-        gl.uniform1i(program.getUniform("uSkyboxTexture"), 0);
+        this.gl.depthMask(false);
+        this.gl.activeTexture(this.gl.TEXTURE0);
+        this.gl.bindTexture(this.gl.TEXTURE_CUBE_MAP, this.texture_);
+        this.gl.uniform1i(this.shader_program.getUniform("uSkyboxTexture"), 0);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices_);
-        gl.vertexAttribPointer(program.getAttribute("aPosition"), 2, gl.FLOAT, false, 0, 0);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertices_);
+        this.gl.vertexAttribPointer(this.shader_program.getAttribute("aPosition"), 2, this.gl.FLOAT, false, 0, 0);
 
-        gl.uniformMatrix4fv(program.getUniform("uInverseView"), false, camera.inverseView);
+        this.gl.uniformMatrix4fv(this.shader_program.getUniform("uInverseView"), false, camera.inverseView);
 
-        gl.uniformMatrix4fv(program.getUniform("uInverseProjection"), false, camera.inverseProjection);
+        this.gl.uniformMatrix4fv(this.shader_program.getUniform("uInverseProjection"), false, camera.inverseProjection);
 
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        this.gl.drawArrays(this.gl.TRIANGLE_STRIP, 0, 4);
 
-        gl.depthMask(true);
+        this.gl.depthMask(true);
     }
 
     private transform_ = new Transform("skybox");

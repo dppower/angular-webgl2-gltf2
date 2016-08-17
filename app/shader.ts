@@ -3,6 +3,18 @@ export enum ShaderType {
     Fragment
 };
 
+export interface VertexShaderSource {
+    attributes: string[],
+    uniforms: string[],
+    source: string
+}
+
+export interface FragmentShaderSource {   
+    attributes: string[],
+    uniforms: string[],
+    source: string
+}
+
 export function compileShader(gl: WebGLRenderingContext, type: ShaderType, source: string) {
 
     let shader: WebGLShader;
@@ -32,9 +44,3 @@ export function compileShader(gl: WebGLRenderingContext, type: ShaderType, sourc
 
     return shader; 
 };
-
-export interface ShaderSource {
-    uniforms: string[],
-    attributes: string[],
-    source: string
-}
