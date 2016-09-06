@@ -1,6 +1,10 @@
-import { Vec3, VEC3_FORWARD, VEC3_UP, VEC3_RIGHT } from "./vec3";
+import { Vec3, vec3_forward, vec3_up, vec3_right } from "./vec3";
 import { Quaternion } from "./quaternion";
 import { Mat4 } from "./mat4";
+
+export { Vec3, vec3_forward, vec3_up, vec3_right } from "./vec3";
+export { Quaternion } from "./quaternion";
+export { Mat4 } from "./mat4";
 
 export enum TransformSpace {
     Local,
@@ -14,7 +18,7 @@ export class Transform {
 
     get rotation() { return this.rotation_; };
     get translation() { return this.translation_; };
-    get transform() { return this.transform_.array; };
+    get transform() { return this.transform_; };
 
     get up() { return this.up_; };
     get forward() { return this.forward_; };
@@ -41,7 +45,7 @@ export class Transform {
         this.translation_.identity();
     };
 
-    update(log: boolean = false) {
+    update() {
         Mat4.fromQuaternion(this.orientation_, this.rotation_);
         Mat4.fromTranslation(this.position_, this.translation_);
         Mat4.multiply(this.rotation_, this.translation_, this.transform_);      
@@ -52,9 +56,9 @@ export class Transform {
         let toTarget = target.subtract(this.position_);
         toTarget = toTarget.normalise();
         
-        let q1 = Quaternion.fromAngleBetweenVectors(VEC3_FORWARD, toTarget, true);
-        let rotatedUp = q1.rotate(VEC3_UP);
-        let right = toTarget.cross(VEC3_UP);
+        let q1 = Quaternion.fromAngleBetweenVectors(vec3_forward, toTarget, true);
+        let rotatedUp = q1.rotate(vec3_up);
+        let right = toTarget.cross(vec3_up);
         let desiredUp = right.cross(toTarget);
 
         let q2 = Quaternion.fromAngleBetweenVectors(rotatedUp, desiredUp);
@@ -85,6 +89,6 @@ export class Transform {
 
     setOrientation(orientation: Quaternion) {
         this.orientation_ = orientation;
-        this.forward_ = orientation.rotate(VEC3_FORWARD);
+        this.forward_ = orientation.rotate(vec3_forward);
     };
 };

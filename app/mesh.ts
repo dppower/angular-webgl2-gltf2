@@ -1,5 +1,6 @@
 ﻿export interface Mesh {
-    vertices_count: number;
+    name: string;
+    vertex_count: number;
     vertex_positions: number[],
     vertex_normals?: number[],
     vertex_colors?: number[],

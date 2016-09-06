@@ -1,17 +1,52 @@
 import {Vec3} from "./vec3";
 
 export class Quaternion {
-    constructor(x = 0.0, y = 0.0, z = 0.0, w = 1.0) {
+
+    get w() { return this.w_; };
+    get x() { return this.v_.x; };
+    get y() { return this.v_.y; };
+    get z() { return this.v_.z; };
+    
+    get v() { return this.v_; };
+
+    get length() {
+        return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2) + Math.pow(this.w, 2));
+    };
+
+    set w(value: number) { this.w_ = value; };
+
+    set v(v: Vec3) {
+        this.v_.copy(v);
+    };
+
+    constructor(w = 1.0, x = 0.0, y = 0.0, z = 0.0) {
         this.v_ = new Vec3(x, y, z);
         this.w_ = w;
     };
 
+    /**
+     * Create a new Quaternion from an angle in degrees and axis of rotation.
+     * @param axis Vec3
+     * @param angle number, angle in degrees
+     */
     static fromAxisAngle(axis = new Vec3(), angle = 0.0) {
         let q = new Quaternion();
         let phi = angle * Math.PI / 360.0;
         q.v = axis.scale(Math.sin(phi));
         q.w = Math.cos(phi);
+        return q;
+    };
 
+    /**
+     * Create a new quaternion from an array, [w, x, y, z]
+     * @param array
+     */
+    static fromArray(array: number[]) {
+        let q = new Quaternion();
+        q.w = array[0] || 1.0;
+        q.v.x = array[1] || 0.0;
+        q.v.y = array[2] || 0.0;
+        q.v.z = array[3] || 0.0;
         return q;
     };
 
@@ -21,7 +56,7 @@ export class Quaternion {
         //let axis = u.cross(v).normalise();
         //let q = Quaternion.fromAxisAngle(axis, angle);
 
-        let norm_u_norm_v = normalized ? 1.0 : Math.sqrt(u.squaredLength * v.squaredLength);
+        let norm_u_norm_v = normalized ? 1.0 : Math.sqrt(u.squared_length * v.squared_length);
         let w = norm_u_norm_v + u.dot(v);
         let p: Vec3;
 
@@ -31,43 +66,11 @@ export class Quaternion {
             p = u.orthogonal;
         }
         else {
-            p = u.cross(v);            
+            p = u.cross(v);
         }
-        let q = new Quaternion(p.x, p.y, p.z, w);
+        let q = new Quaternion(w, p.x, p.y, p.z);
         q.normalise();
         return q;
-    };
-
-    get x() {
-        return this.v_.x;
-    };
-
-    get y() {
-        return this.v_.y;
-    };
-
-    get z() {
-        return this.v_.z;
-    };
-
-    get w() {
-        return this.w_;
-    };
-
-    get v() {
-        return this.v_;
-    };
-
-    get length() {
-        return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2) + Math.pow(this.w, 2));
-    };
-
-    set w(value: number) {
-        this.w_ = value;
-    };
-
-    set v(v: Vec3) {
-        this.v_.copy(v);
     };
 
     conjugate() {
@@ -117,7 +120,7 @@ export class Quaternion {
     };
 
     toString() {
-        return "x: " + this.x + ", y: " + this.y + ", z: " + this.z + ", w: " + this.w;
+        return `w: ${this.w}, x: ${this.x}, y: ${this.y}, z: ${this.z}`;
     };
 
     private w_: number;

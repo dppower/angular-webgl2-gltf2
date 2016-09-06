@@ -3,11 +3,13 @@ import {Quaternion} from "./quaternion";
 
 export class Mat4 {
 
-    constructor() { };
+    get array() { return this.matrix_; };
 
-    get array() {
-        return this.matrix_;
-    };
+    get length() { return this.matrix_.length; };
+
+    private matrix_ = new Float32Array(16);
+
+    constructor() { };
 
     identity() {
         this.matrix_[0] = 1.0;
@@ -81,13 +83,36 @@ export class Mat4 {
         out.array[14] = translation.z;
     };
 
-    /* This is a shortcut method to find the inverse:
-     * M^-1 = [(P^-1) (-P^-1 * V)]
-     *        [    0           1 ]
-     * @param out = the inverse of an affine transformation matrix
+    transpose(out: Mat4) {
+        out.array[0] = this.matrix_[0];
+        out.array[5] = this.matrix_[5];
+        out.array[10] = this.matrix_[10];
+        out.array[15] = this.matrix_[15];
+
+        out.array[1] = this.matrix_[4];
+        out.array[2] = this.matrix_[8];
+        out.array[3] = this.matrix_[12];
+
+        out.array[4] = this.matrix_[1];
+        out.array[6] = this.matrix_[9];
+        out.array[7] = this.matrix_[13];
+
+        out.array[8] = this.matrix_[2];
+        out.array[9] = this.matrix_[6];
+        out.array[11] = this.matrix_[14];
+
+        out.array[12] = this.matrix_[3];
+        out.array[13] = this.matrix_[7];
+        out.array[14] = this.matrix_[11];
+    };
+
+    /**
+     * This is a shortcut method to find the inverse
+     * [(P^-1) (-P^-1 * V)]
+     * [    0           1 ]
+     * @param out
      */
     inverse(out: Mat4) {
-
         // Reset bottom row
         out.array[3] = 0.0;
         out.array[7] = 0.0;
@@ -112,10 +137,11 @@ export class Mat4 {
     };
 
     toString() {
-        return "\n[" + this.matrix_[0] + ", " + this.matrix_[4] + ", " + this.matrix_[8] + ", " + this.matrix_[12] + ",\n" +
-            this.matrix_[1] + ", " + this.matrix_[5] + ", " + this.matrix_[9] + ", " + this.matrix_[13] + ",\n" +
-            this.matrix_[2] + ", " + this.matrix_[6] + ", " + this.matrix_[10] + ", " + this.matrix_[14] + ",\n" +
-            this.matrix_[3] + ", " + this.matrix_[7] + ", " + this.matrix_[11] + ", " + this.matrix_[15] + "]";
+        return `
+            ${this.matrix_[0]}, ${this.matrix_[4]}, ${this.matrix_[8]}, ${this.matrix_[12]},
+            ${this.matrix_[1]}, ${this.matrix_[5]}, ${this.matrix_[9]}, ${this.matrix_[13]},
+            ${this.matrix_[2]}, ${this.matrix_[6]}, ${this.matrix_[10]}, ${this.matrix_[14]},
+            ${this.matrix_[3]}, ${this.matrix_[7]}, ${this.matrix_[11]}, ${this.matrix_[15]}`;
     };
 
     transformPoint(vec: Vec3) {
@@ -139,6 +165,4 @@ export class Mat4 {
 
         return r;
     };
-
-    private matrix_ = new Float32Array(16);
 };

@@ -6,7 +6,7 @@
     <ProjectGuid>{319459dd-0366-40c8-934f-8440822ec98e}</ProjectGuid>
     <ProjectHome />
     <ProjectView>ShowAllFiles</ProjectView>
-    <StartupFile>maint.ts</StartupFile>
+    <StartupFile>..\build\server.js</StartupFile>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
@@ -15,7 +15,8 @@
     <EnableTypeScript>true</EnableTypeScript>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <NodeExeArguments>..\build\server.js</NodeExeArguments>
+    <NodeExeArguments>
+    </NodeExeArguments>
     <NodejsPort>3000</NodejsPort>
     <StartWebBrowser>True</StartWebBrowser>
   </PropertyGroup>
@@ -24,17 +25,21 @@
   <ItemGroup>
     <Content Include="tsconfig.json" />
     <TypeScriptCompile Include="app.component.ts" />
+    <TypeScriptCompile Include="atmosphere-model.ts" />
     <TypeScriptCompile Include="canvas-controller.component.ts" />
     <TypeScriptCompile Include="canvas-dimensions.directive.ts" />
+    <TypeScriptCompile Include="color.ts" />
     <TypeScriptCompile Include="cube-mesh.ts" />
-    <TypeScriptCompile Include="cube.ts" />
-    <TypeScriptCompile Include="game-camera.ts" />
+    <TypeScriptCompile Include="cubes.ts" />
     <TypeScriptCompile Include="input-manager.ts" />
+    <TypeScriptCompile Include="main-camera.ts" />
     <TypeScriptCompile Include="main-canvas.component.ts" />
     <TypeScriptCompile Include="main.ts" />
     <TypeScriptCompile Include="mat4.ts" />
     <TypeScriptCompile Include="mesh.ts" />
     <TypeScriptCompile Include="object-buffer.ts" />
+    <TypeScriptCompile Include="objects\cube.ts" />
+    <TypeScriptCompile Include="objects\painted-cube.ts" />
     <TypeScriptCompile Include="pixel-target-renderer.ts" />
     <TypeScriptCompile Include="quaternion.ts" />
     <TypeScriptCompile Include="render-context.ts" />
@@ -42,18 +47,28 @@
     <TypeScriptCompile Include="scene-renderer.ts" />
     <TypeScriptCompile Include="shader-program.ts" />
     <TypeScriptCompile Include="shader.ts" />
+    <TypeScriptCompile Include="shaders\diffuse-oren-nayar.fs.ts" />
     <TypeScriptCompile Include="shaders\diffuse-uniform-color.fs.ts" />
     <TypeScriptCompile Include="shaders\diffuse-uniform-color.vs.ts" />
+    <TypeScriptCompile Include="shaders\inscattering-3d.fs.ts" />
+    <TypeScriptCompile Include="shaders\inscattering.fs.ts" />
+    <TypeScriptCompile Include="shaders\pbr-ggx.fs.ts" />
+    <TypeScriptCompile Include="shaders\per-vertex-color.fs.ts" />
+    <TypeScriptCompile Include="shaders\per-vertex-color.vs.ts" />
+    <TypeScriptCompile Include="shaders\sky-quad.fs.ts" />
+    <TypeScriptCompile Include="shaders\sky-quad.vs.ts" />
+    <TypeScriptCompile Include="shaders\texture-2d.vs.ts" />
+    <TypeScriptCompile Include="shaders\texture-cube.vs.ts" />
+    <TypeScriptCompile Include="shaders\transmittance.fs.ts" />
     <TypeScriptCompile Include="shaders\uniform-color.fs.ts" />
     <TypeScriptCompile Include="shaders\uniform-color.vs.ts" />
-    <TypeScriptCompile Include="sky-model.ts" />
-    <TypeScriptCompile Include="skybox.ts" />
     <TypeScriptCompile Include="texture-2d.ts" />
     <TypeScriptCompile Include="transform.ts" />
     <TypeScriptCompile Include="vec3.ts" />
     <TypeScriptCompile Include="webgl2.d.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="objects\" />
     <Folder Include="shaders\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />

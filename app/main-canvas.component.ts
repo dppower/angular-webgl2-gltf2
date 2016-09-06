@@ -1,21 +1,14 @@
-import {
-    Component,
-    ViewChild,
-    ElementRef,
-    AfterViewInit,
-    OnDestroy,
-    NgZone,
-    Inject
-} from "@angular/core";
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone, Inject, Injector, ReflectiveInjector } from "@angular/core";
 
-import { RenderContext, webgl2_providers, webgl2, webgl2_context } from "./render-context";
-import { ShaderProgram, shader_providers } from "./shader-program";
-import { Camera } from "./game-camera";
-import { CubeMesh } from "./cube-mesh";
+import { RenderContext, webgl2_providers, webgl2, webgl2_extensions } from "./render-context";
+import { ShaderProgram, shader_providers, diffuse_uniform_shader } from "./shader-program";
+import { MainCamera } from "./main-camera";
+import { Vec3 } from "./transform";
+import { cube_provider } from "./cubes";
 import { InputManager, InputState } from "./input-manager";
 import { SceneRenderer } from "./scene-renderer";
 import { PixelTargetRenderer } from "./pixel-target-renderer";
-import { AtmosphereModel } from "./sky-model";
+import { AtmosphereModel } from "./atmosphere-model";
 
 @Component({
     selector: 'main-canvas',
@@ -27,6 +20,8 @@ import { AtmosphereModel } from "./sky-model";
         [style.height]="canvasHeight" 
         [style.top]="canvasTop" 
         [style.left]="canvasLeft"
+        (webglcontextlost)="render_context.onContextLost($event)"
+        (webglcontextrestored)="render_context.onContextRestored($event)"
     ><p>{{fallbackText}}</p></canvas>
     `,
     styles: [`
@@ -35,28 +30,33 @@ import { AtmosphereModel } from "./sky-model";
         z-index: 0;
     }
     `],
-    providers: [webgl2_providers, shader_providers, Camera, CubeMesh, SceneRenderer, PixelTargetRenderer, AtmosphereModel]
+    providers: [RenderContext, { provide: MainCamera, useValue: new MainCamera(new Vec3()) }]
 })
 export class MainCanvas implements OnDestroy {
     @ViewChild("canvas") canvas_ref: ElementRef;
     
     fallbackText = "Loading Canvas...";
 
-    canvasWidth: number;
-    canvasHeight: number;
+    canvasWidth = 640;
+    canvasHeight = 480;
     canvasTop: string;
     canvasLeft: string;
 
-    cancel_token: number;
+    private cancel_token: number;
+    private previous_time = 0;
+    private time_step = 1000 / 60.0;
+    private accumulated_time = 0;
+
+    private gl: WebGL2RenderingContext;
+    private context_injector: ReflectiveInjector;
+    private scene_renderer: SceneRenderer;
+    private pixel_target_renderer: PixelTargetRenderer;
+    private atmosphere_model: AtmosphereModel;
 
     constructor(
-        @Inject(webgl2) private render_context: RenderContext<WebGL2RenderingContext>,
-        @Inject(webgl2_context) private gl: WebGL2RenderingContext,       
-        private scene_renderer: SceneRenderer,
-        private pixel_target_renderer: PixelTargetRenderer,
-        private atmosphere_model: AtmosphereModel, 
+        private render_context: RenderContext,
         private ng_zone: NgZone,
-        private main_camera: Camera,
+        private main_camera: MainCamera,
         private input_manager: InputManager
     ) { };
     
@@ -70,14 +70,31 @@ export class MainCanvas implements OnDestroy {
         return height;
     };
 
-
     ngAfterViewInit() {
-        let is_context_created = this.render_context.createContext((<HTMLCanvasElement>this.canvas_ref.nativeElement), "experimental-webgl2");
+        this.render_context.createContext((<HTMLCanvasElement>this.canvas_ref.nativeElement), this);
+        this.gl = this.render_context.context;
         
-        if (is_context_created) {
-            this.scene_renderer.Start();
-            this.pixel_target_renderer.Start();
-            this.atmosphere_model.Start();
+        if (this.gl) {
+
+            webgl2_extensions.forEach((extension: string) => {
+                this.render_context.enableExtension(extension);
+            });
+
+            this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            this.gl.clearDepth(1.0);
+            this.gl.enable(this.gl.DEPTH_TEST);
+            this.gl.depthFunc(this.gl.LEQUAL);
+
+            let gl_provider = { provide: webgl2, useValue: this.gl };
+            this.context_injector = ReflectiveInjector.resolveAndCreate([gl_provider, SceneRenderer, cube_provider, shader_providers, PixelTargetRenderer, AtmosphereModel]);
+
+            this.scene_renderer = this.context_injector.get(SceneRenderer);
+            this.pixel_target_renderer = this.context_injector.get(PixelTargetRenderer);
+            this.atmosphere_model = this.context_injector.get(AtmosphereModel);
+
+            this.scene_renderer.start();
+            this.pixel_target_renderer.createFramebuffer();
+            this.atmosphere_model.preRenderTextures();
 
             this.ng_zone.runOutsideAngular(() => {
                 this.cancel_token = requestAnimationFrame(() => {
@@ -102,41 +119,42 @@ export class MainCanvas implements OnDestroy {
         let aspect = this.canvasWidth / this.canvasHeight;
         let inputs = this.input_manager.inputs;
         inputs.aspect = aspect;
-        this.main_camera.Update(inputs);
+        this.main_camera.updateCamera(inputs);
 
+        // Update objects in scene
+        let time_now = window.performance.now();
+        this.accumulated_time += (time_now - this.previous_time); 
+        while (this.accumulated_time > this.time_step) {
+            this.scene_renderer.updateScene(this.time_step, this.main_camera);
+            this.accumulated_time -= this.time_step;
+        }
+
+        // Find the target if mouse-click
         if (inputs.mouseX != 0 && inputs.mouseY != 0) {
+            this.pixel_target_renderer.drawOffscreen(this.main_camera);
             let mouse_position_x = (inputs.mouseX / this.canvasWidth) * this.pixel_target_renderer.width;
             let mouse_position_y = this.pixel_target_renderer.height - ((inputs.mouseY / this.canvasHeight) * this.pixel_target_renderer.height);
             this.pixel_target_renderer.getMouseTarget(mouse_position_x, mouse_position_y);
         }
 
-        let time_now = window.performance.now();
-        this.accumulated_time += (time_now - this.previous_time); 
-        while (this.accumulated_time > this.time_step) {
-            this.scene_renderer.updateScene(this.time_step);
-            this.accumulated_time -= this.time_step;
-        }
-        this.Draw(this.accumulated_time);
         this.input_manager.Update();
         this.previous_time = time_now;
+
+        // Draw scene
+        this.Draw();
     };
 
 
-    Draw(dt: number) {
-        this.pixel_target_renderer.drawOffscreen(this.main_camera);
-        
+    Draw() {
+                
         this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
         this.gl.viewport(0, 0, this.gl.drawingBufferWidth, this.gl.drawingBufferHeight);
 
-        this.atmosphere_model.renderSky(this.gl);
-        this.scene_renderer.drawAll(this.main_camera);
+        this.atmosphere_model.renderSky(this.main_camera);
+        this.scene_renderer.drawObjects();
     };
 
     ngOnDestroy() {
         cancelAnimationFrame(this.cancel_token);
     }
-
-    private previous_time = 0;
-    private time_step = 1000 / 60.0;
-    private accumulated_time = 0;
 }

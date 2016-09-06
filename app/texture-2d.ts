@@ -11,12 +11,18 @@ export class Texture2d {
         this.texture_id = this.gl.createTexture();
     };
 
-    setTextureParameters(min_filter?: MIN_FILTER, mag_filter?: MAG_FILTER, generate_mipmaps = true) {
+    bindTexture() {
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_id);
+    };
+
+    // TODO: move this functionality to a Sampler Object.
+    setTextureParameters(min_filter?: MIN_FILTER, mag_filter?: MAG_FILTER, generate_mipmaps = true) {
+        this.bindTexture()
 
         switch (mag_filter) {
             case ("nearest"):
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+                break;
             case ("linear"):
             default:
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
@@ -25,14 +31,19 @@ export class Texture2d {
         switch (min_filter) {
             case ("nearest"):
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+                break;
             case ("linear"):
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
+                break;
             case ("linear-nearest"):
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR_MIPMAP_NEAREST);
+                break;
             case ("linear-linear"):
-                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR_MIPMAP_LINEAR);           
+                this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR_MIPMAP_LINEAR);
+                break;           
             case ("nearest-nearest"):
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST_MIPMAP_NEAREST);
+                break;
             case ("nearest-linear"):
             default:
                 this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST_MIPMAP_LINEAR);
@@ -47,6 +58,7 @@ export class Texture2d {
     };
 
     allocateTextureStorage(url?: string) {
+        this.bindTexture();
         if (url) {
             // fetch from server
         }

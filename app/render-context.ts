@@ -1,21 +1,35 @@
-
-import {Injectable, provide, OpaqueToken} from "@angular/core";;
-
-type ContextType = "webgl" | "experimental-webgl" | "webgl2" | "experimental-webgl2";
+import { Injectable, provide, OpaqueToken } from "@angular/core";;
+import { MainCanvas } from "./main-canvas.component";
 
 @Injectable()
-export class RenderContext<T extends WebGLRenderingContext> {   
+export class RenderContext {   
     get context() { return this.render_context; };
-    
-    constructor(public context_type: ContextType) { };
 
-    createContext(canvas: HTMLCanvasElement, context_type: ContextType) {
-        this.render_context = (<T>canvas.getContext(context_type));
+    private main_canvas: MainCanvas;
+    private supported_extensions: string[];
+    private enabled_extensions = new Map<string, boolean>();
+    private render_context: WebGL2RenderingContext;
+
+    constructor() { };
+
+    createContext(html_canvas: HTMLCanvasElement, main_canvas_component: MainCanvas) {
+        this.main_canvas = main_canvas_component;
+        this.render_context = html_canvas.getContext("webgl2");
         if (this.render_context) {
             this.setExtensionAvailabilty();
-            return true;
         }
-        return false;
+    };
+
+    onContextLost(event: WebGLContextEvent) {
+        event.preventDefault();
+        console.log("context lost");
+    };
+
+    onContextRestored(event: WebGLContextEvent) {
+        event.preventDefault();
+        // cancel animation loop 
+        // cancelRequestAnimationFrame(token)
+        console.log("context restored");
     };
 
     isExtensionEnabled(extension: string): boolean {
@@ -39,70 +53,37 @@ export class RenderContext<T extends WebGLRenderingContext> {
             this.enabled_extensions.set(this.supported_extensions[i], false);
         }
     };
-
-    private supported_extensions: string[];
-    private enabled_extensions = new Map<string, boolean>();
-    private render_context: T;
 }
 
-let context_factory = (context_type: ContextType, extensions: string[]) => {
-    if (context_type == "webgl" || context_type == "experimental-webgl") {
-        return () => {
-            let context = new RenderContext<WebGLRenderingContext>(context_type);
-            for (let i in extensions) {
-                context.enableExtension(extensions[i]);
-            }
-            return context;
-        };
-    }
-    else if (context_type == "webgl2" || context_type == "experimental-webgl2") {
-        return () => {
-            let context = new RenderContext<WebGL2RenderingContext>(context_type);
-            for (let i in extensions) {
-                context.enableExtension(extensions[i]);
-            }
-            return context;
-        };
-    }
-};
+//let context_factory = (extensions: string[]) => {
 
-let get_context = (context_type: ContextType) => {
-    if (context_type == "webgl" || context_type == "experimental-webgl") {
-        return (render_context: RenderContext<WebGLRenderingContext>) => {
-            return render_context.context;
-        }
-    }
-    else if (context_type == "webgl2" || context_type == "experimental-webgl2") {
-        return (render_context: RenderContext<WebGL2RenderingContext>) => {
-            return render_context.context;
-        }
-    }
-}
+//    return () => {
+//        let context = new RenderContext();
+//        for (let i in extensions) {
+//            console.log(`i: ${i}, value: ${extensions[i]}.`);
+//            context.enableExtension(extensions[i]);
+//        }
+//        return context;
+//    };
+//};
+
+//let get_context = () => {
+//    return (render_context: RenderContext) => {
+//        return render_context.render_context;
+//    }
+//}
 
 export const webgl2 = new OpaqueToken("webgl2");
-export const webgl2_context = new OpaqueToken("webgl2-context");
-const webgl2_extensions = ["OES_texture_float_linear"]
+export const webgl2_extensions = ["OES_texture_float_linear"]
 
 export const webgl2_providers = [
-    provide(webgl2, {
-        useFactory: context_factory("experimental-webgl2", webgl2_extensions)
-    }),
-    provide(webgl2_context, {
-        useFactory: get_context("experimental-webgl2"),
-        deps: [webgl2]
-    })
-];
-
-export const webgl = new OpaqueToken("webgl");
-export const webgl_context = new OpaqueToken("webgl-context");
-const webgl_extensions = ["OES_texture_float", "OES_texture_float_linear", "WEBGL_color_buffer_float"]
-
-export const webgl_providers = [
-    provide(webgl, {
-        useFactory: context_factory("webgl", webgl_extensions)
-    }),
-    provide(webgl_context, {
-        useFactory: get_context("webgl"),
-        deps: [webgl]
-    })
+    //provide(RenderContext, {
+    //    useFactory: context_factory(webgl2_extensions)
+    //}),
+    RenderContext,
+    //{
+    //    provide: webgl2,
+    //    useFactory: get_context(),
+    //    deps: [RenderContext]
+    //}
 ];

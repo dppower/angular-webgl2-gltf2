@@ -1,72 +1,85 @@
 import { Injectable, Inject, OpaqueToken } from "@angular/core";
 
-import { Cube, cube_001, cube_002,  } from "./cube";
-import { ShaderProgram, diffuse_uniform_shader } from "./shader-program";
-import { webgl2_context } from "./render-context";
-import { Camera } from "./game-camera";
+import { cubes } from "./cubes";
+import { RenderObject } from "./render-object";
+import { ShaderProgram, diffuse_uniform_shader, diffuse_oren_nayar_shader, pbr_ggx_shader, per_vertex_color_shader } from "./shader-program";
+import { webgl2 } from "./render-context";
+import { MainCamera } from "./main-camera";
+import { Vec3, Mat4 } from "./transform";
+import { InputState } from "./input-manager";
 
 @Injectable()
 export class SceneRenderer {
-    private cubes_ = new Map<OpaqueToken, Cube>();
+
+    private scene_objects = new Map<string, RenderObject[]>();
+    private light_direction = new Vec3(0.4, 0.4, 1.0);
+    private current_direction = new Vec3();
 
     constructor(
-        @Inject(webgl2_context) private gl: WebGL2RenderingContext,
-        @Inject(diffuse_uniform_shader) private diffuse_uniform_shader: ShaderProgram
-        //@Inject(CUBE_1) private cube1: Cube,
-        //@Inject(CUBE_2) private cube2: Cube,
-        //@Inject(CUBE_3) private cube3: Cube
-    ) { };
+        @Inject(webgl2) private gl: WebGL2RenderingContext,
+        @Inject(diffuse_uniform_shader) private diffuse_uniform_shader_: ShaderProgram,
+        @Inject(diffuse_oren_nayar_shader) private diffuse_oren_nayar_shader_: ShaderProgram,
+        @Inject(pbr_ggx_shader) private pbr_ggx_shader_: ShaderProgram,
+        @Inject(per_vertex_color_shader) private per_vertex_shader_: ShaderProgram,
+        @Inject(cubes) cubes_array: RenderObject[]
+    ) {
+
+        this.scene_objects.set("cubes", cubes_array);
+    };
 
     start() {
-        this.diffuse_uniform_shader.initProgram();
+        this.diffuse_uniform_shader_.initProgram();
+        this.diffuse_oren_nayar_shader_.initProgram();
+        this.pbr_ggx_shader_.initProgram();
+        this.per_vertex_shader_.initProgram();
 
-        this.cube1.Start(this.gl);
-        this.cube2.Start(this.gl);
-        this.cube3.Start(this.gl);
+        //this.scene_objects.get("cubes")[0].uniform_color = new Float32Array([1.0, 0.0, 0.0, 1.0]);
+        //this.scene_objects.get("cubes")[1].uniform_color = new Float32Array([0.0, 1.0, 0.0, 1.0]);
+        //this.scene_objects.get("cubes")[2].uniform_color = new Float32Array([0.0, 0.0, 1.0, 1.0]);
+
+        //this.scene_objects.get("cubes")[0].roughness = 0.9;
+        //this.scene_objects.get("cubes")[1].roughness = 0.5;
+        //this.scene_objects.get("cubes")[2].roughness = 0.1;
+
+        //this.scene_objects.get("cubes")[0].metallic = 0.0;
+        //this.scene_objects.get("cubes")[1].metallic = 0.0;
+        //this.scene_objects.get("cubes")[2].metallic = 0.0;
+
     };
 
-    updateScene(dt: number) {
-        this.cube1.Update(dt);
-        this.cube2.Update(dt);
-        this.cube3.Update(dt);
-    };
+    updateScene(dt: number, camera: MainCamera) {
 
-    drawAll(camera: Camera) {
-        this.cube1.Draw(this.shader_program, this.gl, camera);
-        this.cube2.Draw(this.shader_program, this.gl, camera);
-        this.cube3.Draw(this.shader_program, this.gl, camera);
-    };
+        let view = camera.view.array;
 
+        this.current_direction.x = view[0] * this.light_direction.x + view[4] * this.light_direction.y + view[8] * this.light_direction.z;
+        this.current_direction.y = view[1] * this.light_direction.x + view[5] * this.light_direction.y + view[9] * this.light_direction.z;
+        this.current_direction.z = view[2] * this.light_direction.x + view[6] * this.light_direction.y + view[10] * this.light_direction.z;
 
-    Draw(program: ShaderProgram, gl: WebGLRenderingContext, camera: Camera) {
-
-        if (!this.textureLoaded_) return;
-
-        program.use(gl);
-
-        // Texture
-        gl.activeTexture(gl.TEXTURE0);
-        gl.bindTexture(gl.TEXTURE_2D, this.texture_);
-        gl.uniform1i(program.getUniform("uBaseTexture"), 0);
-
-        // Attributes
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertices_);
-        gl.vertexAttribPointer(program.getAttribute("aVertexPosition"), 3, gl.FLOAT, false, 0, 0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.normals_);
-        gl.vertexAttribPointer(program.getAttribute("aNormals"), 3, gl.FLOAT, false, 0, 0);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.textureCoords_);
-        gl.vertexAttribPointer(program.getAttribute("aTextureCoords"), 2, gl.FLOAT, false, 0, 0);
-
-        // Uniforms
-        gl.uniformMatrix4fv(program.getUniform("uView"), false, camera.view);
-        gl.uniformMatrix4fv(program.getUniform("uProjection"), false, camera.projection);
-        gl.uniformMatrix4fv(program.getUniform("uTransform"), false, this.transform_.transform.array);
-
-        gl.drawArrays(gl.TRIANGLES, 0, 36);
+        this.scene_objects.get("cubes").forEach((cube) => {
+            //console.log(`cube name: ${cube.id}, position: ${cube.position.toString()}`);            
+            cube.update(camera.view, camera.projection);
+        });
+        //console.log("----");
     };
 
 
-    private transform_: Transform;
+    drawObjects() {
+
+        //this.diffuse_uniform_shader_.useProgram();
+        //this.diffuse_oren_nayar_shader_.useProgram();
+        //this.pbr_ggx_shader_.useProgram();
+        this.per_vertex_shader_.useProgram();
+        //this.gl.uniform3fv(this.diffuse_uniform_shader_.getUniform("light_direction"), updated_direction.array);
+        //this.gl.uniform3fv(this.diffuse_oren_nayar_shader_.getUniform("light_direction"), updated_direction.array);
+        //this.gl.uniform3fv(this.pbr_ggx_shader_.getUniform("light_direction"), this.current_direction.array);
+
+        this.scene_objects.forEach((array: RenderObject[], type: string) => {
+            array[0].bindVertexArray();
+            array.forEach((object) => {
+                object.setUniforms(this.gl, this.per_vertex_shader_); 
+                this.gl.drawArrays(this.gl.TRIANGLES, 0, object.vertex_count);
+            });
+            array[0].unbindVertexArray();
+        });
+    };
 }
