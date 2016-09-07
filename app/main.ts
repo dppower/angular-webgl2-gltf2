@@ -1,7 +1,7 @@
-///<reference path="../node_modules/typescript/lib/lib.es6.d.ts" />
+///<reference path="C:/Program Files (x86)/Microsoft SDKs/TypeScript/1.8/lib.es6.d.ts" />
 ///<reference path="./webgl2.d.ts" />
 
-import {bootstrap} from "@angular/platform-browser-dynamic";
-import {AppComponent} from "./app.component";
+import { platformBrowserDynamic } from "@angular/platform-browser-dynamic";
+import { AppModule } from "./app.module";
 
-bootstrap(AppComponent);
+platformBrowserDynamic().bootstrapModule(AppModule);

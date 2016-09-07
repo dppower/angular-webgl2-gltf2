@@ -25,6 +25,7 @@
   <ItemGroup>
     <Content Include="tsconfig.json" />
     <TypeScriptCompile Include="app.component.ts" />
+    <TypeScriptCompile Include="app.module.ts" />
     <TypeScriptCompile Include="atmosphere-model.ts" />
     <TypeScriptCompile Include="canvas-controller.component.ts" />
     <TypeScriptCompile Include="canvas-dimensions.directive.ts" />
@@ -45,8 +46,6 @@
     <TypeScriptCompile Include="render-context.ts" />
     <TypeScriptCompile Include="render-object.ts" />
     <TypeScriptCompile Include="scene-renderer.ts" />
-    <TypeScriptCompile Include="shader-program.ts" />
-    <TypeScriptCompile Include="shader.ts" />
     <TypeScriptCompile Include="shaders\diffuse-oren-nayar.fs.ts" />
     <TypeScriptCompile Include="shaders\diffuse-uniform-color.fs.ts" />
     <TypeScriptCompile Include="shaders\diffuse-uniform-color.vs.ts" />
@@ -55,6 +54,9 @@
     <TypeScriptCompile Include="shaders\pbr-ggx.fs.ts" />
     <TypeScriptCompile Include="shaders\per-vertex-color.fs.ts" />
     <TypeScriptCompile Include="shaders\per-vertex-color.vs.ts" />
+    <TypeScriptCompile Include="shaders\shader-program.module.ts" />
+    <TypeScriptCompile Include="shaders\shader-program.ts" />
+    <TypeScriptCompile Include="shaders\shader.ts" />
     <TypeScriptCompile Include="shaders\sky-quad.fs.ts" />
     <TypeScriptCompile Include="shaders\sky-quad.vs.ts" />
     <TypeScriptCompile Include="shaders\texture-2d.vs.ts" />
