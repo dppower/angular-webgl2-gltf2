@@ -1,25 +1,23 @@
-import { Inject, Injectable, Injector, provide, OpaqueToken } from "@angular/core";
+import { Inject, Injectable, Injector, OpaqueToken } from "@angular/core";
 
-import { webgl2 } from "./render-context";
+import { webgl2 } from "../canvas/render-context";
 import { ShaderType, compileShader, VertexShaderSource, FragmentShaderSource } from "./shader";
 
-import diffuse_uniform_color_fs from "./shaders/diffuse-uniform-color.fs";
-import diffuse_uniform_color_vs from "./shaders/diffuse-uniform-color.vs";
-
-import uniform_color_fs from "./shaders/uniform-color.fs";
-import uniform_color_vs from "./shaders/uniform-color.vs";
-
-import diffuse_oren_nayar_fs from "./shaders/diffuse-oren-nayar.fs";
-import pbr_ggx_fs from "./shaders/pbr-ggx.fs";
-import sky_quad_vs from "./shaders/sky-quad.vs";
-import sky_quad_fs from "./shaders/sky-quad.fs";
-import texture_2d_vs from "./shaders/texture-2d.vs";
-import texture_cube_vs from "./shaders/texture-cube.vs";
-import transmittance_fs from "./shaders/transmittance.fs";
-import inscatter_fs from "./shaders/inscattering.fs";
-import inscatter_3d_fs from "./shaders/inscattering-3d.fs";
-import per_vertex_fs from "./shaders/per-vertex-color.fs";
-import per_vertex_vs from "./shaders/per-vertex-color.vs";
+import diffuse_uniform_color_fs from "./diffuse-uniform-color.fs";
+import diffuse_uniform_color_vs from "./diffuse-uniform-color.vs";
+import uniform_color_fs from "./uniform-color.fs";
+import uniform_color_vs from "./uniform-color.vs";
+import diffuse_oren_nayar_fs from "./diffuse-oren-nayar.fs";
+import pbr_ggx_fs from "./pbr-ggx.fs";
+import sky_quad_vs from "./sky-quad.vs";
+import sky_quad_fs from "./sky-quad.fs";
+import texture_2d_vs from "./texture-2d.vs";
+import texture_cube_vs from "./texture-cube.vs";
+import transmittance_fs from "./transmittance.fs";
+import inscatter_fs from "./inscattering.fs";
+import inscatter_3d_fs from "./inscattering-3d.fs";
+import per_vertex_fs from "./per-vertex-color.fs";
+import per_vertex_vs from "./per-vertex-color.vs";
 
 
 // This is required when VertexArrayObjects are not available.

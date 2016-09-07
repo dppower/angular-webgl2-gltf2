@@ -2,7 +2,6 @@ import { Injectable, Inject } from "@angular/core";
 
 import { Transform, Vec3, vec3_up, Mat4, Quaternion } from "./transform";
 import { InputState } from "./input-manager";
-import { RenderObject } from "./render-object";
 
 @Injectable()
 export class MainCamera {
@@ -15,8 +14,8 @@ export class MainCamera {
 
     get inverse_projection() { return this.inverse_projection_; };
 
-    set target_position(object: RenderObject) {
-        this.target_position_ = object.position;
+    set target_position(position: Vec3) {
+        this.target_position_ = position;
     };
 
     private min_distance_target = 3.0;
@@ -38,8 +37,9 @@ export class MainCamera {
 
     // Transform relative to origin
     private transform_ = new Transform();
+    private target_position_ = new Vec3(0.0, 0.0, 0.0);
 
-    constructor(private target_position_: Vec3) {
+    constructor() {
         let initial_camera_offset = new Vec3(0.0, 1.0, 8.0);
         let initial_camera_position = this.target_position_.add(initial_camera_offset);
 

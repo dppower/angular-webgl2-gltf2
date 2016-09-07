@@ -1,6 +1,6 @@
-import {Injectable} from "@angular/core";
+import { Injectable } from "@angular/core";
 
-var keyBindings = new Map<string, number>();
+const keyBindings = new Map<string, number>();
 keyBindings.set("forward", 69);
 keyBindings.set("back", 68);
 keyBindings.set("left", 83);

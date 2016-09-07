@@ -26,26 +26,24 @@
     <Content Include="tsconfig.json" />
     <TypeScriptCompile Include="app.component.ts" />
     <TypeScriptCompile Include="app.module.ts" />
-    <TypeScriptCompile Include="atmosphere-model.ts" />
-    <TypeScriptCompile Include="canvas-controller.component.ts" />
-    <TypeScriptCompile Include="canvas-dimensions.directive.ts" />
-    <TypeScriptCompile Include="color.ts" />
-    <TypeScriptCompile Include="cube-mesh.ts" />
-    <TypeScriptCompile Include="cubes.ts" />
-    <TypeScriptCompile Include="input-manager.ts" />
-    <TypeScriptCompile Include="main-camera.ts" />
-    <TypeScriptCompile Include="main-canvas.component.ts" />
+    <TypeScriptCompile Include="canvas\canvas-controller.component.ts" />
+    <TypeScriptCompile Include="canvas\canvas-frame.directive.ts" />
+    <TypeScriptCompile Include="canvas\canvas.module.ts" />
+    <TypeScriptCompile Include="canvas\main-canvas.component.ts" />
+    <TypeScriptCompile Include="canvas\render-context.ts" />
+    <TypeScriptCompile Include="game-engine\color.ts" />
+    <TypeScriptCompile Include="game-engine\input-manager.ts" />
+    <TypeScriptCompile Include="game-engine\main-camera.ts" />
+    <TypeScriptCompile Include="game-engine\mat4.ts" />
+    <TypeScriptCompile Include="game-engine\quaternion.ts" />
+    <TypeScriptCompile Include="game-engine\transform.ts" />
+    <TypeScriptCompile Include="game-engine\vec3.ts" />
     <TypeScriptCompile Include="main.ts" />
-    <TypeScriptCompile Include="mat4.ts" />
-    <TypeScriptCompile Include="mesh.ts" />
-    <TypeScriptCompile Include="object-buffer.ts" />
-    <TypeScriptCompile Include="objects\cube.ts" />
-    <TypeScriptCompile Include="objects\painted-cube.ts" />
-    <TypeScriptCompile Include="pixel-target-renderer.ts" />
-    <TypeScriptCompile Include="quaternion.ts" />
-    <TypeScriptCompile Include="render-context.ts" />
-    <TypeScriptCompile Include="render-object.ts" />
-    <TypeScriptCompile Include="scene-renderer.ts" />
+    <TypeScriptCompile Include="renderers\atmosphere-model.ts" />
+    <TypeScriptCompile Include="renderers\objects\painted-cube.ts" />
+    <TypeScriptCompile Include="renderers\pixel-target-renderer.ts" />
+    <TypeScriptCompile Include="renderers\render-object.ts" />
+    <TypeScriptCompile Include="renderers\scene-renderer.ts" />
     <TypeScriptCompile Include="shaders\diffuse-oren-nayar.fs.ts" />
     <TypeScriptCompile Include="shaders\diffuse-uniform-color.fs.ts" />
     <TypeScriptCompile Include="shaders\diffuse-uniform-color.vs.ts" />
@@ -64,14 +62,23 @@
     <TypeScriptCompile Include="shaders\transmittance.fs.ts" />
     <TypeScriptCompile Include="shaders\uniform-color.fs.ts" />
     <TypeScriptCompile Include="shaders\uniform-color.vs.ts" />
-    <TypeScriptCompile Include="texture-2d.ts" />
-    <TypeScriptCompile Include="transform.ts" />
-    <TypeScriptCompile Include="vec3.ts" />
+    <TypeScriptCompile Include="textures\texture-2d.ts" />
+    <TypeScriptCompile Include="vertex-data\cube-mesh.ts" />
+    <TypeScriptCompile Include="vertex-data\cubes.ts" />
+    <TypeScriptCompile Include="vertex-data\data\cube.ts" />
+    <TypeScriptCompile Include="vertex-data\mesh.ts" />
+    <TypeScriptCompile Include="vertex-data\object-buffer.ts" />
     <TypeScriptCompile Include="webgl2.d.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="objects\" />
+    <Folder Include="canvas\" />
+    <Folder Include="game-engine\" />
+    <Folder Include="renderers\" />
+    <Folder Include="renderers\objects\" />
     <Folder Include="shaders\" />
+    <Folder Include="textures\" />
+    <Folder Include="vertex-data\" />
+    <Folder Include="vertex-data\data\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->

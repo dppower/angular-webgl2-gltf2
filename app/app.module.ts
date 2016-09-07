@@ -2,10 +2,11 @@
 import { BrowserModule } from "@angular/platform-browser";
 
 import { AppComponent } from "./app.component";
+import { CanvasModule } from "./canvas/canvas.module";
 
 @NgModule({
-    imports: [BrowserModule],
-    declarations: [AppComponent],
-    bootstrap: [AppComponent]
+    imports: [ BrowserModule, CanvasModule ],
+    declarations: [ AppComponent ],
+    bootstrap: [ AppComponent ]
 })
 export class AppModule { };

@@ -1,13 +1,13 @@
-import { provide, OpaqueToken, Injector } from "@angular/core";
+import { OpaqueToken, Injector } from "@angular/core";
 
-import { Transform, Vec3, Quaternion } from "./transform";
-import { RenderObject, RenderObjectData } from "./render-object";
+import { Transform, Vec3, Quaternion } from "../game-engine/transform";
+import { RenderObject, RenderObjectData } from "../renderers/render-object";
 import { ObjectBuffer } from "./object-buffer";
-import { webgl2 } from "./render-context";
+import { webgl2 } from "../canvas/render-context";
 //import { CubeMesh } from "./cube-mesh";
 import { Mesh } from "./mesh";
-import cube_mesh from "./objects/cube";
-import painted_cube from "./objects/painted-cube";
+import cube_mesh from "./data/cube";
+import painted_cube from "../renderers/objects/painted-cube";
 
 export const cubes = new OpaqueToken("cubes")
 export const cube_vertex_buffers = new OpaqueToken("cube-vertex-buffers");

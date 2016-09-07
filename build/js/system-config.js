@@ -1,21 +1,20 @@
 (function(global) {
     var map = {
-        "@angular": "scripts/@angular",
         "rxjs": "scripts/rxjs"
     };
 
-    var packages = {
-        "app": { main: "main.js", defaultExtension: "js" },
-        "rxjs": { defaultExtension: "js" }
-    };
-
-    var ngPackageName = [
-        "common", "compiler", "core", "platform-browser", "platform-browser-dynamic", "http", "router"
+    var ngBundles = [
+        "common", "compiler", "core", "platform-browser", "platform-browser-dynamic", "http", "router", "forms"
     ];
 
-    ngPackageName.forEach((name) => {
-        packages["@angular/" + name] = { main: name + ".umd.js", defaultExtension: "js" };
+    ngBundles.forEach((name) => {
+        map["@angular/" + name] = "scripts/@angular/" + name + "/bundles/" + name + ".umd.js";
     })
+
+    var packages = {
+        "app": { main: "./main.js", defaultExtension: "js" },
+        "rxjs": { defaultExtension: "js" }
+    };
 
     var config = {
         map,

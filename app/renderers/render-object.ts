@@ -1,9 +1,9 @@
 import { OpaqueToken } from "@angular/core";
 
-import { ObjectBuffer } from "./object-buffer";
-import { Transform, Vec3, Quaternion, Mat4 } from "./transform";
-import { ShaderProgram } from "./shader-program";
-import { Color } from "./color";
+import { ObjectBuffer } from "../vertex-data/object-buffer";
+import { Transform, Vec3, Quaternion, Mat4 } from "../game-engine/transform";
+import { ShaderProgram } from "../shaders/shader-program";
+import { Color } from "../game-engine/color";
 
 export interface RenderObjectData {
     name: string;

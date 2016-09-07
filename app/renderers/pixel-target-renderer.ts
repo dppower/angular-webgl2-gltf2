@@ -1,11 +1,11 @@
 import { Injectable, Inject } from "@angular/core";
 
-import { uniform_color_shader, ShaderProgram } from "./shader-program";
-import { webgl2 } from "./render-context";
+import { uniform_color_shader, ShaderProgram } from "../shaders/shader-program";
+import { webgl2 } from "../canvas/render-context";
 import { RenderObject } from "./render-object";
-import { Texture2d } from "./texture-2d";
-import { cubes } from "./cubes";
-import { MainCamera } from "./main-camera";
+import { Texture2d } from "../textures/texture-2d";
+import { cubes } from "../vertex-data/cubes";
+import { MainCamera } from "../game-engine/main-camera";
 
 @Injectable()
 export class PixelTargetRenderer {

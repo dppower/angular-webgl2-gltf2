@@ -1,14 +1,14 @@
-import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone, Inject, Injector, ReflectiveInjector } from "@angular/core";
+import { Component, ViewChild, ElementRef, AfterViewInit, OnDestroy, NgZone, ReflectiveInjector } from "@angular/core";
 
-import { RenderContext, webgl2_providers, webgl2, webgl2_extensions } from "./render-context";
-import { ShaderProgram, shader_providers, diffuse_uniform_shader } from "./shader-program";
-import { MainCamera } from "./main-camera";
-import { Vec3 } from "./transform";
-import { cube_provider } from "./cubes";
-import { InputManager, InputState } from "./input-manager";
-import { SceneRenderer } from "./scene-renderer";
-import { PixelTargetRenderer } from "./pixel-target-renderer";
-import { AtmosphereModel } from "./atmosphere-model";
+import { RenderContext, webgl2, webgl2_extensions } from "./render-context";
+import { shader_providers } from "../shaders/shader-program";
+import { MainCamera } from "../game-engine/main-camera";
+import { Vec3 } from "../game-engine/transform";
+import { cube_provider } from "../vertex-data/cubes";
+import { InputManager, InputState } from "../game-engine/input-manager";
+import { SceneRenderer } from "../renderers/scene-renderer";
+import { PixelTargetRenderer } from "../renderers/pixel-target-renderer";
+import { AtmosphereModel } from "../renderers/atmosphere-model";
 
 @Component({
     selector: 'main-canvas',
@@ -30,15 +30,15 @@ import { AtmosphereModel } from "./atmosphere-model";
         z-index: 0;
     }
     `],
-    providers: [RenderContext, { provide: MainCamera, useValue: new MainCamera(new Vec3()) }]
+    providers: [RenderContext, MainCamera ]
 })
 export class MainCanvas implements OnDestroy {
     @ViewChild("canvas") canvas_ref: ElementRef;
     
     fallbackText = "Loading Canvas...";
 
-    canvasWidth = 640;
-    canvasHeight = 480;
+    canvasWidth: number;
+    canvasHeight: number;
     canvasTop: string;
     canvasLeft: string;
 
@@ -143,7 +143,6 @@ export class MainCanvas implements OnDestroy {
         // Draw scene
         this.Draw();
     };
-
 
     Draw() {
                 

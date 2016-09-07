@@ -1,4 +1,4 @@
-import { Injectable, provide, OpaqueToken } from "@angular/core";;
+import { Injectable, OpaqueToken } from "@angular/core";
 import { MainCanvas } from "./main-canvas.component";
 
 @Injectable()
@@ -55,35 +55,6 @@ export class RenderContext {
     };
 }
 
-//let context_factory = (extensions: string[]) => {
-
-//    return () => {
-//        let context = new RenderContext();
-//        for (let i in extensions) {
-//            console.log(`i: ${i}, value: ${extensions[i]}.`);
-//            context.enableExtension(extensions[i]);
-//        }
-//        return context;
-//    };
-//};
-
-//let get_context = () => {
-//    return (render_context: RenderContext) => {
-//        return render_context.render_context;
-//    }
-//}
-
 export const webgl2 = new OpaqueToken("webgl2");
 export const webgl2_extensions = ["OES_texture_float_linear"]
 
-export const webgl2_providers = [
-    //provide(RenderContext, {
-    //    useFactory: context_factory(webgl2_extensions)
-    //}),
-    RenderContext,
-    //{
-    //    provide: webgl2,
-    //    useFactory: get_context(),
-    //    deps: [RenderContext]
-    //}
-];

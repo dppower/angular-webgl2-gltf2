@@ -1,16 +1,25 @@
-import {Component, ViewChild, ContentChild, AfterViewInit, AfterViewChecked, AfterContentChecked} from "@angular/core";
-import {CanvasDimensions} from "./canvas-dimensions.directive";
-import {MainCanvas} from "./main-canvas.component";
-import {InputManager, InputState} from "./input-manager";
+import {
+    Component,
+    ViewChild,
+    ContentChild,
+    AfterViewInit,
+    AfterViewChecked,
+    AfterContentChecked
+}
+from "@angular/core";
+
+import { CanvasFrame } from "./canvas-frame.directive";
+import { MainCanvas } from "./main-canvas.component";
+import { InputManager, InputState } from "../game-engine/input-manager";
 
 @Component({
     selector: "canvas-controller",
     template: `
-    <div #frame id="frame" canvas-dimensions tabindex="0" 
-        [inHeight]="frame.offsetHeight" 
-        [inWidth]="frame.offsetWidth" 
-        [inTop]="frame.offsetTop" 
-        [inLeft]="frame.offsetLeft" 
+    <div #frame id="frame" canvas-frame tabindex="0" 
+        [frameHeight]="frame.offsetHeight" 
+        [frameWidth]="frame.offsetWidth" 
+        [frameTop]="frame.offsetTop" 
+        [frameLeft]="frame.offsetLeft" 
         (mousemove)="onMouseMove($event)" 
         (wheel)="onMouseWheel($event)"
         (click)="onMouseClick($event)" 
@@ -30,19 +39,18 @@ import {InputManager, InputState} from "./input-manager";
         border: 0.25em dashed white;
     }
     `],
-    directives: [CanvasDimensions],
-    providers: [InputManager]
+    providers: [ InputManager ]
 })
 export class CanvasController implements AfterViewInit, AfterViewChecked, AfterContentChecked {
-    @ViewChild(CanvasDimensions) dimensions: CanvasDimensions;
-    @ContentChild(MainCanvas) canvas: MainCanvas;
+    @ViewChild(CanvasFrame) canvas_frame: CanvasFrame;
+    @ContentChild(MainCanvas) main_canvas: MainCanvas;
 
-    constructor(private inputManager_: InputManager) { };
+    controllerWidth: number;
+    controllerHeight: number;
+    controllerTop: string;
+    controllerLeft: string;
 
-    outCanvasWidth: number;
-    outCanvasHeight: number;
-    outCanvasTop: string;
-    outCanvasLeft: string;
+    constructor(private input_manager_: InputManager) { };
 
     setFocus(event: MouseEvent) {
         (<HTMLElement>event.target).focus();
@@ -52,46 +60,46 @@ export class CanvasController implements AfterViewInit, AfterViewChecked, AfterC
     };
 
     ngAfterContentChecked() {
-        this.canvas.canvasHeight = this.outCanvasHeight;
-        this.canvas.canvasWidth = this.outCanvasWidth;
-        this.canvas.canvasTop = this.outCanvasTop;
-        this.canvas.canvasLeft = this.outCanvasLeft;
+        this.main_canvas.canvasHeight = this.controllerHeight;
+        this.main_canvas.canvasWidth = this.controllerWidth;
+        this.main_canvas.canvasTop = this.controllerTop;
+        this.main_canvas.canvasLeft = this.controllerLeft;
     };
 
     ngAfterViewChecked() {
         setTimeout(() => {
-            this.outCanvasHeight = this.dimensions.inHeight;
-            this.outCanvasWidth = this.dimensions.inWidth;
-            this.outCanvasTop = this.dimensions.inTop;
-            this.outCanvasLeft = this.dimensions.inLeft;
+            this.controllerHeight = this.canvas_frame.frameHeight;
+            this.controllerWidth = this.canvas_frame.frameWidth;
+            this.controllerTop = this.canvas_frame.frameTop;
+            this.controllerLeft = this.canvas_frame.frameLeft;
         }, 0);
     };
 
     onMouseWheel(event: WheelEvent) {
-        this.inputManager_.zoom = event.deltaY;
+        this.input_manager_.zoom = event.deltaY;
         return false;
     };
 
     onMouseClick(event: MouseEvent) {
         this.setFocus(event);
         if (event.button == 0) {
-            this.inputManager_.setMouseCoords(event.clientX, event.clientY);
+            this.input_manager_.setMouseCoords(event.clientX, event.clientY);
         } 
     };
 
     onKeyDown(event: KeyboardEvent) {
-        this.inputManager_.setKeyDown(event);
+        this.input_manager_.setKeyDown(event);
         return false;
     };
 
     onKeyUp(event: KeyboardEvent) {
-        this.inputManager_.setKeyUp(event);
+        this.input_manager_.setKeyUp(event);
         return false;
     };
 
     onMouseMove(event: MouseEvent) {
         if (event.buttons == 2) {
-            this.inputManager_.setCenteredCoords(event.clientX, event.clientY, this.dimensions.inWidth, this.dimensions.inHeight);
+            this.input_manager_.setCenteredCoords(event.clientX, event.clientY, this.canvas_frame.frameWidth, this.canvas_frame.frameHeight);
         }     
         return false;
     };
