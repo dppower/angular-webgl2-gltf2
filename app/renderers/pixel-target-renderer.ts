@@ -1,7 +1,8 @@
 import { Injectable, Inject } from "@angular/core";
 
-import { uniform_color_shader, ShaderProgram } from "../shaders/shader-program";
-import { webgl2 } from "../canvas/render-context";
+import { ShaderProgram } from "../shaders/shader-program";
+import { uniform_color_shader } from "../shaders/shader-program.module";
+import { webgl2 } from "../canvas/webgl2-token";
 import { RenderObject } from "./render-object";
 import { Texture2d } from "../textures/texture-2d";
 import { cubes } from "../vertex-data/cubes";

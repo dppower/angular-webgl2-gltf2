@@ -2,8 +2,9 @@ import { Injectable, Inject, OpaqueToken } from "@angular/core";
 
 import { cubes } from "../vertex-data/cubes";
 import { RenderObject } from "./render-object";
-import { ShaderProgram, diffuse_uniform_shader, diffuse_oren_nayar_shader, pbr_ggx_shader, per_vertex_color_shader } from "../shaders/shader-program";
-import { webgl2 } from "../canvas/render-context";
+import { ShaderProgram } from "../shaders/shader-program";
+import { diffuse_uniform_shader, diffuse_oren_nayar_shader, pbr_ggx_shader, per_vertex_color_shader } from "../shaders/shader-program.module";
+import { webgl2 } from "../canvas/webgl2-token";
 import { MainCamera } from "../game-engine/main-camera";
 import { Vec3, Mat4 } from "../game-engine/transform";
 import { InputState } from "../game-engine/input-manager";

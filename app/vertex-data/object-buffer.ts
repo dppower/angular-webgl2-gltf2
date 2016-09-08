@@ -1,7 +1,8 @@
 ﻿import { Inject, Injectable } from "@angular/core"
 
-import { webgl2 } from "../canvas/render-context";
-import { ShaderProgram, AttributeLayout } from "../shaders/shader-program";
+import { webgl2 } from "../canvas/webgl2-token";
+import { ShaderProgram } from "../shaders/shader-program";
+import { AttributeLayout } from "../shaders/attribute-layout";
 import { Mesh } from "./mesh";
 
 @Injectable()

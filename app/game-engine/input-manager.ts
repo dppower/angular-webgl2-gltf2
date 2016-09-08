@@ -1,14 +1,14 @@
 import { Injectable } from "@angular/core";
 
-const keyBindings = new Map<string, number>();
-keyBindings.set("forward", 69);
-keyBindings.set("back", 68);
-keyBindings.set("left", 83);
-keyBindings.set("right", 70);
-keyBindings.set("jump", 32);
+const key_bindings = new Map<string, number>();
+key_bindings.set("forward", 69);
+key_bindings.set("back", 68);
+key_bindings.set("left", 83);
+key_bindings.set("right", 70);
+key_bindings.set("jump", 32);
 
-const moveSet = ["forward", "back", "left", "right"];
-const actionSet = ["jump"];
+const move_set = ["forward", "back", "left", "right"];
+const action_set = ["jump"];
 
 export class InputState {
     aspect = 1.78;
@@ -85,17 +85,17 @@ export class InputManager {
         currentState.mouseDx = this.centeredMouseX - this.previousMouseX;
         currentState.mouseDy = this.centeredMouseY - this.previousMouseY;
 
-        for (let i in moveSet) {
-            let move = moveSet[i];
-            let key = keyBindings.get(move);
+        for (let i in move_set) {
+            let move = move_set[i];
+            let key = key_bindings.get(move);
             if (this.isKeyDown(key)) {
                 currentState.keyDown.push(move);
             }
         }
 
-        for (let i in actionSet) {
-            let action = actionSet[i];
-            let key = keyBindings.get(action);
+        for (let i in action_set) {
+            let action = action_set[i];
+            let key = key_bindings.get(action);
             if (this.isKeyPressed(key)) {
                 currentState.keyPressed.push(action);
             }

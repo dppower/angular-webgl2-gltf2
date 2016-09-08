@@ -81,7 +81,7 @@ export class CanvasController implements AfterViewInit, AfterViewChecked, AfterC
     };
 
     onMouseClick(event: MouseEvent) {
-        this.setFocus(event);
+        //this.setFocus(event);
         if (event.button == 0) {
             this.input_manager_.setMouseCoords(event.clientX, event.clientY);
         } 

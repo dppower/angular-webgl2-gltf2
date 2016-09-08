@@ -3,7 +3,7 @@ import { OpaqueToken, Injector } from "@angular/core";
 import { Transform, Vec3, Quaternion } from "../game-engine/transform";
 import { RenderObject, RenderObjectData } from "../renderers/render-object";
 import { ObjectBuffer } from "./object-buffer";
-import { webgl2 } from "../canvas/render-context";
+import { webgl2 } from "../canvas/webgl2-token";
 //import { CubeMesh } from "./cube-mesh";
 import { Mesh } from "./mesh";
 import cube_mesh from "./data/cube";

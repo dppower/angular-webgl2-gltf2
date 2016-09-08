@@ -1,9 +1,10 @@
 import { Injectable, Inject } from "@angular/core";
 
-import { ShaderProgram, inscatter_shader, transmittance_shader, skyquad_shader, inscatter_3d_shader} from "../shaders/shader-program";
+import { ShaderProgram } from "../shaders/shader-program";
+import { inscatter_shader, transmittance_shader, skyquad_shader, inscatter_3d_shader} from "../shaders/shader-program.module";
 import { MainCamera } from "../game-engine/main-camera";
 import { Vec3, Quaternion } from "../game-engine/transform";
-import { webgl2 } from "../canvas/render-context";
+import { webgl2 } from "../canvas/webgl2-token";
 import { Texture2d } from "../textures/texture-2d";
 
 const transmittance_width = 256;

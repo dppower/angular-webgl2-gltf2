@@ -1,52 +1,8 @@
 import { Inject, Injectable, Injector, OpaqueToken } from "@angular/core";
 
-import { webgl2 } from "../canvas/render-context";
-import { ShaderType, compileShader, VertexShaderSource, FragmentShaderSource } from "./shader";
-
-import diffuse_uniform_color_fs from "./diffuse-uniform-color.fs";
-import diffuse_uniform_color_vs from "./diffuse-uniform-color.vs";
-import uniform_color_fs from "./uniform-color.fs";
-import uniform_color_vs from "./uniform-color.vs";
-import diffuse_oren_nayar_fs from "./diffuse-oren-nayar.fs";
-import pbr_ggx_fs from "./pbr-ggx.fs";
-import sky_quad_vs from "./sky-quad.vs";
-import sky_quad_fs from "./sky-quad.fs";
-import texture_2d_vs from "./texture-2d.vs";
-import texture_cube_vs from "./texture-cube.vs";
-import transmittance_fs from "./transmittance.fs";
-import inscatter_fs from "./inscattering.fs";
-import inscatter_3d_fs from "./inscattering-3d.fs";
-import per_vertex_fs from "./per-vertex-color.fs";
-import per_vertex_vs from "./per-vertex-color.vs";
-
-
-// This is required when VertexArrayObjects are not available.
-class ActiveProgramAttributes {
-    private active_attribute_count = 0;
-
-    checkAttributeCount(attribute_count: number, gl: WebGLRenderingContext) {
-        let actives_difference = attribute_count - this.active_attribute_count;
-
-        if (actives_difference > 0) {
-            for (let i = 0; i < actives_difference; i++) {
-                gl.enableVertexAttribArray(this.active_attribute_count + i);
-            }
-        }
-        else if (actives_difference < 0) {
-            for (let i = 0; i > actives_difference; i--) {
-                gl.disableVertexAttribArray(this.active_attribute_count - 1 + i);
-            }
-        }
-        this.active_attribute_count = attribute_count;
-    };
-}
-
-export enum AttributeLayout {
-    vertex_position,
-    vertex_normal,
-    vertex_color,
-    texture_coordinates
-};
+//import { webgl2 } from "../app.module";
+import { ShaderType, compileShader, VertexShaderSource, FragmentShaderSource } from "./shader-source";
+import { webgl2 } from "../canvas/webgl2-token";
 
 @Injectable()
 export class ShaderProgram {
@@ -140,33 +96,3 @@ export class ShaderProgram {
         });
     };
 }
-
-let shader_program_factory = (vertex_source: VertexShaderSource, fragment_source: FragmentShaderSource) => {
-    return (injector: Injector) => {
-        let gl = injector.get(webgl2);
-        let shader_program = new ShaderProgram(gl, vertex_source, fragment_source);
-        return shader_program;
-    }
-};
-
-export const diffuse_uniform_shader = new OpaqueToken("diffuse-uniform-color-shader");
-export const diffuse_oren_nayar_shader = new OpaqueToken("diffuse-oren-nayar-shader");
-export const uniform_color_shader = new OpaqueToken("uniform-color-shader");
-export const pbr_ggx_shader = new OpaqueToken("pbr-ggx-shader");
-export const transmittance_shader = new OpaqueToken("transmittance-shader");
-export const inscatter_shader = new OpaqueToken("inscatter-shader");
-export const inscatter_3d_shader = new OpaqueToken("inscatter-3d-shader");
-export const skyquad_shader = new OpaqueToken("skyquad-shader");
-export const per_vertex_color_shader = new OpaqueToken("per-vertex-color-shader");
-
-export const shader_providers = [
-    { provide: uniform_color_shader, useFactory: shader_program_factory(uniform_color_vs, uniform_color_fs), deps: [Injector, webgl2] },
-    { provide: diffuse_uniform_shader, useFactory: shader_program_factory(diffuse_uniform_color_vs, diffuse_uniform_color_fs), deps: [Injector, webgl2] },
-    { provide: diffuse_oren_nayar_shader, useFactory: shader_program_factory(diffuse_uniform_color_vs, diffuse_oren_nayar_fs), deps: [Injector, webgl2] },
-    { provide: pbr_ggx_shader, useFactory: shader_program_factory(diffuse_uniform_color_vs, pbr_ggx_fs), deps: [Injector, webgl2] },     
-    { provide: transmittance_shader, useFactory: shader_program_factory(texture_2d_vs, transmittance_fs), deps: [Injector, webgl2] },
-    { provide: inscatter_shader, useFactory: shader_program_factory(texture_cube_vs, inscatter_fs), deps: [Injector, webgl2] },
-    { provide: inscatter_3d_shader, useFactory: shader_program_factory(texture_2d_vs, inscatter_3d_fs), deps: [Injector, webgl2] },
-    { provide: skyquad_shader, useFactory: shader_program_factory(sky_quad_vs, sky_quad_fs), deps: [Injector, webgl2] },
-    { provide: per_vertex_color_shader, useFactory: shader_program_factory(per_vertex_vs, per_vertex_fs), deps: [Injector, webgl2] }
-]
