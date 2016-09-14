@@ -30,7 +30,10 @@ import { Vec2 } from "../game-engine/vec2";
         (keydown)="onKeyDown($event)" 
         (keyup)="onKeyUp($event)" 
         (contextmenu)="false"  
-    ><skill-bar></skill-bar>
+    ><menu-button></menu-button>
+    <menu-display *ngIf="should_display_menu"></menu-display>
+    <skill-bar></skill-bar>
+    <skill-log></skill-log>
     </div>
     <ng-content></ng-content>
     `,

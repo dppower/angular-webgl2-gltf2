@@ -32,6 +32,7 @@
     <TypeScriptCompile Include="canvas\menu-display.component.ts" />
     <TypeScriptCompile Include="canvas\skill-bar.component.ts" />
     <TypeScriptCompile Include="canvas\skill-button.component.ts" />
+    <TypeScriptCompile Include="canvas\skill-log.component.ts" />
     <TypeScriptCompile Include="canvas\webgl2-context.directive.ts" />
     <TypeScriptCompile Include="canvas\webgl2-token.ts" />
     <TypeScriptCompile Include="canvas\webgl2.module.ts" />

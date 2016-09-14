@@ -7,11 +7,9 @@ import { InputManager, Actions } from "../game-engine/input-manager";
 @Component({
     selector: "menu-button",
     template: `
-<div #menu-button-background
-    
-><p #menu-button-text 
+<div id="menu-button-background"   
     (mousedown)="toggleMenuDisplay($event)"
->Menu</p></div>
+><p id="menu-button-text">Menu</p></div>
 `,
     styles: []
 })

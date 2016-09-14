@@ -124,7 +124,7 @@ export class InputManager {
      */
     setKeyDown(key_code: string) {
         let action = this.current_key_bindings_.get(key_code);
-        if (action) {
+        if (action != undefined) {
             this.current_key_state_.set(action, true);
         }
     };
@@ -134,7 +134,7 @@ export class InputManager {
      */
     setKeyUp(key_code: string) {
         let action = this.current_key_bindings_.get(key_code);
-        if (action) {
+        if (action != undefined) {
             this.current_key_state_.set(action, false);
         }
     };
@@ -179,9 +179,8 @@ export class InputManager {
                         break;
                 }
             }
-            // Reset key state
+            // Update previous key state
             this.previous_key_state_.set(action, value);
-            map.set(action, false);
         });
 
         // Reset inputs
