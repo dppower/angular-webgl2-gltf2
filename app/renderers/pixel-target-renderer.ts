@@ -7,6 +7,8 @@ import { RenderObject } from "./render-object";
 import { Texture2d } from "../textures/texture-2d";
 import { cubes } from "../vertex-data/cubes";
 import { MainCamera } from "../game-engine/main-camera";
+import { InputManager } from "../game-engine/input-manager";
+import { Vec2 } from "../game-engine/vec2";
 
 @Injectable()
 export class PixelTargetRenderer {
@@ -22,12 +24,18 @@ export class PixelTargetRenderer {
     private width_ = 640;
     private height_ = 480;
 
+    private current_target_: Vec2;
+
     constructor(
         @Inject(webgl2) private gl: WebGL2RenderingContext,
         @Inject(uniform_color_shader) private shader_program: ShaderProgram,
-        @Inject(cubes) cubes_array: RenderObject[]
+        @Inject(cubes) cubes_array: RenderObject[],
+        private input_manager_: InputManager
     ) {
         this.target_objects.set(cubes.toString(), cubes_array);
+        this.input_manager_.set_mouse_target.subscribe((target) => {
+            this.current_target_ = target;
+        })
     };
 
     createFramebuffer() {
@@ -57,21 +65,29 @@ export class PixelTargetRenderer {
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
     };
 
-    getMouseTarget(mouse_x: number, mouse_y: number) {
-        
-        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebuffer);
-        let color = new Float32Array(4);
-        this.gl.readPixels(mouse_x, mouse_y, 1, 1, this.gl.RGBA, this.gl.FLOAT, color);
-        
-        console.log("colour picked: " + color);
-        return color;
+    getMouseTarget(canvas_width: number, canvas_height: number) {
+
+        if (this.current_target_) {
+            this.drawOffscreen();
+            
+            let offscreen_buffer_x = (this.current_target_.x / canvas_width) * this.width;
+            let offscreen_buffer_y = this.height - ((this.current_target_.y / canvas_height ) * this.height);
+
+            let color = new Float32Array(4);
+            this.gl.readPixels(offscreen_buffer_x, offscreen_buffer_y, 1, 1, this.gl.RGBA, this.gl.FLOAT, color);
+
+            console.log("colour picked: " + color);
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+            this.current_target_ = null;
+            return color;
+        }
     };
 
     // TODO: set unique identifying colors for each object.
     setUniqueColors() {
     };
 
-    drawOffscreen(camera: MainCamera) {
+    private drawOffscreen() {
 
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebuffer);
 
@@ -88,7 +104,5 @@ export class PixelTargetRenderer {
             });
             array[0].unbindVertexArray();
         });
-
-        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
     };
 };

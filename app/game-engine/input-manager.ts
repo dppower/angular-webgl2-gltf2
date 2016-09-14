@@ -1,128 +1,198 @@
 import { Injectable } from "@angular/core";
+import { Subject } from "rxjs/Rx";
 
-const key_bindings = new Map<string, number>();
-key_bindings.set("forward", 69);
-key_bindings.set("back", 68);
-key_bindings.set("left", 83);
-key_bindings.set("right", 70);
-key_bindings.set("jump", 32);
+import { Vec2 } from "../game-engine/vec2";
 
-const move_set = ["forward", "back", "left", "right"];
-const action_set = ["jump"];
+export enum Actions {
+    forward,
+    back,
+    left,
+    right,
+    jump,
+    action_1,
+    action_2,
+    action_3,
+    action_4,
+    action_5,
+    display_menu
+};
 
-export class InputState {
-    aspect = 1.78;
-    zoom = 0.0;
-    mouseX = 0.0;
-    mouseY = 0.0;
-    mouseDx = 0.0;
-    mouseDy = 0.0;
-    keyDown: string[] = [];
-    keyPressed: string[] = [];
+export interface CameraInputs {
+    wheel_direction: number;
+    screen_movement: Vec2
 };
 
 @Injectable()
 export class InputManager {
+    
+    set_mouse_target = new Subject<Vec2>();
 
-    private zoom_ = 0.0;
+    camera_inputs = new Subject<CameraInputs>();
 
-    previousMouseX = 0.0;
-    previousMouseY = 0.0;
+    ui_inputs = new Subject<Actions>();
 
-    centeredMouseX = 0.0;
-    centeredMouseY = 0.0;
+    character_movement_inputs = new Subject<Actions>();
 
-    currentMouseX = 0.0;
-    currentMouseY = 0.0;
+    character_actions_inputs = new Subject<Actions>();
 
-    setMouseCoords(x: number, y: number) {
-        this.currentMouseX = x;
-        this.currentMouseY = y;
+    private current_key_bindings_ = new Map<string, Actions>();
+
+    private wheel_direction_ = 0.0;
+    private previous_pointer_position_ = new Vec2();
+    private current_pointer_position_ = new Vec2();
+
+    private previous_key_state_ = new Map<Actions, boolean>();
+    private current_key_state_ = new Map<Actions, boolean>();
+
+    private previous_mouse_button_state_ = { left: false, right: false };
+    private current_mouse_button_state_ = { left: false, right: false };
+
+    constructor() {
+        // set default key code bindings
+        this.current_key_bindings_.set("KeyW", Actions.forward);
+        this.current_key_bindings_.set("KeyS", Actions.back);
+        this.current_key_bindings_.set("KeyA", Actions.left);
+        this.current_key_bindings_.set("KeyD", Actions.right);
+        this.current_key_bindings_.set("Space", Actions.jump);
+        this.current_key_bindings_.set("Digit1", Actions.action_1);
+        this.current_key_bindings_.set("Digit2", Actions.action_2);
+        this.current_key_bindings_.set("Digit3", Actions.action_3);
+        this.current_key_bindings_.set("Digit4", Actions.action_4);
+        this.current_key_bindings_.set("Digit5", Actions.action_5);
+        this.current_key_bindings_.set("Escape", Actions.display_menu);      
     };
 
-    setCenteredCoords(x: number, y: number, canvasWidth: number, canvasHeight: number) {
-        this.centeredMouseX = 2 * (x / canvasWidth) - 1;
-        this.centeredMouseY = 2 * (y / canvasHeight) - 1;
+    setPointerCoords(coords: Vec2) {
+        this.current_pointer_position_.copy(coords);
     };
 
-    previousKeyMap = new Map<number, boolean>();
-    currentKeyMap = new Map<number, boolean>();
-
-    isKeyDown(key: number) {
-        if (this.currentKeyMap.get(key) == true) {            
-            return true;
-        }
-        return false;
-    };
-
-    isKeyPressed(key: number) {
-        if (this.isKeyDown(key) == true && this.wasKeyDown(key) == false) {
-            return true;
-        }
-        return false;
-    };
-
-    wasKeyDown(key: number) {
-        if (this.previousKeyMap.get(key) == true) {
-            return true;
-        }
-        return false;
-    };
-
-    setKeyDown(event: KeyboardEvent) {
-        this.currentKeyMap.set(event.keyCode, true);
-    };
-
-    setKeyUp(event: KeyboardEvent) {
-        this.currentKeyMap.set(event.keyCode, false);
-    };
-
-    get inputs() {
-        let currentState = new InputState();
-        currentState.zoom = this.zoom_;
-        currentState.mouseX = this.currentMouseX;
-        currentState.mouseY = this.currentMouseY;
-        currentState.mouseDx = this.centeredMouseX - this.previousMouseX;
-        currentState.mouseDy = this.centeredMouseY - this.previousMouseY;
-
-        for (let i in move_set) {
-            let move = move_set[i];
-            let key = key_bindings.get(move);
-            if (this.isKeyDown(key)) {
-                currentState.keyDown.push(move);
-            }
-        }
-
-        for (let i in action_set) {
-            let action = action_set[i];
-            let key = key_bindings.get(action);
-            if (this.isKeyPressed(key)) {
-                currentState.keyPressed.push(action);
-            }
-        }
-        return currentState;
-    };
-
-    set zoom(value: number) {
+    setWheelDirection(value: number) {
         if (value > 0.0) {
-            this.zoom_ = 1.0;
+            this.wheel_direction_ = 1.0;
         }
         else {
-            this.zoom_ = -1.0;
+            this.wheel_direction_ = -1.0;
         }
     };
 
-    Update() {
-        this.zoom_ = 0.0;
+    isKeyDown(action: Actions) {
+        if (this.current_key_state_.get(action) == true) {            
+            return true;
+        }
+        return false;
+    };
 
-        this.previousMouseX = this.centeredMouseX;
-        this.previousMouseY = this.centeredMouseY;
 
-        this.currentMouseX = 0;
-        this.currentMouseY = 0;
+    wasKeyDown(action: Actions) {
+        if (this.previous_key_state_.get(action) == true) {
+            return true;
+        }
+        return false;
+    };
 
-        this.currentKeyMap.forEach((value, key, map) => {
-            this.previousKeyMap.set(key, value);
+    isKeyPressed(action: Actions) {
+        if (this.isKeyDown(action) == true && this.wasKeyDown(action) == false) {
+            return true;
+        }
+        return false;
+    };
+
+    isButtonDown(button: string) {
+        if (this.current_mouse_button_state_[button] == true) {
+            return true;
+        }
+        return false;
+    };
+
+
+    wasButtonDown(button: string) {
+        if (this.previous_mouse_button_state_[button] == true) {
+            return true;
+        }
+        return false;
+    };
+
+    isButtonPressed(button: string) {
+        if (this.isButtonDown(button) == true && this.wasButtonDown(button) == false) {
+            return true;
+        }
+        return false;
+    };
+
+    /**
+     * @param key_code = KeyboardEvent.code
+     */
+    setKeyDown(key_code: string) {
+        let action = this.current_key_bindings_.get(key_code);
+        if (action) {
+            this.current_key_state_.set(action, true);
+        }
+    };
+
+    /**
+     * @param key_code = KeyboardEvent.code
+     */
+    setKeyUp(key_code: string) {
+        let action = this.current_key_bindings_.get(key_code);
+        if (action) {
+            this.current_key_state_.set(action, false);
+        }
+    };
+
+    setMouseButton(button: string, state: boolean) {
+        this.current_mouse_button_state_[button] = state;
+    };
+
+    update() {
+        // Emit events
+        let pointer_movement = this.isButtonDown("right") ? this.current_pointer_position_.subtract(this.previous_pointer_position_) : new Vec2();
+        let current_camera_inputs: CameraInputs = { wheel_direction: this.wheel_direction_, screen_movement: pointer_movement };
+        this.camera_inputs.next(current_camera_inputs);
+
+        if (this.isButtonPressed("left")) {
+            this.set_mouse_target.next(this.current_pointer_position_);
+        };
+
+        this.current_key_state_.forEach((value, action, map) => {
+            if (value) {
+                switch (action) {
+                    case Actions.forward:
+                    case Actions.back:
+                    case Actions.left:
+                    case Actions.right:
+                        this.character_movement_inputs.next(action);
+                        break;
+                    case Actions.jump:
+                    case Actions.action_1:
+                    case Actions.action_2:
+                    case Actions.action_3:
+                    case Actions.action_4:
+                    case Actions.action_5:
+                        if (this.isKeyPressed(action)) {
+                            this.character_actions_inputs.next(action);
+                        }
+                        break;
+                    case Actions.display_menu:
+                        if (this.isKeyPressed(action)) {
+                            this.ui_inputs.next(action);
+                        }
+                        break;
+                }
+            }
+            // Reset key state
+            this.previous_key_state_.set(action, value);
+            map.set(action, false);
         });
+
+        // Reset inputs
+        this.wheel_direction_ = 0.0;
+        this.previous_pointer_position_.copy(this.current_pointer_position_);
+
+        this.previous_mouse_button_state_["left"] = this.current_mouse_button_state_["left"];
+        this.previous_mouse_button_state_["right"] = this.current_mouse_button_state_["right"];
+    };
+
+    dispose() {
+        this.ui_inputs.complete();
     };
 }

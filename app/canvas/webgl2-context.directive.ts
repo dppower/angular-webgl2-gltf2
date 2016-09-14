@@ -1,10 +1,10 @@
-import { Directive, ElementRef, Host, OpaqueToken, HostListener, OnInit, ReflectiveInjector } from "@angular/core";
+import { Directive, ElementRef, Host, OpaqueToken, HostListener, OnInit, ReflectiveInjector, Injector, Inject } from "@angular/core";
 
 import { MainCanvas } from "./main-canvas.component";
 import { shader_providers } from "../shaders/shader-program.module";
 import { MainCamera } from "../game-engine/main-camera";
 import { cube_provider } from "../vertex-data/cubes";
-import { InputManager, InputState } from "../game-engine/input-manager";
+import { InputManager } from "../game-engine/input-manager";
 import { SceneRenderer } from "../renderers/scene-renderer";
 import { PixelTargetRenderer } from "../renderers/pixel-target-renderer";
 import { AtmosphereModel } from "../renderers/atmosphere-model";
@@ -27,7 +27,7 @@ export class Webgl2Context {
     private pixel_target_renderer: PixelTargetRenderer;
     private atmosphere_model: AtmosphereModel;
 
-    constructor(private canvas_ref: ElementRef) { };
+    constructor(private canvas_ref: ElementRef, private input_manager_: InputManager) { };
 
     createContext() {
         let html_canvas = (<HTMLCanvasElement>this.canvas_ref.nativeElement);
@@ -39,13 +39,14 @@ export class Webgl2Context {
                 this.enableExtension(extension);
             });
 
-            this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+            this.gl.clearColor(0.7, 0.7, 0.7, 1.0);
             this.gl.clearDepth(1.0);
             this.gl.enable(this.gl.DEPTH_TEST);
             this.gl.depthFunc(this.gl.LEQUAL);
 
             let gl_provider = { provide: webgl2, useValue: this.gl };
-            this.context_injector = ReflectiveInjector.resolveAndCreate([gl_provider, SceneRenderer, cube_provider, shader_providers, PixelTargetRenderer, AtmosphereModel]);
+            let input_provider = { provide: InputManager, useValue: this.input_manager_ };
+            this.context_injector = ReflectiveInjector.resolveAndCreate([gl_provider, input_provider, SceneRenderer, cube_provider, shader_providers, PixelTargetRenderer, AtmosphereModel]);
 
             this.scene_renderer = this.context_injector.get(SceneRenderer);
             this.pixel_target_renderer = this.context_injector.get(PixelTargetRenderer);
@@ -79,14 +80,9 @@ export class Webgl2Context {
         return false;
     };
 
-    update(dt: number, inputs: InputState, camera: MainCamera, canvas_width, canvas_height) {
+    update(dt: number, camera: MainCamera, canvas_width, canvas_height) {
 
-        if (inputs.mouseX != 0 && inputs.mouseY != 0) {
-            this.pixel_target_renderer.drawOffscreen(camera);
-            let mouse_position_x = (inputs.mouseX / canvas_width) * this.pixel_target_renderer.width;
-            let mouse_position_y = this.pixel_target_renderer.height - ((inputs.mouseY / canvas_height ) * this.pixel_target_renderer.height);
-            this.pixel_target_renderer.getMouseTarget(mouse_position_x, mouse_position_y);
-        }
+        this.pixel_target_renderer.getMouseTarget(canvas_width, canvas_height);
         this.scene_renderer.updateScene(dt, camera);
     };
 

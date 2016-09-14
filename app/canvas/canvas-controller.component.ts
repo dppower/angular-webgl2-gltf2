@@ -4,13 +4,15 @@ import {
     ContentChild,
     AfterViewInit,
     AfterViewChecked,
-    AfterContentChecked
+    AfterContentChecked,
 }
 from "@angular/core";
 
 import { CanvasFrame } from "./canvas-frame.directive";
 import { MainCanvas } from "./main-canvas.component";
-import { InputManager, InputState } from "../game-engine/input-manager";
+import { InputManager } from "../game-engine/input-manager";
+import { Vec2 } from "../game-engine/vec2";
+
 
 @Component({
     selector: "canvas-controller",
@@ -19,15 +21,17 @@ import { InputManager, InputState } from "../game-engine/input-manager";
         [frameHeight]="frame.offsetHeight" 
         [frameWidth]="frame.offsetWidth" 
         [frameTop]="frame.offsetTop" 
-        [frameLeft]="frame.offsetLeft" 
-        (mousemove)="onMouseMove($event)" 
-        (wheel)="onMouseWheel($event)"
-        (click)="onMouseClick($event)" 
-        (mouseenter)="setFocus($event)"
+        [frameLeft]="frame.offsetLeft"
+        (mousemove)="setMouseMovement($event)"
+        (mouseup) = "setMouseUp($event)"
+        (mousedown) = "setMouseDown($event)" 
+        (wheel)="onMouseWheel($event)" 
+        (mouseover)="setFocus($event)"
         (keydown)="onKeyDown($event)" 
         (keyup)="onKeyUp($event)" 
         (contextmenu)="false"  
-    ></div>
+    ><skill-bar></skill-bar>
+    </div>
     <ng-content></ng-content>
     `,
     styles: [`
@@ -35,7 +39,7 @@ import { InputManager, InputState } from "../game-engine/input-manager";
         height: 100%;
         width: 100%;
         position: relative;
-        z-index: 10;
+        z-index: 5;
         border: 0.25em dashed white;
     }
     `],
@@ -49,6 +53,8 @@ export class CanvasController implements AfterViewInit, AfterViewChecked, AfterC
     controllerHeight: number;
     controllerTop: string;
     controllerLeft: string;
+
+    should_display_menu = false;
 
     constructor(private input_manager_: InputManager) { };
 
@@ -76,31 +82,47 @@ export class CanvasController implements AfterViewInit, AfterViewChecked, AfterC
     };
 
     onMouseWheel(event: WheelEvent) {
-        this.input_manager_.zoom = event.deltaY;
+        this.input_manager_.setWheelDirection(event.deltaY);
         return false;
     };
 
-    onMouseClick(event: MouseEvent) {
-        //this.setFocus(event);
+    setMouseUp(event: MouseEvent) {
+        event.stopPropagation();
         if (event.button == 0) {
-            this.input_manager_.setMouseCoords(event.clientX, event.clientY);
+            this.input_manager_.setMouseButton("left", false);
+        }
+        else if (event.button == 2) {
+            this.input_manager_.setMouseButton("right", false);
         } 
     };
 
+    setMouseDown(event: MouseEvent) {
+        event.stopPropagation();
+        if (event.button == 0) {
+            this.input_manager_.setMouseButton("left", true);
+        }
+        else if (event.button == 2) {
+            this.input_manager_.setMouseButton("right", true);
+        }
+    };
+
     onKeyDown(event: KeyboardEvent) {
-        this.input_manager_.setKeyDown(event);
+        this.input_manager_.setKeyDown(event.code);
+
         return false;
     };
 
     onKeyUp(event: KeyboardEvent) {
-        this.input_manager_.setKeyUp(event);
+        this.input_manager_.setKeyUp(event.code);
+
         return false;
     };
 
-    onMouseMove(event: MouseEvent) {
-        if (event.buttons == 2) {
-            this.input_manager_.setCenteredCoords(event.clientX, event.clientY, this.canvas_frame.frameWidth, this.canvas_frame.frameHeight);
-        }     
+    setMouseMovement(event: MouseEvent) {
+        event.stopPropagation();
+
+        this.input_manager_.setPointerCoords(new Vec2(event.clientX, event.clientY));
+            
         return false;
     };
 }

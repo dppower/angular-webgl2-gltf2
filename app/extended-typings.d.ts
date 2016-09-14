@@ -1,0 +1,3 @@
+﻿interface KeyboardEvent {
+    code: string
+}

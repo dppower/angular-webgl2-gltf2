@@ -7,7 +7,6 @@ import { diffuse_uniform_shader, diffuse_oren_nayar_shader, pbr_ggx_shader, per_
 import { webgl2 } from "../canvas/webgl2-token";
 import { MainCamera } from "../game-engine/main-camera";
 import { Vec3, Mat4 } from "../game-engine/transform";
-import { InputState } from "../game-engine/input-manager";
 
 @Injectable()
 export class SceneRenderer {
