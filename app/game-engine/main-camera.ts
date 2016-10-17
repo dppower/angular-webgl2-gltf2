@@ -1,8 +1,8 @@
 import { Injectable, Inject, forwardRef } from "@angular/core";
 
 import { MainCanvas } from "../canvas/main-canvas.component";
-import { InputManager, CameraInputs } from "./input-manager";
-import { Transform, Vec3, vec3_up, Mat4, Quaternion } from "./transform";
+import { InputManager, CameraInputs, Actions } from "./input-manager";
+import { Transform, Vec3, vec3_up, vec3_forward, vec3_right, Mat4, Quaternion } from "./transform";
 
 @Injectable()
 export class MainCamera {
@@ -21,20 +21,28 @@ export class MainCamera {
 
     private min_distance_target = 3.0;
     private max_distance_target = 15.0;
-    private zoom_speed = 0.1;
+    private zoom_speed = 1.5;
 
     private near = 0.1;
     private far = 100;
 
-    private mouse_sensitivity_x = 0.2;
-    private mouse_sensitivity_y = 0.2;
-    private camera_orbit_velocity = 1.1;
-
+    private mouse_sensitivity_x = 0.005;
+    private mouse_sensitivity_y = 0.005;
+    private camera_orbit_velocity = 0.002;
+    
     private view_ = new Mat4();
     private projection_ = new Mat4();
-    private projection_view_ = new Mat4();
     private transform_matrix_ = new Mat4();
     private inverse_projection_ = new Mat4();
+
+    private view_forward: Vec3;
+    private view_up: Vec3;
+    private view_right: Vec3;
+
+    private lerp_duration = 500;
+    private current_lerp_time = 0;
+    private start_distance: number;
+    private end_distance: number;
 
     // TODO Should the FoV be adjustable by user?
     private vertical_field_of_view = 60.0 * Math.PI / 180;
@@ -43,59 +51,83 @@ export class MainCamera {
     private transform_ = new Transform();
     private target_position_ = new Vec3(0.0, 0.0, 0.0);
 
-    private current_inputs_: CameraInputs;
+    private camera_inputs_: CameraInputs;
+    private control_inputs_: Actions;
 
-    constructor(/*@Inject(forwardRef(() => MainCanvas)) private main_canvas_: MainCanvas, */private input_manager_: InputManager) {
-
-        let initial_camera_offset = new Vec3(0.0, 1.0, 8.0);
-        let initial_camera_position = this.target_position_.add(initial_camera_offset);
-
-        this.transform_.setTranslation(initial_camera_position);
+    constructor(private input_manager_: InputManager) {
 
         this.input_manager_.camera_inputs.subscribe((inputs) => {
-            //console.log(`camera inputs: ${inputs.screen_movement.toString()}.`);
-            this.current_inputs_ = inputs;
+            this.camera_inputs_ = inputs;
+        });
+
+        this.input_manager_.character_actions_inputs.subscribe((action) => {
+            this.control_inputs_ = action;
         });
     };
 
-    updateCamera(canvas: MainCanvas/*inputs: InputState*/) {
+    initialiseCamera() {
+        let initial_camera_offset = new Vec3(0.0, 1.0, 8.0);
 
-        // Handle zooming
-        let zoom = this.current_inputs_.wheel_direction * this.zoom_speed;
-        let from_target = this.transform_.position.subtract(this.target_position_);
-        let distance_from_target = from_target.length;
+        this.start_distance = this.end_distance = initial_camera_offset.length;
 
-        let desired_distance = zoom + distance_from_target;
-        let allowed_distance = (desired_distance <= this.min_distance_target) ?
-            this.min_distance_target : (desired_distance >= this.max_distance_target) ?
-                this.max_distance_target : desired_distance;
-        
-        // Orbit camera around target
-        let current_right = vec3_up.cross(from_target).normalise();
-        let current_up = from_target.cross(current_right).normalise();
+        this.updateOrthoNormalVectors(initial_camera_offset.normalise());
 
-        //let movement_dx = 2 * (this.current_inputs_.screen_movement.x / canvas.canvasWidth) - 1;
-        //let movement_dy = 2 * (this.current_inputs_.screen_movement.y / canvas.canvasHeight) - 1;
-        //console.log(`movement: dx ${movement_dx}, dy: ${movement_dy}.`);
-        let movement_axis_x = current_right.scale(this.mouse_sensitivity_x * this.current_inputs_.screen_movement.x);
-        let movement_axis_y = current_up.scale(-1.0 * this.mouse_sensitivity_y * this.current_inputs_.screen_movement.y);
+        let initial_camera_position = this.target_position_.add(initial_camera_offset);
+        this.transform_.setTranslation(initial_camera_position);
 
-        let movement_axis = movement_axis_x.add(movement_axis_y).normalise();
+        let initial_angle = Math.acos(initial_camera_offset.normalise().scale(-1.0).dot(vec3_forward));
+        let initial_rotation = Quaternion.fromAxisAngle(new Vec3(-1.0, 0.0, 0.0), initial_angle);
+        this.transform_.setOrientation(initial_rotation);
 
-        let rotation_axis = movement_axis.cross(from_target).normalise();
-        let camera_rotation = Quaternion.fromAxisAngle(rotation_axis, this.camera_orbit_velocity);
+        this.transform_.updateTransform();
 
-        let rotated_direction = this.transform_.rotateAround(this.target_position_, camera_rotation);
-        let rotated_point = rotated_direction.scale(allowed_distance);
+        console.log(`initial camera forward: ${this.transform_.forward}.`);
+    };
 
-        // Clamp vertical rotation
-        let updated_position: Vec3;
-        if (rotated_direction.y >= 0.75 || rotated_direction.y <= -0.75) {
-            updated_position = this.transform_.position;
+    updateOrthoNormalVectors(view_normal: Vec3) {
+        this.view_forward = view_normal;
+        this.view_right = this.view_forward.cross(vec3_up);
+        this.view_right = this.view_right.normalise();
+        this.view_up = this.view_right.cross(this.view_forward);
+        this.view_up = this.view_up.normalise();
+    }
+
+    getInputRotation(input_x: number, input_y: number) {
+        let input_rotation: Vec3;
+        let scaled_up = this.view_up.scale(input_y);
+        let scaled_right = this.view_right.scale(input_x);
+        let scaled_xy = scaled_right.add(scaled_up);
+
+        let length_squared = scaled_xy.squared_length;
+        if (length_squared < 1.0) {
+            let z_length = Math.sqrt(1.0 - length_squared);
+            let scaled_view = this.view_forward.scale(z_length);
+            input_rotation = scaled_xy.add(scaled_view);
         }
         else {
-            updated_position = this.target_position_.add(rotated_point);
+            input_rotation = scaled_xy.normalise();
         }
+
+        return input_rotation;
+    }
+
+    setTargetTransform(target_transform: Transform) {
+
+    };
+
+    updateCamera(dt: number, canvas: MainCanvas) {
+
+        let from_target = this.transform_.position.subtract(this.target_position_);
+        this.updateOrthoNormalVectors(from_target.normalise());
+
+        // Handle zooming
+        let updated_distance = this.updateCameraDistanceFromTarget(dt, from_target);
+
+        // Rotate camera position around target
+        let updated_rotation = this.updateCameraOrbitPosition(canvas, dt);
+        let updated_direction = this.transform_.rotateAround(this.target_position_, updated_rotation)
+        let rotated_point = updated_direction.scale(updated_distance);
+        let updated_position = this.target_position_.add(rotated_point);
         
         this.transform_.setTranslation(updated_position);
 
@@ -104,26 +136,62 @@ export class MainCamera {
         this.transform_.setOrientation(look_at_rotation);
         
         // Update matrices after transformations
-        this.transform_.update();
-        let rotation = this.transform_.rotation;
-        let translation = this.transform_.translation;
-        this.transform_matrix_.identity();
-        this.transform_matrix_.array[0] = rotation.array[0];
-        this.transform_matrix_.array[1] = rotation.array[1];
-        this.transform_matrix_.array[2] = rotation.array[2];
-        this.transform_matrix_.array[4] = rotation.array[4];
-        this.transform_matrix_.array[5] = rotation.array[5];
-        this.transform_matrix_.array[6] = rotation.array[6];
-        this.transform_matrix_.array[8] = rotation.array[8];
-        this.transform_matrix_.array[9] = rotation.array[9];
-        this.transform_matrix_.array[10] = rotation.array[10];
-        this.transform_matrix_.array[12] = translation.array[12];
-        this.transform_matrix_.array[13] = translation.array[13];
-        this.transform_matrix_.array[14] = translation.array[14];
-        
-        this.transform_matrix_.inverse(this.view_);
+        this.transform_.updateTransform();
+
+        this.transform_matrix_ = this.transform_.transform;
+        this.view_ = this.transform_.inverse;
         this.setProjection(canvas.aspect);
         this.setInverseProjection();
+    };
+
+    updateCameraDistanceFromTarget(dt: number, from_target: Vec3) {
+        // Handle zooming
+        let wheel_direction = this.camera_inputs_.wheel_direction;
+        let current_distance = from_target.length;
+
+        if (wheel_direction != 0) {
+            this.current_lerp_time = 0;
+            this.start_distance = current_distance;
+
+            let zoom = wheel_direction * this.zoom_speed;
+
+            let desired_distance = current_distance + zoom;
+
+            this.end_distance = (desired_distance <= this.min_distance_target) ?
+                this.min_distance_target : (desired_distance >= this.max_distance_target) ?
+                    this.max_distance_target : desired_distance;
+        }
+
+        // TODO: Collisions!!
+        // Lerp between current distance and allowed distance:
+        this.current_lerp_time += dt;
+        if (this.current_lerp_time > this.lerp_duration) {
+            this.current_lerp_time = this.lerp_duration;
+        }
+        let t = this.current_lerp_time / this.lerp_duration;
+        return (1 - t) * this.start_distance + (t * this.end_distance);
+    };
+
+    updateCameraOrbitPosition(canvas: MainCanvas, dt: number) {
+        
+        let input_x = this.camera_inputs_.screen_movement.x / canvas.canvasWidth;
+        let input_y = this.camera_inputs_.screen_movement.y / canvas.canvasHeight;
+
+        let length = Math.sqrt(input_x * input_x + input_y * input_y);
+        input_x *= length;
+        input_y *= length;
+
+        if (!!input_x && !!input_y) {
+            console.log(`input x: ${input_x}, input y: ${input_y}.`);
+            let input_rotation = this.getInputRotation(input_x, input_y);
+
+            let rotation_angle = this.camera_orbit_velocity * dt;
+            let rotation_axis = this.view_forward.cross(input_rotation).normalise();
+            let update_rotation = Quaternion.fromAxisAngle(rotation_axis, rotation_angle);
+
+            return update_rotation;
+        }
+        return new Quaternion();
     };
 
     setProjection(aspect: number) {
@@ -140,8 +208,8 @@ export class MainCamera {
     setInverseProjection() {
         this.inverse_projection_.array[0] = 1.0 / this.projection_.array[0];
         this.inverse_projection_.array[5] = 1.0 / this.projection_.array[5];
-        this.inverse_projection_.array[14] = -1.0;
         this.inverse_projection_.array[11] = 1.0 / this.projection_.array[14];
+        this.inverse_projection_.array[14] = -1.0;
         this.inverse_projection_.array[15] = this.projection_.array[10] / this.projection_.array[14];
     };
 }

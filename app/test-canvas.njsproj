@@ -39,6 +39,7 @@
     <TypeScriptCompile Include="canvas\canvas.module.ts" />
     <TypeScriptCompile Include="canvas\main-canvas.component.ts" />
     <TypeScriptCompile Include="extended-typings.d.ts" />
+    <TypeScriptCompile Include="game-engine\character-controller.ts" />
     <TypeScriptCompile Include="game-engine\color.ts" />
     <TypeScriptCompile Include="game-engine\input-manager.ts" />
     <TypeScriptCompile Include="game-engine\main-camera.ts" />

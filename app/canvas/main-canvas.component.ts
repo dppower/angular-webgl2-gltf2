@@ -61,6 +61,7 @@ export class MainCanvas implements OnDestroy {
     };
 
     ngAfterViewInit() {
+        this.main_camera.initialiseCamera();
 
         if (this.webgl_context.createContext()) {
             this.ng_zone.runOutsideAngular(() => {
@@ -78,28 +79,27 @@ export class MainCanvas implements OnDestroy {
     }
 
     update() {
-        //this.ng_zone.runOutsideAngular(() => {
+        this.ng_zone.runOutsideAngular(() => {
             this.cancel_token = requestAnimationFrame(() => {
                 this.update();
             });
-        //});
+        });
 
         this.input_manager.update();
 
-        this.main_camera.updateCamera(this);
 
         // Update objects in scene
         let time_now = window.performance.now();
         this.accumulated_time += (time_now - this.previous_time); 
         while (this.accumulated_time > this.time_step) {
             this.webgl_context.update(this.time_step, this.main_camera, this.canvasWidth, this.canvasHeight);
+            
             this.accumulated_time -= this.time_step;
         }
-
-        this.previous_time = time_now;
-
+        this.main_camera.updateCamera(this.time_step, this);
         // Draw scene
         this.webgl_context.draw(this.main_camera);
+        this.previous_time = time_now;
     };
 
     ngOnDestroy() {

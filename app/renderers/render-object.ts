@@ -53,7 +53,7 @@ export class RenderObject {
     };
 
     update(view: Mat4, projection: Mat4) {
-        this.transform_.update();
+        this.transform_.updateTransform();
         //console.log(`view: ${view.toString()}, projection: ${projection.toString()}.`)
         // Update transformation matrices
         Mat4.multiply(view, this.transform_.transform, this.view_matrix_);

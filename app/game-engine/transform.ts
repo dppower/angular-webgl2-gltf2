@@ -18,20 +18,17 @@ export class Transform {
 
     get rotation() { return this.rotation_; };
     get translation() { return this.translation_; };
+
     get transform() { return this.transform_; };
+    get inverse() { return this.inverse_; };
 
     get up() { return this.up_; };
     get forward() { return this.forward_; };
     get right() { return this.right_; };
 
-    get inverse() {
-        this.transform_.inverse(this.inverse_);
-        return this.inverse_;
-    };
-
-    private up_ = new Vec3(0.0, 1.0, 0.0);
-    private forward_ = new Vec3(0.0, 0.0, -1.0);
-    private right_ = new Vec3(1.0, 0.0, 0.0);
+    private up_ = vec3_up;
+    private forward_ = vec3_forward;
+    private right_ = vec3_right;
 
     private transform_ = new Mat4();
     private inverse_ = new Mat4();
@@ -45,50 +42,52 @@ export class Transform {
         this.translation_.identity();
     };
 
-    update() {
-        Mat4.fromQuaternion(this.orientation_, this.rotation_);
+    updateTransform() {
+        Mat4.multiply(this.translation_, this.rotation_, this.transform_); 
+        this.transform_.inverse(this.inverse_);
+        this.up_ = this.orientation_.rotate(vec3_up);
+        this.forward_ = this.orientation_.rotate(vec3_forward);
+        this.right_ = this.orientation_.rotate(vec3_right);
+    };
+
+    lookAt(target_position: Vec3, up = vec3_up) {
+        
+        let desired_forward = target_position.subtract(this.position_).normalise();
+        
+        let q1 = Quaternion.fromAngleBetweenVectors(vec3_forward, desired_forward, true);
+
+        let rotated_up = q1.rotate(up);
+
+        let right = desired_forward.cross(up).normalise();
+        let desired_up = right.cross(desired_forward).normalise();
+
+        let q2 = Quaternion.fromAngleBetweenVectors(rotated_up, desired_up);
+        let look_at_rotation = q2.multiply(q1);
+        return look_at_rotation;
+    };
+
+    rotateAround(target_position: Vec3, rotation: Quaternion) {
+        let current_direction = this.position_.subtract(target_position).normalise();
+        return rotation.rotate(current_direction);
+    };
+
+    addTranslation(translation: Vec3) {
+        this.position_.copy(this.position_.add(translation));
         Mat4.fromTranslation(this.position_, this.translation_);
-        Mat4.multiply(this.rotation_, this.translation_, this.transform_);      
-    };
-
-    lookAt(target: Vec3) {
-        
-        let toTarget = target.subtract(this.position_);
-        toTarget = toTarget.normalise();
-        
-        let q1 = Quaternion.fromAngleBetweenVectors(vec3_forward, toTarget, true);
-        let rotatedUp = q1.rotate(vec3_up);
-        let right = toTarget.cross(vec3_up);
-        let desiredUp = right.cross(toTarget);
-
-        let q2 = Quaternion.fromAngleBetweenVectors(rotatedUp, desiredUp);
-        let lookAtRotation = q2.multiply(q1);
-        return lookAtRotation;
-    };
-
-    rotateAround(target: Vec3, rotation: Quaternion) {
-
-        let fromTarget = this.position_.subtract(target);
-        fromTarget = fromTarget.normalise();
-
-        let r = rotation.rotate(fromTarget);
-        return r;
-    };
-
-    addTranslation(move: Vec3) {
-        this.position_.copy(this.position_.add(move));
     };
 
     setTranslation(translation: Vec3) {
         this.position_.copy(translation);
+        Mat4.fromTranslation(this.position_, this.translation_);
     };
     
     addRotation(rotation: Quaternion) {
-        this.orientation_ = this.orientation_.multiply(rotation); 
+        this.orientation_ = rotation.multiply(this.orientation_);
+        Mat4.fromQuaternion(this.orientation_, this.rotation_); 
     };
 
     setOrientation(orientation: Quaternion) {
         this.orientation_ = orientation;
-        this.forward_ = orientation.rotate(vec3_forward);
+        Mat4.fromQuaternion(this.orientation_, this.rotation_);
     };
 };

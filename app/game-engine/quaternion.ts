@@ -27,11 +27,11 @@ export class Quaternion {
     /**
      * Create a new Quaternion from an angle in degrees and axis of rotation.
      * @param axis Vec3
-     * @param angle number, angle in degrees
+     * @param angle number, angle in radians
      */
     static fromAxisAngle(axis = new Vec3(), angle = 0.0) {
         let q = new Quaternion();
-        let phi = angle * Math.PI / 360.0;
+        let phi = angle / 2/** Math.PI / 360.0*/;
         q.v = axis.scale(Math.sin(phi));
         q.w = Math.cos(phi);
         return q;
