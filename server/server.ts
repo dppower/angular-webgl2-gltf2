@@ -1,9 +1,15 @@
-"use strict"
-var express = require("express");
-var http = require("http");
-var path = require("path");
-var morgan = require("morgan");
-var fs = require("fs")
+"use strict";
+
+import * as express from "express";
+import * as http from "http";
+import * as path from "path";
+import * as fs from "fs";
+import * as morgan from "morgan";
+//var express = require("express");
+//var http = require("http");
+//var path = require("path");
+//var morgan = require("morgan");
+//var fs = require("fs")
 var app = express();
 
 app.use(morgan("dev"));

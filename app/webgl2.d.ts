@@ -1,18 +1,18 @@
 ﻿// Webgl-1 Type aliases
-type GLenum = number; // unsigned long
-type GLboolean = boolean; // boolean
-type GLbitfield = number; // unsigned long
-type GLbyte = number; // byte
-type GLshort = number; // short
-type GLint = number; // long
-type GLsizei = number; //long
-type GLintptr = number; // long long
-type GLsizeiptr = number; // long long
-type GLubyte = number; // unsigned byte
-type GLushort = number; // unsigned short
-type GLuint = number; // unsigned long
-type GLfloat = number; //float
-type GLclampf = number; // float
+//type GLenum = number; // unsigned long
+//type GLboolean = boolean; // boolean
+//type GLbitfield = number; // unsigned long
+//type GLbyte = number; // byte
+//type GLshort = number; // short
+//type GLint = number; // long
+//type GLsizei = number; //long
+//type GLintptr = number; // long long
+//type GLsizeiptr = number; // long long
+//type GLubyte = number; // unsigned byte
+//type GLushort = number; // unsigned short
+//type GLuint = number; // unsigned long
+//type GLfloat = number; //float
+//type GLclampf = number; // float
 
 // Webgl-2 only
 type GLint64 = number; // long long

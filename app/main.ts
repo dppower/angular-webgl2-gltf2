@@ -1,4 +1,4 @@
-///<reference path="C:/Program Files (x86)/Microsoft SDKs/TypeScript/1.8/lib.es6.d.ts" />
+///<reference path="C:/Program Files (x86)/Microsoft SDKs/TypeScript/2.0/lib.es6.d.ts" />
 ///<reference path="./webgl2.d.ts" />
 
 import { enableProdMode } from "@angular/core";

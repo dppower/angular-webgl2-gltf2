@@ -1,3 +1,3 @@
-﻿interface KeyboardEvent {
-    code: string
-}
+﻿//interface KeyboardEvent {
+//    code: string
+//}
