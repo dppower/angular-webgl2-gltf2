@@ -1,4 +1,4 @@
-﻿export interface Mesh {
+﻿export interface VertexData {
     name: string;
     vertex_count: number;
     vertex_positions: number[],

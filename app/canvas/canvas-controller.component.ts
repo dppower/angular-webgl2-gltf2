@@ -17,10 +17,10 @@ import { Vec2 } from "../game-engine/vec2";
 @Component({
     selector: "canvas-controller",
     template: `
-    <div #frame id="frame" canvas-frame tabindex="0" 
-        [frameHeight]="frame.offsetHeight" 
-        [frameWidth]="frame.offsetWidth" 
-        [frameTop]="frame.offsetTop" 
+    <div #frame id="frame" tabindex="0" canvas-frame
+        [frameHeight]="frame.offsetHeight"
+        [frameWidth]="frame.offsetWidth"
+        [frameTop]="frame.offsetTop"
         [frameLeft]="frame.offsetLeft"
         (mousemove)="setMouseMovement($event)"
         (mouseup) = "setMouseUp($event)"
@@ -35,7 +35,6 @@ import { Vec2 } from "../game-engine/vec2";
     <skill-bar></skill-bar>
     <skill-log></skill-log>
     </div>
-    <ng-content></ng-content>
     `,
     styles: [`
     #frame {
@@ -45,17 +44,10 @@ import { Vec2 } from "../game-engine/vec2";
         z-index: 5;
         border: 0.25em dashed white;
     }
-    `],
-    providers: [ InputManager ]
+    `]
 })
-export class CanvasController implements AfterViewInit, AfterViewChecked, AfterContentChecked {
+export class CanvasController {
     @ViewChild(CanvasFrame) canvas_frame: CanvasFrame;
-    @ContentChild(MainCanvas) main_canvas: MainCanvas;
-
-    controllerWidth: number;
-    controllerHeight: number;
-    controllerTop: string;
-    controllerLeft: string;
 
     should_display_menu = false;
 
@@ -65,23 +57,19 @@ export class CanvasController implements AfterViewInit, AfterViewChecked, AfterC
         (<HTMLElement>event.target).focus();
     };
 
-    ngAfterViewInit() {
+    updateCanvasDimensions(canvas: MainCanvas) {
+        canvas.canvasHeight = this.canvas_frame.frameHeight;
+        canvas.canvasWidth = this.canvas_frame.frameWidth;
+        canvas.canvasTop = this.canvas_frame.frameTop;
+        canvas.canvasLeft = this.canvas_frame.frameLeft;
     };
 
-    ngAfterContentChecked() {
-        this.main_canvas.canvasHeight = this.controllerHeight;
-        this.main_canvas.canvasWidth = this.controllerWidth;
-        this.main_canvas.canvasTop = this.controllerTop;
-        this.main_canvas.canvasLeft = this.controllerLeft;
-    };
-
-    ngAfterViewChecked() {
-        setTimeout(() => {
-            this.controllerHeight = this.canvas_frame.frameHeight;
-            this.controllerWidth = this.canvas_frame.frameWidth;
-            this.controllerTop = this.canvas_frame.frameTop;
-            this.controllerLeft = this.canvas_frame.frameLeft;
-        }, 0);
+    isCanvasResizing() {
+        if (this.canvas_frame.resizing) {
+            this.canvas_frame.resizing = false;
+            return true;
+        }
+        return false;
     };
 
     onMouseWheel(event: WheelEvent) {

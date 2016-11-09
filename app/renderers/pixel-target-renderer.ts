@@ -5,7 +5,7 @@ import { uniform_color_shader } from "../shaders/shader-program.module";
 import { webgl2 } from "../canvas/webgl2-token";
 import { RenderObject } from "./render-object";
 import { Texture2d } from "../textures/texture-2d";
-import { cubes } from "../vertex-data/cubes";
+//import { cubes } from "../vertex-data/cubes";
 import { MainCamera } from "../game-engine/main-camera";
 import { InputManager } from "../game-engine/input-manager";
 import { Vec2 } from "../game-engine/vec2";
@@ -29,10 +29,10 @@ export class PixelTargetRenderer {
     constructor(
         @Inject(webgl2) private gl: WebGL2RenderingContext,
         @Inject(uniform_color_shader) private shader_program: ShaderProgram,
-        @Inject(cubes) cubes_array: RenderObject[],
+        //@Inject(cubes) cubes_array: RenderObject[],
         private input_manager_: InputManager
     ) {
-        this.target_objects.set(cubes.toString(), cubes_array);
+        //this.target_objects.set(cubes.toString(), cubes_array);
         this.input_manager_.set_mouse_target.subscribe((target) => {
             this.current_target_ = target;
         })
@@ -96,13 +96,13 @@ export class PixelTargetRenderer {
 
         this.shader_program.useProgram();
 
-        this.target_objects.forEach((array: RenderObject[], type: string) => {
-            array[0].bindVertexArray();
-            array.forEach((object) => {
-                object.setUniforms(this.gl, this.shader_program);
-                this.gl.drawArrays(this.gl.TRIANGLES, 0, object.vertex_count);
-            });
-            array[0].unbindVertexArray();
-        });
+        //this.target_objects.forEach((array: RenderObject[], type: string) => {
+        //    array[0].bindVertexArray();
+        //    array.forEach((object) => {
+        //        object.setUniforms(this.gl, this.shader_program);
+        //        this.gl.drawArrays(this.gl.TRIANGLES, 0, object.vertex_count);
+        //    });
+        //    array[0].unbindVertexArray();
+        //});
     };
 };

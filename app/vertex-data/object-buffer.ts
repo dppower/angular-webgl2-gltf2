@@ -3,7 +3,7 @@
 import { webgl2 } from "../canvas/webgl2-token";
 import { ShaderProgram } from "../shaders/shader-program";
 import { AttributeLayout } from "../shaders/attribute-layout";
-import { Mesh } from "./mesh";
+import { VertexData } from "./vertex-data";
 
 @Injectable()
 export class ObjectBuffer {
@@ -21,28 +21,28 @@ export class ObjectBuffer {
 
     constructor(@Inject(webgl2) private gl: WebGL2RenderingContext) { };
 
-    initVertexArray(mesh: Mesh) {
-        this.vertex_count_ = mesh.vertex_count;
-        this.name_ = mesh.name;
+    initVertexArray(vertex_data: VertexData) {
+        this.vertex_count_ = vertex_data.vertex_count;
+        this.name_ = vertex_data.name;
 
         this.vertex_array_object = this.gl.createVertexArray();
         this.gl.bindVertexArray(this.vertex_array_object);
         
-        this.bufferData(this.vertex_position_buffer, mesh.vertex_positions);
+        this.bufferData(this.vertex_position_buffer, vertex_data.vertex_positions);
         this.enableAttribute(AttributeLayout.vertex_position);
         
-        if (mesh.vertex_normals) {
-            this.bufferData(this.vertex_normal_buffer, mesh.vertex_normals);
+        if (vertex_data.vertex_normals) {
+            this.bufferData(this.vertex_normal_buffer, vertex_data.vertex_normals);
             this.enableAttribute(AttributeLayout.vertex_normal);
         }
 
-        if (mesh.vertex_colors) {
-            this.bufferData(this.vertex_color_buffer, mesh.vertex_colors);
+        if (vertex_data.vertex_colors) {
+            this.bufferData(this.vertex_color_buffer, vertex_data.vertex_colors);
             this.enableAttribute(AttributeLayout.vertex_color);
         }
 
-        if (mesh.texture_coordinates) {
-            this.bufferData(this.texture_coordinates_buffer, mesh.texture_coordinates);
+        if (vertex_data.texture_coordinates) {
+            this.bufferData(this.texture_coordinates_buffer, vertex_data.texture_coordinates);
             this.enableAttribute(AttributeLayout.texture_coordinates);
         }
 

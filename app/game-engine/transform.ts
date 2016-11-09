@@ -37,12 +37,15 @@ export class Transform {
 
     constructor(private position_ = new Vec3(), private orientation_ = new Quaternion()) {
         this.transform_.identity();
+ 
         this.inverse_.identity();
         this.rotation_.identity();
         this.translation_.identity();
     };
 
     updateTransform() {
+        Mat4.fromTranslation(this.position_, this.translation_);
+        Mat4.fromQuaternion(this.orientation_, this.rotation_);
         Mat4.multiply(this.translation_, this.rotation_, this.transform_); 
         this.transform_.inverse(this.inverse_);
         this.up_ = this.orientation_.rotate(vec3_up);
@@ -73,21 +76,21 @@ export class Transform {
 
     addTranslation(translation: Vec3) {
         this.position_.copy(this.position_.add(translation));
-        Mat4.fromTranslation(this.position_, this.translation_);
+        //Mat4.fromTranslation(this.position_, this.translation_);
     };
 
     setTranslation(translation: Vec3) {
         this.position_.copy(translation);
-        Mat4.fromTranslation(this.position_, this.translation_);
+        //Mat4.fromTranslation(this.position_, this.translation_);
     };
     
     addRotation(rotation: Quaternion) {
         this.orientation_ = rotation.multiply(this.orientation_);
-        Mat4.fromQuaternion(this.orientation_, this.rotation_); 
+        //Mat4.fromQuaternion(this.orientation_, this.rotation_); 
     };
 
     setOrientation(orientation: Quaternion) {
         this.orientation_ = orientation;
-        Mat4.fromQuaternion(this.orientation_, this.rotation_);
+        //Mat4.fromQuaternion(this.orientation_, this.rotation_);
     };
 };

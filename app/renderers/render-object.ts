@@ -10,33 +10,34 @@ export interface RenderObjectData {
     position: Vec3;
     rotation: Quaternion;
     mesh_id: string;
-    uniform_color: Color
+    uniform_color?: Color
 };
 
 export class RenderObject {
 
     get id() { return this.id_; };
 
-    get vertex_count() { return this.object_buffer_.vertex_count; };
+    //get vertex_count() { return this.object_buffer_.vertex_count; };
 
     get position() { return this.transform_.position; };
+    get orientation() { return this.transform_.orientation; };
 
     //set uniform_color(color: Float32Array) {
     //    this.uniform_color_.set(color);
     //};
 
-    set roughness(value: number) {
-        this.roughness_[0] = (value < 0) ? 0 : ((value > 1.0) ? 1.0 : value);
-    };
+    //set roughness(value: number) {
+    //    this.roughness_[0] = (value < 0) ? 0 : ((value > 1.0) ? 1.0 : value);
+    //};
 
-    set metallic(value: number) {
-        this.metallic_[0] = (value < 0) ? 0 : ((value > 1.0) ? 1.0 : value);
-    };
+    //set metallic(value: number) {
+    //    this.metallic_[0] = (value < 0) ? 0 : ((value > 1.0) ? 1.0 : value);
+    //};
 
     // Uniforms
     get transform_matrix_() { return this.transform_.transform; };
-    private roughness_ = new Float32Array(1);
-    private metallic_ = new Float32Array(1);
+    //private roughness_ = new Float32Array(1);
+    //private metallic_ = new Float32Array(1);
     private uniform_color_ : Color;
     private view_matrix_ = new Mat4();
     private inverse_view_matrix_ = new Mat4();
@@ -46,7 +47,7 @@ export class RenderObject {
     private id_: string;
     private transform_: Transform;
 
-    constructor(object_data: RenderObjectData, private object_buffer_: ObjectBuffer) {
+    constructor(object_data: RenderObjectData, /*private object_buffer_: ObjectBuffer*/) {
         this.uniform_color_ = object_data.uniform_color;
         this.id_ = object_data.name;
         this.transform_ = new Transform(object_data.position, object_data.rotation);
@@ -54,22 +55,24 @@ export class RenderObject {
 
     update(view: Mat4, projection: Mat4) {
         this.transform_.updateTransform();
-        //console.log(`view: ${view.toString()}, projection: ${projection.toString()}.`)
+        
         // Update transformation matrices
         Mat4.multiply(view, this.transform_.transform, this.view_matrix_);
         Mat4.multiply(projection, this.view_matrix_, this.projection_matrix_);
+
+        console.log(`id: ${this.id}, projection: ${this.transform_.transform.toString()}.`)
 
         this.view_matrix_.inverse(this.inverse_view_matrix_);
         this.inverse_view_matrix_.transpose(this.normal_matrix_);
     };
 
-    bindVertexArray() {
-        this.object_buffer_.bindVertexArray();
-    };
+    //bindVertexArray() {
+    //    this.object_buffer_.bindVertexArray();
+    //};
 
-    unbindVertexArray() {
-        this.object_buffer_.unbindVertexArray();
-    };
+    //unbindVertexArray() {
+    //    this.object_buffer_.unbindVertexArray();
+    //};
     
     setUniforms(gl: WebGL2RenderingContext, shader_program: ShaderProgram) {
 
@@ -96,6 +99,5 @@ export class RenderObject {
                 }
             }
         });
-        //console.log("----");
     };
 };

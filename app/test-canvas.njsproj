@@ -6,7 +6,7 @@
     <ProjectGuid>{319459dd-0366-40c8-934f-8440822ec98e}</ProjectGuid>
     <ProjectHome />
     <ProjectView>ShowAllFiles</ProjectView>
-    <StartupFile>..\build\server.js</StartupFile>
+    <StartupFile>..\build\server\server.js</StartupFile>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
@@ -33,6 +33,7 @@
     <TypeScriptCompile Include="canvas\skill-bar.component.ts" />
     <TypeScriptCompile Include="canvas\skill-button.component.ts" />
     <TypeScriptCompile Include="canvas\skill-log.component.ts" />
+    <TypeScriptCompile Include="canvas\webgl-resource-loader.ts" />
     <TypeScriptCompile Include="canvas\webgl2-context.directive.ts" />
     <TypeScriptCompile Include="canvas\webgl2-token.ts" />
     <TypeScriptCompile Include="canvas\webgl2.module.ts" />
@@ -50,7 +51,6 @@
     <TypeScriptCompile Include="game-engine\vec3.ts" />
     <TypeScriptCompile Include="main.ts" />
     <TypeScriptCompile Include="renderers\atmosphere-model.ts" />
-    <TypeScriptCompile Include="renderers\objects\painted-cube.ts" />
     <TypeScriptCompile Include="renderers\pixel-target-renderer.ts" />
     <TypeScriptCompile Include="renderers\render-object.ts" />
     <TypeScriptCompile Include="renderers\scene-renderer.ts" />
@@ -74,22 +74,18 @@
     <TypeScriptCompile Include="shaders\uniform-color.fs.ts" />
     <TypeScriptCompile Include="shaders\uniform-color.vs.ts" />
     <TypeScriptCompile Include="textures\texture-2d.ts" />
-    <TypeScriptCompile Include="vertex-data\cube-mesh.ts" />
     <TypeScriptCompile Include="vertex-data\cubes.ts" />
-    <TypeScriptCompile Include="vertex-data\data\cube.ts" />
-    <TypeScriptCompile Include="vertex-data\mesh.ts" />
     <TypeScriptCompile Include="vertex-data\object-buffer.ts" />
+    <TypeScriptCompile Include="vertex-data\vertex-data.ts" />
     <TypeScriptCompile Include="webgl2.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="canvas\" />
     <Folder Include="game-engine\" />
     <Folder Include="renderers\" />
-    <Folder Include="renderers\objects\" />
     <Folder Include="shaders\" />
     <Folder Include="textures\" />
     <Folder Include="vertex-data\" />
-    <Folder Include="vertex-data\data\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->

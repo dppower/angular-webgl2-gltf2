@@ -1,16 +1,19 @@
-import { Directive, ElementRef, Host, OpaqueToken, HostListener, OnInit, ReflectiveInjector, Injector, Inject } from "@angular/core";
+import { Directive, ElementRef, Host, OpaqueToken, HostListener, OnInit, ReflectiveInjector, Injector, Inject, Provider } from "@angular/core";
 
 import { MainCanvas } from "./main-canvas.component";
 import { shader_providers } from "../shaders/shader-program.module";
 import { MainCamera } from "../game-engine/main-camera";
-import { cube_provider } from "../vertex-data/cubes";
+//import { cube_provider } from "../vertex-data/cubes";
+import { ResourceLoader } from "./webgl-resource-loader"
 import { InputManager } from "../game-engine/input-manager";
 import { SceneRenderer } from "../renderers/scene-renderer";
 import { PixelTargetRenderer } from "../renderers/pixel-target-renderer";
 import { AtmosphereModel } from "../renderers/atmosphere-model";
-import { webgl2 } from "./webgl2-token";
+import { webgl2, buffer_dictionary, scene_provider_token } from "./webgl2-token";
 
 const webgl2_extensions = ["OES_texture_float_linear"]
+
+
 
 @Directive({
     selector: "[canvas-context]"
@@ -27,7 +30,7 @@ export class Webgl2Context {
     private pixel_target_renderer: PixelTargetRenderer;
     private atmosphere_model: AtmosphereModel;
 
-    constructor(private canvas_ref: ElementRef, private input_manager_: InputManager) { };
+    constructor(private canvas_ref: ElementRef, private input_manager_: InputManager, private resource_loader_: ResourceLoader) { };
 
     createContext() {
         let html_canvas = (<HTMLCanvasElement>this.canvas_ref.nativeElement);
@@ -46,15 +49,37 @@ export class Webgl2Context {
 
             let gl_provider = { provide: webgl2, useValue: this.gl };
             let input_provider = { provide: InputManager, useValue: this.input_manager_ };
-            this.context_injector = ReflectiveInjector.resolveAndCreate([gl_provider, input_provider, SceneRenderer, cube_provider, shader_providers, PixelTargetRenderer, AtmosphereModel]);
+            
+            this.resource_loader_.getStaticObjectsList().subscribe((list) => {
+                for (let i in list) {
+                    console.log(list[i].name);
+                }
+            }, (error) => {
+                console.log("get objects list error!");
+                }, () => {
+                    this.resource_loader_.getVertexData(this.render_context).subscribe((provider) => {
+                        console.log(`provider name: ${provider.provide.toString()}, buffer id: ${provider.useValue.name}, vertex_count: ${provider.useValue.vertex_count}.`)
+                        //scene_provider.push(provider);
+                    }, (error) => { }, () => {
+                        let scene_provider: Provider[] = [
+                            { provide: scene_provider_token, useValue: this.resource_loader_.scene_objects },
+                            { provide: buffer_dictionary, useValue: this.resource_loader_.object_buffer_data_ }
+                        ];
+                        this.context_injector = ReflectiveInjector.resolveAndCreate([gl_provider, input_provider, SceneRenderer, scene_provider, shader_providers/*, PixelTargetRenderer, AtmosphereModel*/]);
 
-            this.scene_renderer = this.context_injector.get(SceneRenderer);
-            this.pixel_target_renderer = this.context_injector.get(PixelTargetRenderer);
-            this.atmosphere_model = this.context_injector.get(AtmosphereModel);
+                        this.scene_renderer = this.context_injector.get(SceneRenderer);
+                        this.scene_renderer.start();
+                    });
+                });
+            
 
-            this.scene_renderer.start();
-            this.pixel_target_renderer.createFramebuffer();
-            this.atmosphere_model.preRenderTextures();
+            
+            ////this.pixel_target_renderer = this.context_injector.get(PixelTargetRenderer);
+            ////this.atmosphere_model = this.context_injector.get(AtmosphereModel);
+
+            //this.scene_renderer.start();
+            //this.pixel_target_renderer.createFramebuffer();
+            //this.atmosphere_model.preRenderTextures();
             return true;
         }
         else {
@@ -82,8 +107,10 @@ export class Webgl2Context {
 
     update(dt: number, camera: MainCamera, canvas_width, canvas_height) {
 
-        this.pixel_target_renderer.getMouseTarget(canvas_width, canvas_height);
-        this.scene_renderer.updateScene(dt, camera);
+        //this.pixel_target_renderer.getMouseTarget(canvas_width, canvas_height);
+        if (this.scene_renderer) {
+            this.scene_renderer.updateScene(dt, camera);
+        }
     };
 
     draw(camera: MainCamera) {
@@ -91,7 +118,9 @@ export class Webgl2Context {
         this.gl.viewport(0, 0, this.gl.drawingBufferWidth, this.gl.drawingBufferHeight);
 
         //this.atmosphere_model.renderSky(camera);
-        this.scene_renderer.drawObjects();
+        if (this.scene_renderer) {
+            this.scene_renderer.drawObjects();
+        }
     };
 
     isExtensionEnabled(extension: string): boolean {

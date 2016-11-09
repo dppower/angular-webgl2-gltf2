@@ -1,17 +1,19 @@
 import { Injectable, Inject, OpaqueToken } from "@angular/core";
 
-import { cubes } from "../vertex-data/cubes";
+//import { cubes } from "../vertex-data/cubes";
 import { RenderObject } from "./render-object";
 import { ShaderProgram } from "../shaders/shader-program";
 import { diffuse_uniform_shader, diffuse_oren_nayar_shader, pbr_ggx_shader, per_vertex_color_shader } from "../shaders/shader-program.module";
-import { webgl2 } from "../canvas/webgl2-token";
+import { webgl2, buffer_dictionary, scene_provider_token } from "../canvas/webgl2-token";
 import { MainCamera } from "../game-engine/main-camera";
 import { Vec3, Mat4 } from "../game-engine/transform";
+
+import { ObjectBuffer } from "../vertex-data/object-buffer";
 
 @Injectable()
 export class SceneRenderer {
 
-    private scene_objects = new Map<string, RenderObject[]>();
+    //private scene_objects = new Map<string, RenderObject[]>();
     private light_direction = new Vec3(0.4, 0.4, 1.0);
     private current_direction = new Vec3();
 
@@ -21,10 +23,11 @@ export class SceneRenderer {
         @Inject(diffuse_oren_nayar_shader) private diffuse_oren_nayar_shader_: ShaderProgram,
         @Inject(pbr_ggx_shader) private pbr_ggx_shader_: ShaderProgram,
         @Inject(per_vertex_color_shader) private per_vertex_shader_: ShaderProgram,
-        @Inject(cubes) cubes_array: RenderObject[]
+        @Inject(scene_provider_token) private scene_objects: Map<OpaqueToken, RenderObject[]>,
+        @Inject(buffer_dictionary) private buffers: Map<OpaqueToken, ObjectBuffer>
     ) {
 
-        this.scene_objects.set("cubes", cubes_array);
+        //this.scene_objects.set("cubes", cubes_array);
     };
 
     start() {
@@ -55,31 +58,34 @@ export class SceneRenderer {
         this.current_direction.y = view[1] * this.light_direction.x + view[5] * this.light_direction.y + view[9] * this.light_direction.z;
         this.current_direction.z = view[2] * this.light_direction.x + view[6] * this.light_direction.y + view[10] * this.light_direction.z;
 
-        this.scene_objects.get("cubes").forEach((cube) => {
-            //console.log(`cube name: ${cube.id}, position: ${cube.position.toString()}`);            
-            cube.update(camera.view, camera.projection);
+        this.scene_objects.forEach(object_array => {
+            object_array.forEach(object => {
+                console.log(`object name: ${object.id}, position: ${object.position.toString()}`);
+                object.update(camera.view, camera.projection);
+            });
         });
-        //console.log("----");
     };
 
 
     drawObjects() {
 
-        //this.diffuse_uniform_shader_.useProgram();
+        this.diffuse_uniform_shader_.useProgram();
         //this.diffuse_oren_nayar_shader_.useProgram();
         //this.pbr_ggx_shader_.useProgram();
-        this.per_vertex_shader_.useProgram();
-        //this.gl.uniform3fv(this.diffuse_uniform_shader_.getUniform("light_direction"), updated_direction.array);
+        //this.per_vertex_shader_.useProgram();
+        this.gl.uniform3fv(this.diffuse_uniform_shader_.getUniform("light_direction"), this.current_direction.array);
         //this.gl.uniform3fv(this.diffuse_oren_nayar_shader_.getUniform("light_direction"), updated_direction.array);
         //this.gl.uniform3fv(this.pbr_ggx_shader_.getUniform("light_direction"), this.current_direction.array);
 
-        this.scene_objects.forEach((array: RenderObject[], type: string) => {
-            array[0].bindVertexArray();
+        this.scene_objects.forEach((array: RenderObject[], type: OpaqueToken) => {
+
+            let buffer = this.buffers.get(type);
+            buffer.bindVertexArray();
             array.forEach((object) => {
-                object.setUniforms(this.gl, this.per_vertex_shader_); 
-                this.gl.drawArrays(this.gl.TRIANGLES, 0, object.vertex_count);
+                object.setUniforms(this.gl, this.diffuse_uniform_shader_);
+                this.gl.drawArrays(this.gl.TRIANGLES, 0, buffer.vertex_count);
             });
-            array[0].unbindVertexArray();
+            buffer.unbindVertexArray();
         });
     };
 }

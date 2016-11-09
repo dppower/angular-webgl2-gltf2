@@ -3,6 +3,7 @@ import { Injectable, Inject, forwardRef } from "@angular/core";
 import { MainCanvas } from "../canvas/main-canvas.component";
 import { InputManager, CameraInputs, Actions } from "./input-manager";
 import { Transform, Vec3, vec3_up, vec3_forward, vec3_right, Mat4, Quaternion } from "./transform";
+import { Vec2 } from "./vec2";
 
 @Injectable()
 export class MainCamera {
@@ -51,7 +52,11 @@ export class MainCamera {
     private transform_ = new Transform();
     private target_position_ = new Vec3(0.0, 0.0, 0.0);
 
-    private camera_inputs_: CameraInputs;
+    private camera_inputs_: CameraInputs = {
+        wheel_direction: 0,
+        screen_movement: new Vec2(0.0, 0.0)
+    };
+
     private control_inputs_: Actions;
 
     constructor(private input_manager_: InputManager) {
@@ -80,8 +85,6 @@ export class MainCamera {
         this.transform_.setOrientation(initial_rotation);
 
         this.transform_.updateTransform();
-
-        console.log(`initial camera forward: ${this.transform_.forward}.`);
     };
 
     updateOrthoNormalVectors(view_normal: Vec3) {
@@ -95,6 +98,7 @@ export class MainCamera {
     getInputRotation(input_x: number, input_y: number) {
         let input_rotation: Vec3;
         let scaled_up = this.view_up.scale(input_y);
+        //let scaled_up = vec3_up.scale(input_y);
         let scaled_right = this.view_right.scale(input_x);
         let scaled_xy = scaled_right.add(scaled_up);
 
@@ -182,7 +186,6 @@ export class MainCamera {
         input_y *= length;
 
         if (!!input_x && !!input_y) {
-            console.log(`input x: ${input_x}, input y: ${input_y}.`);
             let input_rotation = this.getInputRotation(input_x, input_y);
 
             let rotation_angle = this.camera_orbit_velocity * dt;

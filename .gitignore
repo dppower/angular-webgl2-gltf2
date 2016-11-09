@@ -1,6 +1,8 @@
-random/
 build/app
 build/textures
+build/render-object-lists
+build/vertex-data
+build/server
 node_modules/
 app/shaders
 obj/

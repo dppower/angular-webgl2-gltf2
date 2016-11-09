@@ -145,18 +145,6 @@ export class InputManager {
 
     update() {
         // Emit events
-        //let pointer_movement: Vec2;
-
-        //if (this.isButtonDown("right")) {
-        //    let movement_delta = this.current_pointer_position_.subtract(this.previous_pointer_position_);
-        //    movement_delta.x = Math.sign(movement_delta.x);
-        //    movement_delta.y = Math.sign(movement_delta.y);
-        //    pointer_movement = movement_delta;
-        //}
-        //else {
-        //    pointer_movement = new Vec2();
-        //}
-
         let pointer_movement = (this.isButtonDown("right")) ? this.current_pointer_position_.subtract(this.previous_pointer_position_) : new Vec2();
         let current_camera_inputs: CameraInputs = { wheel_direction: this.wheel_direction_, screen_movement: pointer_movement };
         this.camera_inputs.next(current_camera_inputs);
