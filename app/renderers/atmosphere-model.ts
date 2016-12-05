@@ -77,9 +77,9 @@ export class AtmosphereModel {
         this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, null);
 
         // Transmittance texture 2d.
-        this.transmittance_texture_ = new Texture2d(transmittance_width, transmittance_height, this.gl);
-        this.transmittance_texture_.setTextureParameters("linear", "linear", false);
-        this.transmittance_texture_.allocateTextureStorage();
+        this.transmittance_texture_ = new Texture2d(this.gl);
+        //this.transmittance_texture_.setTextureParameters("linear", "linear", false);
+        this.transmittance_texture_.allocateTextureStorage(transmittance_width, transmittance_height);
 
         this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, this.transmittance_texture_.id, 0);
 

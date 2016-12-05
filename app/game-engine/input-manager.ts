@@ -38,7 +38,7 @@ export class InputManager {
     private current_key_bindings_ = new Map<string, Actions>();
 
     private wheel_direction_ = 0.0;
-    private previous_pointer_position_ = new Vec2();
+    private pointer_movement_ = new Vec2();
     private current_pointer_position_ = new Vec2();
 
     private previous_key_state_ = new Map<Actions, boolean>();
@@ -62,8 +62,11 @@ export class InputManager {
         this.current_key_bindings_.set("Escape", Actions.display_menu);      
     };
 
-    setPointerCoords(coords: Vec2) {
-        this.current_pointer_position_.copy(coords);
+    setPointerMovement(updated_coords: Vec2) {
+        if (this.isButtonDown("right")) {
+            this.pointer_movement_ = this.pointer_movement_.add(updated_coords.subtract(this.current_pointer_position_));
+        }
+        this.current_pointer_position_.copy(updated_coords);
     };
 
     setWheelDirection(value: number) {
@@ -145,8 +148,8 @@ export class InputManager {
 
     update() {
         // Emit events
-        let pointer_movement = (this.isButtonDown("right")) ? this.current_pointer_position_.subtract(this.previous_pointer_position_) : new Vec2();
-        let current_camera_inputs: CameraInputs = { wheel_direction: this.wheel_direction_, screen_movement: pointer_movement };
+        //let pointer_movement = (this.isButtonDown("right")) ? this.current_pointer_position_.subtract(this.previous_pointer_position_) : new Vec2();
+        let current_camera_inputs: CameraInputs = { wheel_direction: this.wheel_direction_, screen_movement: this.pointer_movement_ };
         this.camera_inputs.next(current_camera_inputs);
 
         if (this.isButtonPressed("left")) {
@@ -185,7 +188,8 @@ export class InputManager {
 
         // Reset inputs
         this.wheel_direction_ = 0.0;
-        this.previous_pointer_position_.copy(this.current_pointer_position_);
+        //this.previous_pointer_position_.copy(this.current_pointer_position_);
+        this.pointer_movement_ = new Vec2();
 
         this.previous_mouse_button_state_["left"] = this.current_mouse_button_state_["left"];
         this.previous_mouse_button_state_["right"] = this.current_mouse_button_state_["right"];

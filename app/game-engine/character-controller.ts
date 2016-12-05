@@ -1,7 +1,7 @@
 ﻿import { Injectable } from "@angular/core";
 
 import { InputManager } from "./input-manager";
-import { RenderObject } from "../renderers/render-object";
+import { RenderObject } from "../render-objects/render-object";
 
 @Injectable()
 export class CharacterController {

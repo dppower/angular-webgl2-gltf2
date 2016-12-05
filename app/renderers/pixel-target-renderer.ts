@@ -3,7 +3,7 @@ import { Injectable, Inject } from "@angular/core";
 import { ShaderProgram } from "../shaders/shader-program";
 import { uniform_color_shader } from "../shaders/shader-program.module";
 import { webgl2 } from "../canvas/webgl2-token";
-import { RenderObject } from "./render-object";
+import { RenderObject } from "../render-objects/render-object";
 import { Texture2d } from "../textures/texture-2d";
 //import { cubes } from "../vertex-data/cubes";
 import { MainCamera } from "../game-engine/main-camera";
@@ -46,9 +46,9 @@ export class PixelTargetRenderer {
 
         this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.framebuffer);
 
-        this.rendered_texture = new Texture2d(this.width_, this.height_, this.gl);
-        this.rendered_texture.setTextureParameters("nearest", "nearest", false);
-        this.rendered_texture.allocateTextureStorage();
+        this.rendered_texture = new Texture2d(this.gl);
+        //this.rendered_texture.setTextureParameters("nearest", "nearest", false);
+        this.rendered_texture.allocateTextureStorage(this.width_, this.height_);
 
         this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, this.rendered_texture.id, 0);
 

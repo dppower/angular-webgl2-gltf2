@@ -112,7 +112,7 @@ export class CanvasController {
     setMouseMovement(event: MouseEvent) {
         event.stopPropagation();
 
-        this.input_manager_.setPointerCoords(new Vec2(event.clientX, event.clientY));
+        this.input_manager_.setPointerMovement(new Vec2(event.clientX, event.clientY));
             
         return false;
     };

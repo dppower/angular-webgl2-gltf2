@@ -5,6 +5,8 @@ import * as http from "http";
 import * as path from "path";
 import * as fs from "fs";
 import * as morgan from "morgan";
+import * as bodyparser from "body-parser";
+//import { Observable } from "rxjs/Rx";
 //var express = require("express");
 //var http = require("http");
 //var path = require("path");
@@ -12,17 +14,21 @@ import * as morgan from "morgan";
 //var fs = require("fs")
 var app = express();
 
-app.use(morgan("dev"));
+
 app.use(express.static(path.join(__dirname, "..")));
 app.use("/scripts", express.static(path.join(__dirname, "..", "..", "node_modules")));
+//app.use("/textures", express.static(path.join(__dirname, "..", "textures")));
+
+app.use(morgan("dev"));
 
 app.set("port", process.env.PORT || 3000);
 
 var static_scene_objects;
-
+const game_data_path = path.join(__dirname, "..", "game-data");
+ 
 app.get("/static-scene-objects", (req, res) => {
     if (!static_scene_objects) {
-        fs.readFile(path.join(__dirname, "..", "render-object-lists", "static-objects.json"), "utf8", (err, data) => {
+        fs.readFile(path.join(__dirname, "..", "game-data", "render-object-lists", "static-objects.json"), "utf8", (err, data) => {
             if (err) throw err;
             static_scene_objects = JSON.parse(data);
             res.json(static_scene_objects);
@@ -33,14 +39,34 @@ app.get("/static-scene-objects", (req, res) => {
     }
 });
 
+app.get("/lights", (req, res) => {
+    let file_path = path.join(__dirname, "..", "game-data", "light-data", "scene-lights.json")
+    fs.readFile(file_path, "utf8", (err, data) => {
+        if (err) throw err;
+        static_scene_objects = JSON.parse(data);
+        res.json(static_scene_objects);
+    });
+});
+
 app.get("/vertex-data/:fileName", (req, res) => {
     let fileName = req.params.fileName;
-    let filePath = path.join(__dirname, "..", "vertex-data", fileName + ".json");
+    let filePath = path.join(__dirname, "..", "game-data", "vertex-data", fileName + ".json");
     console.log(filePath);
     fs.readFile(filePath, "utf8", (err, data) => {
         if (err) throw err;
         var obj = JSON.parse(data);
         res.json(obj);
+    });
+});
+
+app.get("/textures/:fileName", (req, res) => {
+    let fileName = req.params.fileName;
+    let filePath = path.join(__dirname, "..", "game-data", "textures", fileName);
+    console.log(filePath);
+    fs.readFile(filePath, (err, data) => {
+        if (err) throw err;
+        res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
+        res.end(data);
     });
 });
 

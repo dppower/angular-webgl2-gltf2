@@ -43,23 +43,33 @@
     <TypeScriptCompile Include="game-engine\character-controller.ts" />
     <TypeScriptCompile Include="game-engine\color.ts" />
     <TypeScriptCompile Include="game-engine\input-manager.ts" />
+    <TypeScriptCompile Include="game-engine\light-source.ts" />
     <TypeScriptCompile Include="game-engine\main-camera.ts" />
     <TypeScriptCompile Include="game-engine\mat4.ts" />
     <TypeScriptCompile Include="game-engine\quaternion.ts" />
     <TypeScriptCompile Include="game-engine\transform.ts" />
+    <TypeScriptCompile Include="game-engine\float32.ts" />
+    <TypeScriptCompile Include="game-engine\uint32.ts" />
     <TypeScriptCompile Include="game-engine\vec2.ts" />
     <TypeScriptCompile Include="game-engine\vec3.ts" />
     <TypeScriptCompile Include="main.ts" />
+    <TypeScriptCompile Include="render-objects\cubes.ts" />
+    <TypeScriptCompile Include="render-objects\object-buffer.ts" />
+    <TypeScriptCompile Include="render-objects\render-object-data.ts" />
+    <TypeScriptCompile Include="render-objects\render-object.ts" />
+    <TypeScriptCompile Include="render-objects\vertex-data.ts" />
     <TypeScriptCompile Include="renderers\atmosphere-model.ts" />
     <TypeScriptCompile Include="renderers\pixel-target-renderer.ts" />
-    <TypeScriptCompile Include="renderers\render-object.ts" />
     <TypeScriptCompile Include="renderers\scene-renderer.ts" />
     <TypeScriptCompile Include="shaders\attribute-layout.ts" />
+    <TypeScriptCompile Include="shaders\diffuse-base-texture.fs.ts" />
+    <TypeScriptCompile Include="shaders\diffuse-base-texture.vs.ts" />
     <TypeScriptCompile Include="shaders\diffuse-oren-nayar.fs.ts" />
     <TypeScriptCompile Include="shaders\diffuse-uniform-color.fs.ts" />
     <TypeScriptCompile Include="shaders\diffuse-uniform-color.vs.ts" />
     <TypeScriptCompile Include="shaders\inscattering-3d.fs.ts" />
     <TypeScriptCompile Include="shaders\inscattering.fs.ts" />
+    <TypeScriptCompile Include="shaders\irradiance-cubemap.fs.ts" />
     <TypeScriptCompile Include="shaders\pbr-ggx.fs.ts" />
     <TypeScriptCompile Include="shaders\per-vertex-color.fs.ts" />
     <TypeScriptCompile Include="shaders\per-vertex-color.vs.ts" />
@@ -73,19 +83,21 @@
     <TypeScriptCompile Include="shaders\transmittance.fs.ts" />
     <TypeScriptCompile Include="shaders\uniform-color.fs.ts" />
     <TypeScriptCompile Include="shaders\uniform-color.vs.ts" />
+    <TypeScriptCompile Include="textures\image-decoder.ts" />
+    <TypeScriptCompile Include="textures\sampler.ts" />
     <TypeScriptCompile Include="textures\texture-2d.ts" />
-    <TypeScriptCompile Include="vertex-data\cubes.ts" />
-    <TypeScriptCompile Include="vertex-data\object-buffer.ts" />
-    <TypeScriptCompile Include="vertex-data\vertex-data.ts" />
+    <TypeScriptCompile Include="textures\texture-cube.ts" />
+    <TypeScriptCompile Include="textures\texture-loader.ts" />
+    <TypeScriptCompile Include="textures\texture-set.ts" />
     <TypeScriptCompile Include="webgl2.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="canvas\" />
     <Folder Include="game-engine\" />
+    <Folder Include="render-objects\" />
     <Folder Include="renderers\" />
     <Folder Include="shaders\" />
     <Folder Include="textures\" />
-    <Folder Include="vertex-data\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->

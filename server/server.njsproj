@@ -34,8 +34,31 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="game-data\light-data\scene-lights.json" />
+    <Content Include="game-data\render-object-lists\static-objects.json" />
+    <Content Include="game-data\textures\cube-texture.png" />
+    <Content Include="game-data\textures\rough_cube_base_color.jpg" />
+    <Content Include="game-data\textures\rough_cube_metal_rough.jpg" />
+    <Content Include="game-data\textures\skybox-back.png" />
+    <Content Include="game-data\textures\skybox-bottom.png" />
+    <Content Include="game-data\textures\skybox-front.png" />
+    <Content Include="game-data\textures\skybox-left.png" />
+    <Content Include="game-data\textures\skybox-right.png" />
+    <Content Include="game-data\textures\skybox-top.png" />
+    <Content Include="game-data\vertex-data\cube.json" />
+    <Content Include="game-data\vertex-data\cube_low.json" />
+    <Content Include="game-data\vertex-data\plane.json" />
+    <Content Include="game-data\vertex-data\wall.json" />
     <Content Include="tsconfig.json" />
     <TypeScriptCompile Include="server.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="game-data\" />
+    <Folder Include="game-data\light-data\" />
+    <Folder Include="game-data\program-data\" />
+    <Folder Include="game-data\render-object-lists\" />
+    <Folder Include="game-data\textures\" />
+    <Folder Include="game-data\vertex-data\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
