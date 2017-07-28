@@ -1,0 +1,26 @@
+﻿{
+    "uniform-color": {
+        "fragmentShader":"uniform-color.fs",
+        "vertexShader":"uniform-color.vs"
+    },
+    "diffuse-texture": {
+        "fragmentShader":"diffuse-base-texture.fs",
+        "vertexShader":"diffuse-base-texture.vs"
+    },
+    "diffuse-uniform-color": {
+        "fragmentShader":"uniform-color.fs",
+        "vertexShader":"uniform-color.vs"
+    },
+    "diffuse-oren-nayar": {
+        "fragmentShader":"diffuse-oren-nayar.fs",
+        "vertexShader":"diffuse-uniform-color.vs"
+    },
+    "per-vertex-color": {
+        "fragmentShader":"per-vertex-color.fs",
+        "vertexShader":"per-vertex-color.vs"
+    },
+    "pbr-ggx": {
+        "fragmentShader":"pbr-ggx.fs",
+        "vertexShader":"diffuse-base-texture.vs"
+    }
+}

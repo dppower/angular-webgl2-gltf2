@@ -1,0 +1,180 @@
+{
+  "scenes": {
+    "test-scene-1": {
+      "nodes": [
+        "node001",
+        "node002",
+        "node003",
+        "node004",
+        "node005",
+        "node006",
+        "node007"
+      ]
+    }
+  },
+  "scene": "test-scene-1",
+  "meshes": {
+    "plane": {
+      "plane_001": {
+        "size": 6,
+        "attributes": [
+          "POSITION",
+          "NORMAL",
+          "TEXCOORD"
+        ]
+      }
+    },
+    "cube": {
+      "cube_001": {
+        "size": 36,
+        "attributes": [
+          "POSITION",
+          "NORMAL",
+          "TEXCOORD",
+          "COLOR"
+        ]
+      }
+    },
+    "cube_low": {
+      "cube_low_001": {
+        "size": 132,
+        "attributes": [
+          "POSITION",
+          "NORMAL",
+          "TEXCOORD"
+        ]
+      }
+    },
+    "wall": {
+      "wall_001": {
+        "size": 36,
+        "attributes": [
+          "POSITION",
+          "NORMAL",
+          "TEXCOORD"
+        ]
+      }
+    }
+  },
+  "nodes": {
+    "node007": {
+      "rotation": [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      "meshes": [
+        "wall"
+      ],
+      "name": "west-wall",
+      "translation": [
+        -10.0,
+        0.0,
+        -10.0
+      ]
+    },
+    "node001": {
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "meshes": [
+        "cube_low"
+      ],
+      "name": "cube_low",
+      "translation": [
+        0.0,
+        1.0,
+        0.0
+      ]
+    },
+    "node003": {
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "meshes": [
+        "plane"
+      ],
+      "name": "ground",
+      "translation": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "node002": {
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "meshes": [
+        "wall"
+      ],
+      "name": "east-wall",
+      "translation": [
+        10.0,
+        0.0,
+        10.0
+      ]
+    },
+    "node006": {
+      "rotation": [
+        0.0,
+        0.7071068,
+        0.0,
+        -0.7071068
+      ],
+      "meshes": [
+        "wall"
+      ],
+      "name": "south-wall",
+      "translation": [
+        -10.0,
+        0.0,
+        10.0
+      ]
+    },
+    "node004": {
+      "rotation": [
+        0.0,
+        0.7071068,
+        0.0,
+        0.7071068
+      ],
+      "meshes": [
+        "wall"
+      ],
+      "name": "north-wall",
+      "translation": [
+        10.0,
+        0.0,
+        -10.0
+      ]
+    },
+    "node005": {
+      "rotation": [
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "meshes": [
+        "cube"
+      ],
+      "name": "painted-cube",
+      "translation": [
+        4.0,
+        0.5,
+        0.0
+      ]
+    }
+  }
+}

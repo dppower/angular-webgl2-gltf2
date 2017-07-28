@@ -1,15 +1,38 @@
 "use strict";
-var express = require("express");
-var http = require("http");
-var path = require("path");
-var fs = require("fs");
-var morgan = require("morgan");
-//import { Observable } from "rxjs/Rx";
-//var express = require("express");
-//var http = require("http");
-//var path = require("path");
-//var morgan = require("morgan");
-//var fs = require("fs")
+Object.defineProperty(exports, "__esModule", { value: true });
+const express = require("express");
+const http = require("http");
+const path = require("path");
+const fs = require("fs");
+const morgan = require("morgan");
+const glTF_builder_1 = require("./glTF-builder");
+let gltf = new glTF_builder_1.gltfBuilder();
+gltf.initialiseGLTFObject("test-scene-1").subscribe(null, null, () => {
+    let buffer_id = "plane";
+    let array_buffer = gltf.gltf.buffers[buffer_id].buffer;
+    let array = new Float32Array(array_buffer);
+    console.log(`${buffer_id} bytelength: ${array.byteLength}.`);
+    for (let i = 0; i < array.byteLength / 4; i += 8) {
+        console.log(array.subarray(i, i + 8));
+    }
+    ;
+    //fs.writeFile(path.join(__dirname, "gltf.json"), gltf.toJSON(), (err) => { });
+});
+//createSceneObject("test-scene-1").then(result => {
+//    //console.log(result);
+//});
+//for (let id in scene.programs) {
+//    console.log(scene.programs[id].attributes);
+//}
+//fs.readFile("game-data/vertex-data/cube_low.glb", (err, data) => {
+//    if (err) {
+//        console.log(err.message); return;
+//    }
+//    let array = new Float32Array(data.buffer);
+//    array.forEach(val => console.log(val));
+//    console.log(data.byteLength);
+//    console.log(array.length);
+//});
 var app = express();
 app.use(express.static(path.join(__dirname, "..")));
 app.use("/scripts", express.static(path.join(__dirname, "..", "..", "node_modules")));
@@ -17,9 +40,10 @@ app.use("/scripts", express.static(path.join(__dirname, "..", "..", "node_module
 app.use(morgan("dev"));
 app.set("port", process.env.PORT || 3000);
 var static_scene_objects;
-app.get("/static-scene-objects", function (req, res) {
+const game_data_path = path.join(__dirname, "..", "game-data");
+app.get("/static-scene-objects", (req, res) => {
     if (!static_scene_objects) {
-        fs.readFile(path.join(__dirname, "..", "game-data", "render-object-lists", "static-objects.json"), "utf8", function (err, data) {
+        fs.readFile(path.join(__dirname, "..", "game-data", "render-object-lists", "static-objects.json"), "utf8", (err, data) => {
             if (err)
                 throw err;
             static_scene_objects = JSON.parse(data);
@@ -31,29 +55,38 @@ app.get("/static-scene-objects", function (req, res) {
         res.json(static_scene_objects);
     }
 });
-app.get("/vertex-data/:fileName", function (req, res) {
-    var fileName = req.params.fileName;
-    var filePath = path.join(__dirname, "..", "game-data", "vertex-data", fileName + ".json");
+app.get("/lights", (req, res) => {
+    let file_path = path.join(__dirname, "..", "game-data", "light-data", "scene-lights.json");
+    fs.readFile(file_path, "utf8", (err, data) => {
+        if (err)
+            throw err;
+        static_scene_objects = JSON.parse(data);
+        res.json(static_scene_objects);
+    });
+});
+app.get("/vertex-data/:fileName", (req, res) => {
+    let fileName = req.params.fileName;
+    let filePath = path.join(__dirname, "..", "game-data", "vertex-data", fileName + ".json");
     console.log(filePath);
-    fs.readFile(filePath, "utf8", function (err, data) {
+    fs.readFile(filePath, "utf8", (err, data) => {
         if (err)
             throw err;
         var obj = JSON.parse(data);
         res.json(obj);
     });
 });
-app.get("/textures/:fileName", function (req, res) {
-    var fileName = req.params.fileName;
-    var filePath = path.join(__dirname, "..", "game-data", "textures", fileName);
+app.get("/textures/:fileName", (req, res) => {
+    let fileName = req.params.fileName;
+    let filePath = path.join(__dirname, "..", "game-data", "textures", fileName);
     console.log(filePath);
-    fs.readFile(filePath, function (err, data) {
+    fs.readFile(filePath, (err, data) => {
         if (err)
             throw err;
         res.writeHead(200, { 'Content-Type': 'application/octet-stream' });
         res.end(data);
     });
 });
-app.get("*", function (request, response) {
+app.get("*", (request, response) => {
     console.log(__dirname);
     response.sendFile(path.join(__dirname, "..", "index.html"));
 });

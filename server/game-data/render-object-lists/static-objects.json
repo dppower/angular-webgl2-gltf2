@@ -1,9 +1,0 @@
-{
-"1":{"name":"cube_low","position":[0,1.0,0.0],"rotation":[1.0,0.0,0.0,0.0],"mesh_id":"cube_low","texture_name":"rough_cube_","textures":["base_color","metal_rough"]},
-"2":{"name":"east-wall","position":[10.0,0.0,10.0],"rotation":[1.0,0.0,0.0,0.0],"mesh_id":"wall","uniform_color":[1.0,1.0,0.0,1.0]},
-"3":{"name":"ground","position":[0.0,0.0,0.0],"rotation":[1.0,0.0,0.0,0.0],"mesh_id":"plane","uniform_color":[0.8,0.6,0.1,1.0]},
-"4":{"name":"north-wall","position":[10.0,0.0,-10.0],"rotation":[0.7071067690849304,0.0,0.7071067690849304,0.0],"mesh_id":"wall"},
-"5":{"name":"painted-cube","position":[4.0,0.5,0.0],"rotation":[1.0,0.0,0.0,0.0],"mesh_id":"cube","uniform_color":[1.0,0.0,0.0,1.0]},
-"6":{"name":"south-wall","position":[-10.0,0.0,10.0],"rotation":[-0.7071067690849304,0.0,0.7071067690849304,0.0],"mesh_id":"wall","uniform_color":[1.0,0.0,1.0,0.0]},
-"7":{"name":"west-wall","position":[-10.0,0.0,-10.0],"rotation":[-4.371138828673793e-08,0.0,1.0,0.0],"mesh_id":"wall"}
-}

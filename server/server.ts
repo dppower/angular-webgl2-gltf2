@@ -6,12 +6,41 @@ import * as path from "path";
 import * as fs from "fs";
 import * as morgan from "morgan";
 import * as bodyparser from "body-parser";
-//import { Observable } from "rxjs/Rx";
-//var express = require("express");
-//var http = require("http");
-//var path = require("path");
-//var morgan = require("morgan");
-//var fs = require("fs")
+
+import { gltfBuilder } from "./glTF-builder";
+import { glBuffer } from "./gl-objects/gl-buffer";
+
+let gltf = new gltfBuilder();
+gltf.initialiseGLTFObject("test-scene-1").subscribe(
+    null,
+    null,
+    () => {
+        let buffer_id = "plane";
+        let array_buffer = gltf.gltf.buffers[buffer_id].buffer;
+        let array = new Float32Array(array_buffer);
+        console.log(`${buffer_id} bytelength: ${array.byteLength}.`);
+        for (let i = 0; i < array.byteLength / 4; i += 8) {
+            console.log(array.subarray(i, i + 8));
+        };
+        //fs.writeFile(path.join(__dirname, "gltf.json"), gltf.toJSON(), (err) => { });
+    }
+);
+//createSceneObject("test-scene-1").then(result => {
+//    //console.log(result);
+//});
+//for (let id in scene.programs) {
+//    console.log(scene.programs[id].attributes);
+//}
+
+//fs.readFile("game-data/vertex-data/cube_low.glb", (err, data) => {
+//    if (err) {
+//        console.log(err.message); return;
+//    }
+//    let array = new Float32Array(data.buffer);
+//    array.forEach(val => console.log(val));
+//    console.log(data.byteLength);
+//    console.log(array.length);
+//});
 var app = express();
 
 

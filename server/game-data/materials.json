@@ -1,0 +1,13 @@
+﻿{
+    "$schema": "../glTF-schema/glTF.schema.json#",
+
+    "materials": {
+        "diffuse-texture": {
+            "technique": "",
+            "values": {
+
+            }
+        }
+    }
+
+}

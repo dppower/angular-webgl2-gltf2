@@ -5,6 +5,8 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>server</Name>
     <RootNamespace>server</RootNamespace>
+    <NodejsPort>3000</NodejsPort>
+    <ToolsVersionPromptShown>2.1</ToolsVersionPromptShown>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -12,8 +14,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>8881c6b1-2e7c-446c-b8e0-f33d8073520d</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>
-    </StartupFile>
+    <StartupFile>..\build\server\server.js</StartupFile>
     <StartWebBrowser>False</StartWebBrowser>
     <SearchPath>
     </SearchPath>
@@ -25,7 +26,7 @@
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
     <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
     <EnableTypeScript>true</EnableTypeScript>
-    <StartWebBrowser>false</StartWebBrowser>
+    <StartWebBrowser>False</StartWebBrowser>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,31 +35,70 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="game-data\light-data\scene-lights.json" />
-    <Content Include="game-data\render-object-lists\static-objects.json" />
-    <Content Include="game-data\textures\cube-texture.png" />
-    <Content Include="game-data\textures\rough_cube_base_color.jpg" />
-    <Content Include="game-data\textures\rough_cube_metal_rough.jpg" />
-    <Content Include="game-data\textures\skybox-back.png" />
-    <Content Include="game-data\textures\skybox-bottom.png" />
-    <Content Include="game-data\textures\skybox-front.png" />
-    <Content Include="game-data\textures\skybox-left.png" />
-    <Content Include="game-data\textures\skybox-right.png" />
-    <Content Include="game-data\textures\skybox-top.png" />
-    <Content Include="game-data\vertex-data\cube.json" />
-    <Content Include="game-data\vertex-data\cube_low.json" />
-    <Content Include="game-data\vertex-data\plane.json" />
-    <Content Include="game-data\vertex-data\wall.json" />
+    <Content Include="game-data\materials.json" />
+    <Content Include="game-data\programs.json" />
+    <Content Include="game-data\scene-lights.json" />
+    <Content Include="game-data\shader-source.json" />
+    <Content Include="game-data\static-objects.json" />
+    <Content Include="game-data\techniques.json" />
+    <Content Include="game-data\test-scene-1.json" />
+    <Content Include="gltf-schema\accessor.schema.json" />
+    <Content Include="gltf-schema\animation.channel.schema.json" />
+    <Content Include="gltf-schema\animation.channel.target.schema.json" />
+    <Content Include="gltf-schema\animation.parameter.schema.json" />
+    <Content Include="gltf-schema\animation.sampler.schema.json" />
+    <Content Include="gltf-schema\animation.schema.json" />
+    <Content Include="gltf-schema\arrayValues.schema.json" />
+    <Content Include="gltf-schema\asset.profile.schema.json" />
+    <Content Include="gltf-schema\asset.schema.json" />
+    <Content Include="gltf-schema\buffer.schema.json" />
+    <Content Include="gltf-schema\bufferView.schema.json" />
+    <Content Include="gltf-schema\camera.orthographic.schema.json" />
+    <Content Include="gltf-schema\camera.perspective.schema.json" />
+    <Content Include="gltf-schema\camera.schema.json" />
+    <Content Include="gltf-schema\extension.schema.json" />
+    <Content Include="gltf-schema\extras.schema.json" />
+    <Content Include="gltf-schema\glTF.schema.json" />
+    <Content Include="gltf-schema\glTFChildOfRootProperty.schema.json" />
+    <Content Include="gltf-schema\glTFid.schema.json" />
+    <Content Include="gltf-schema\glTFProperty.schema.json" />
+    <Content Include="gltf-schema\image.schema.json" />
+    <Content Include="gltf-schema\material.schema.json" />
+    <Content Include="gltf-schema\material.values.schema.json" />
+    <Content Include="gltf-schema\mesh.primitive.attribute.schema.json" />
+    <Content Include="gltf-schema\mesh.primitive.schema.json" />
+    <Content Include="gltf-schema\mesh.schema.json" />
+    <Content Include="gltf-schema\node.schema.json" />
+    <Content Include="gltf-schema\program.schema.json" />
+    <Content Include="gltf-schema\sampler.schema.json" />
+    <Content Include="gltf-schema\scene.schema.json" />
+    <Content Include="gltf-schema\shader.schema.json" />
+    <Content Include="gltf-schema\skin.schema.json" />
+    <Content Include="gltf-schema\technique.attribute.schema.json" />
+    <Content Include="gltf-schema\technique.parameters.schema.json" />
+    <Content Include="gltf-schema\technique.schema.json" />
+    <Content Include="gltf-schema\technique.states.functions.schema.json" />
+    <Content Include="gltf-schema\technique.states.schema.json" />
+    <Content Include="gltf-schema\technique.uniform.schema.json" />
+    <Content Include="gltf-schema\texture.schema.json" />
     <Content Include="tsconfig.json" />
+    <TypeScriptCompile Include="gl-objects\gl-accessor.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-buffer-view.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-image.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-material.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-sampler.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-texture.ts" />
+    <TypeScriptCompile Include="gltf-builder.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-constants.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-buffer.ts" />
+    <TypeScriptCompile Include="gl-objects\gltf-object.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-mesh.ts" />
     <TypeScriptCompile Include="server.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="game-data\" />
-    <Folder Include="game-data\light-data\" />
-    <Folder Include="game-data\program-data\" />
-    <Folder Include="game-data\render-object-lists\" />
-    <Folder Include="game-data\textures\" />
-    <Folder Include="game-data\vertex-data\" />
+    <Folder Include="gltf-schema\" />
+    <Folder Include="gl-objects\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

@@ -15,7 +15,7 @@ export interface FragmentShaderSource {
     source: string
 }
 
-export function compileShader(gl: WebGLRenderingContext, type: ShaderType, source: string) {
+export function compileShader(gl: WebGL2RenderingContext, type: ShaderType, source: string) {
 
     let shader: WebGLShader;
 

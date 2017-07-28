@@ -1,5 +1,10 @@
 build/app
 build/game-data
+build/server
+textures/
+glTF-schema/
+.png
+.jpg
 node_modules/
 obj/
 bin/
