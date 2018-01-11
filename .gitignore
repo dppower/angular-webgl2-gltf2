@@ -8,6 +8,7 @@ glTF-schema/
 node_modules/
 obj/
 bin/
+glsl
 .vs/
 typings/
 typings.json
