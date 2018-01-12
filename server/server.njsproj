@@ -1,40 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
-  <PropertyGroup>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <Name>server</Name>
-    <RootNamespace>server</RootNamespace>
-    <NodejsPort>3000</NodejsPort>
-    <ToolsVersionPromptShown>2.1</ToolsVersionPromptShown>
-  </PropertyGroup>
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>8881c6b1-2e7c-446c-b8e0-f33d8073520d</ProjectGuid>
-    <ProjectHome>.</ProjectHome>
-    <StartupFile>..\build\server\server.js</StartupFile>
-    <StartWebBrowser>False</StartWebBrowser>
-    <SearchPath>
-    </SearchPath>
+    <ProjectGuid>{4a986871-c4eb-4c71-8b9f-0e1e17e55e22}</ProjectGuid>
+    <ProjectHome />
+    <ProjectView>ShowAllFiles</ProjectView>
+    <StartupFile>server.ts</StartupFile>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
-    <ProjectView>ShowAllFiles</ProjectView>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
     <TypeScriptSourceMap>true</TypeScriptSourceMap>
     <TypeScriptModuleKind>CommonJS</TypeScriptModuleKind>
     <EnableTypeScript>true</EnableTypeScript>
-    <StartWebBrowser>False</StartWebBrowser>
+    <TypeScriptToolsVersion>2.3</TypeScriptToolsVersion>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
+    <Content Include="tsconfig.json" />
+    <TypeScriptCompile Include="gltf-builder.ts" />
+    <TypeScriptCompile Include="server.ts" />
     <Content Include="game-data\materials.json" />
     <Content Include="game-data\programs.json" />
     <Content Include="game-data\scene-lights.json" />
@@ -42,6 +30,16 @@
     <Content Include="game-data\static-objects.json" />
     <Content Include="game-data\techniques.json" />
     <Content Include="game-data\test-scene-1.json" />
+    <TypeScriptCompile Include="gl-objects\gl-accessor.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-buffer-view.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-buffer.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-constants.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-image.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-material.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-mesh.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-sampler.ts" />
+    <TypeScriptCompile Include="gl-objects\gl-texture.ts" />
+    <TypeScriptCompile Include="gl-objects\gltf-object.ts" />
     <Content Include="gltf-schema\accessor.schema.json" />
     <Content Include="gltf-schema\animation.channel.schema.json" />
     <Content Include="gltf-schema\animation.channel.target.schema.json" />
@@ -81,26 +79,20 @@
     <Content Include="gltf-schema\technique.states.schema.json" />
     <Content Include="gltf-schema\technique.uniform.schema.json" />
     <Content Include="gltf-schema\texture.schema.json" />
-    <Content Include="tsconfig.json" />
-    <TypeScriptCompile Include="gl-objects\gl-accessor.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-buffer-view.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-image.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-material.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-sampler.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-texture.ts" />
-    <TypeScriptCompile Include="gltf-builder.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-constants.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-buffer.ts" />
-    <TypeScriptCompile Include="gl-objects\gltf-object.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-mesh.ts" />
-    <TypeScriptCompile Include="server.ts" />
+    <Content Include="obj\Debug\server.njsproj.FileListAbsolute.txt" />
+    <Content Include="obj\Debug\TypeScriptCompilerOutput.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="game-data\" />
-    <Folder Include="gltf-schema\" />
-    <Folder Include="gl-objects\" />
+    <Folder Include="bin" />
+    <Folder Include="game-data" />
+    <Folder Include="game-data\vertex-data" />
+    <Folder Include="gl-objects" />
+    <Folder Include="gltf-schema" />
+    <Folder Include="obj" />
+    <Folder Include="obj\Debug" />
   </ItemGroup>
-  <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
   <ProjectExtensions>
