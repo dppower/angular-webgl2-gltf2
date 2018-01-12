@@ -21,9 +21,6 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
-    <Content Include="input-data\scene-lights.json" />
-    <Content Include="input-data\static-objects.json" />
-    <Content Include="input-data\test-scene.json" />
     <Content Include="tsconfig.json" />
     <TypeScriptCompile Include="gl-constants.ts" />
     <TypeScriptCompile Include="gl-object.ts" />
@@ -43,7 +40,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="gl-objects" />
-    <Folder Include="input-data\" />
     <Folder Include="texture\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />

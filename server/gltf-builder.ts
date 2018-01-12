@@ -33,96 +33,96 @@ interface glTFRoot {
     meshes: { [id: string]: MeshData }
 };
 
-interface Technique {
-    parameters: {},
-    attributes: {},
-    program: string,
-    uniforms: {},
-    states: TechniqueStates,
-    name: string,
-    extensions?: {},
-    extras?: any
-};
+//interface Technique {
+//    parameters: {},
+//    attributes: {},
+//    program: string,
+//    uniforms: {},
+//    states: TechniqueStates,
+//    name: string,
+//    extensions?: {},
+//    extras?: any
+//};
 
-interface TechniqueStates {
-    enable: number[];
-    functions: {};
-    extensions?: {},
-    extras?: any
-}
+//interface TechniqueStates {
+//    enable: number[];
+//    functions: {};
+//    extensions?: {},
+//    extras?: any
+//}
 
-interface StateFunctions {
-    blendColor: number[];
-    blend
-    extensions?: {},
-    extras?: any
-}
+//interface StateFunctions {
+//    blendColor: number[];
+//    blend
+//    extensions?: {},
+//    extras?: any
+//}
 
-interface Program {
-    attributes: string[],
-    fragmentShader: string,
-    vertexShader: string,
-    name: string,
-    extensions?: {},
-    extras?: any
-};
+//interface Program {
+//    attributes: string[],
+//    fragmentShader: string,
+//    vertexShader: string,
+//    name: string,
+//    extensions?: {},
+//    extras?: any
+//};
 
-interface ShaderSource {
-    name: string,
-    type: number,
-    attributes: string[],
-    uniforms: string[],
-    source: string
-};
+//interface ShaderSource {
+//    name: string,
+//    type: number,
+//    attributes: string[],
+//    uniforms: string[],
+//    source: string
+//};
 
-interface Shader {
-    uri: string,
-    type: number,
-    name: string,
-    extensions?: {},
-    extras?: any
-};
+//interface Shader {
+//    uri: string,
+//    type: number,
+//    name: string,
+//    extensions?: {},
+//    extras?: any
+//};
 
-var program_source: { [id: string]: Program } = require("../game-data/programs.json");
-var shader_source: { [id: string]: ShaderSource } = require("../game-data/shader-source.json");
+//var program_source: { [id: string]: Program } = require("../game-data/programs.json");
+//var shader_source: { [id: string]: ShaderSource } = require("../game-data/shader-source.json");
 
-var programs: { [id: string]: Program } = require("../game-data/programs.json");
+//var programs: { [id: string]: Program } = require("../game-data/programs.json");
 
-function createShadersObject() {
-    let shaders: { [shader_id: string]: Shader } = {};
+//function createShadersObject() {
+//    let shaders: { [shader_id: string]: Shader } = {};
 
-    for (let id in shader_source) {
-        let source = shader_source[id];
-        let uri = id + ".glsl";
+//    for (let id in shader_source) {
+//        let source = shader_source[id];
+//        let uri = id + ".glsl";
 
-        let shader: Shader = Object.assign({}, {
-            uri,
-            type: source.type,
-            name: id
-        });
-        shaders[id] = shader;
-    }
-    return shaders;
-};
+//        let shader: Shader = Object.assign({}, {
+//            uri,
+//            type: source.type,
+//            name: id
+//        });
+//        shaders[id] = shader;
+//    }
+//    return shaders;
+//};
 
-function getProgramAttributes(vertex_shader_name: string) {
-    return shader_source[vertex_shader_name].attributes;
-};
+//function getProgramAttributes(vertex_shader_name: string) {
+//    return shader_source[vertex_shader_name].attributes;
+//};
 
-function createProgramsObject() {
-    let programs: { [program_id: string]: Program } = {};
-    for (let id in program_source) {
-        let attribute_array = getProgramAttributes(program_source[id].vertexShader);
+//function createProgramsObject() {
+//    let programs: { [program_id: string]: Program } = {};
+//    for (let id in program_source) {
+//        let attribute_array = getProgramAttributes(program_source[id].vertexShader);
 
-        let program = Object.assign({}, {
-            attributes: attribute_array,
-            name: id
-        }, program_source[id]);
+//        let program = Object.assign({}, {
+//            attributes: attribute_array,
+//            name: id
+//        }, program_source[id]);
         
-        programs[id] = program;
-    }
-    return programs;
-};
+//        programs[id] = program;
+//    }
+//    return programs;
+//};
 
 //export function createSceneObject(scene_name: string) {
 //    let scene_json_file = path.join("game-data", scene_name + ".json");
