@@ -1,20 +1,4 @@
-﻿// Webgl-1 Type aliases
-//type GLenum = number; // unsigned long
-//type GLboolean = boolean; // boolean
-//type GLbitfield = number; // unsigned long
-//type GLbyte = number; // byte
-//type GLshort = number; // short
-//type GLint = number; // long
-//type GLsizei = number; //long
-//type GLintptr = number; // long long
-//type GLsizeiptr = number; // long long
-//type GLubyte = number; // unsigned byte
-//type GLushort = number; // unsigned short
-//type GLuint = number; // unsigned long
-//type GLfloat = number; //float
-//type GLclampf = number; // float
-
-// Webgl-2 only
+﻿// Webgl-2 only
 type GLint64 = number; // long long
 
 interface WebGLQuery extends WebGLObject { }
@@ -330,30 +314,31 @@ interface WebGL2RenderingContext extends WebGLRenderingContext {
     /**
     Attaches a single layer of a texture to a framebuffer.
     */
-    framebufferTextureLayer(target: GLenum, attachment: GLenum, texture: WebGLTexture, level: GLint, layer: GLint);
+    framebufferTextureLayer(target: GLenum, attachment: GLenum, texture: WebGLTexture, level: GLint, layer: GLint): void;
 
 
     /**
     Invalidates the contents of the attachments of a framebufer target.
     */
-    invalidateFramebuffer(target: GLenum, attachments: GLenum[]);
+    invalidateFramebuffer(target: GLenum, attachments: GLenum[]): void;
 
     /**
     Invalidates a portion of the contents of the attachments of a framebufer target.
     */
-    invalidateSubFramebuffer(target: GLenum, attachments: GLenum[], x: GLint, y: GLint, width: GLsizei, height: GLsizei);
+    invalidateSubFramebuffer(target: GLenum, attachments: GLenum[],
+        x: GLint, y: GLint, width: GLsizei, height: GLsizei): void;
 
     /**
     Selects a color buffer to read from e.g. with readPixels.
     @param color_buffer Possible values: NONE, BACK or COLOR_ATTACHMENT{0, 15}.
     */
-    readBuffer(color_buffer: GLenum);
+    readBuffer(color_buffer: GLenum): void;
 
     
     // Renderbuffer objects
 
 
-    getInternalformatParameter(target: GLenum, internal_format: GLenum, parameter_name: GLenum);
+    getInternalformatParameter(target: GLenum, internal_format: GLenum, parameter_name: GLenum): any;
     
     renderbufferStorageMultisample(target: GLenum, samples: GLsizei, internal_format: GLenum, width: GLsizei, height: GLsizei): void;
 
@@ -370,18 +355,20 @@ interface WebGL2RenderingContext extends WebGLRenderingContext {
     texSubImage2D(target: GLenum, level: GLint, offset_x: GLint, offset_y: GLint, width: GLsizei, height: GLsizei, format: GLenum, type: GLenum, offset: GLintptr): void;
     texSubImage2D(target: GLenum, level: GLint, offset_x: GLint, offset_y: GLsizei, format: GLenum, type: GLenum, ...args: any[]): void; // Function implementation that matches all overloads in both interfaces.
 
-    texImage3D(target: GLenum, level: GLint, internal_format: GLint, width: GLsizei, height: GLsizei, depth: GLsizei, border: GLint, format: GLenum, type: GLenum, pixels: ArrayBufferView);
-    texImage3D(target: GLenum, level: GLint, internal_format: GLint, width: GLsizei, height: GLsizei, depth: GLsizei, border: GLint, format: GLenum, type: GLenum, offset: GLintptr);
+    texImage3D(target: GLenum, level: GLint, internal_format: GLint, width: GLsizei, height: GLsizei,
+        depth: GLsizei, border: GLint, format: GLenum, type: GLenum, pixels: ArrayBufferView): void;
+    texImage3D(target: GLenum, level: GLint, internal_format: GLint, width: GLsizei, height: GLsizei,
+        depth: GLsizei, border: GLint, format: GLenum, type: GLenum, offset: GLintptr): void;
 
     texSubImage3D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, zoffset: GLint,
-        width: GLsizei, height: GLsizei, depth: GLsizei, format: GLenum, type: GLenum, pixels: ArrayBufferView);
+        width: GLsizei, height: GLsizei, depth: GLsizei, format: GLenum, type: GLenum, pixels: ArrayBufferView): void;
     texSubImage3D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, zoffset: GLint,
-        format: GLenum, type: GLenum, offset: GLintptr);
+        format: GLenum, type: GLenum, offset: GLintptr): void;
     texSubImage3D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, zoffset: GLint,
-        width: GLsizei, height: GLsizei, depth: GLsizei, format: GLenum, type: GLenum, offset: GLintptr);
+        width: GLsizei, height: GLsizei, depth: GLsizei, format: GLenum, type: GLenum, offset: GLintptr): void;
 
     copyTexSubImage3D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, zoffset: GLint,
-        x: GLint, y: GLint, width: GLsizei, height: GLsizei);
+        x: GLint, y: GLint, width: GLsizei, height: GLsizei): void;
 
     compressedTexImage2D(target: GLenum, level: GLint, internal_format: GLenum, width: GLsizei, height: GLsizei, border: GLint, offset: GLintptr): void;
     compressedTexImage2D(target: GLenum, level: GLint, internal_format: GLenum, width: GLsizei, height: GLsizei, border: GLint, data_or_offset: ArrayBufferView | GLintptr): void; // Function implementation that matches all overloads in both interfaces.
@@ -392,14 +379,14 @@ interface WebGL2RenderingContext extends WebGLRenderingContext {
         width: GLsizei, height: GLsizei, format: GLenum, data_or_offset: ArrayBufferView | GLintptr): void; // Function implementation that matches all overloads in both interfaces.
 
     compressedTexImage3D(target: GLenum, level: GLint, internal_format: GLenum,
-        width: GLsizei, height: GLsizei, depth: GLsizei, border: GLint, data: ArrayBufferView);
+        width: GLsizei, height: GLsizei, depth: GLsizei, border: GLint, data: ArrayBufferView): void;
     compressedTexImage3D(target: GLenum, level: GLint, internal_format: GLenum, width: GLsizei, height: GLsizei,
-        depth: GLsizei, border: GLint, offset: GLintptr)
+        depth: GLsizei, border: GLint, offset: GLintptr): void;
 
     compressedTexSubImage3D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, zoffset: GLint,
-        width: GLsizei, height: GLsizei, depth: GLsizei, format: GLenum, data: ArrayBufferView);
+        width: GLsizei, height: GLsizei, depth: GLsizei, format: GLenum, data: ArrayBufferView): void;
     compressedTexSubImage3D(target: GLenum, level: GLint, xoffset: GLint, yoffset: GLint, zoffset: GLint,
-        width: GLsizei, height: GLsizei, depth: GLsizei, format: GLenum, offset: GLintptr);
+        width: GLsizei, height: GLsizei, depth: GLsizei, format: GLenum, offset: GLintptr): void;
 
     // Programs and shaders
     getFragDataLocation(program: WebGLProgram, name: string): GLint;
@@ -450,7 +437,7 @@ interface WebGL2RenderingContext extends WebGLRenderingContext {
     beginQuery(target: GLenum, query: WebGLQuery): void;
     endQuery(target: GLenum): void;
     getQuery(target: GLenum, pname: GLenum) : WebGLQuery;
-    getQueryParameter(query: WebGLQuery, pname: GLenum);
+    getQueryParameter(query: WebGLQuery, pname: GLenum): GLuint | GLboolean;
 
     /* Sampler Objects */
     createSampler(): WebGLSampler;
@@ -459,7 +446,7 @@ interface WebGL2RenderingContext extends WebGLRenderingContext {
     bindSampler(unit: GLuint, sampler: WebGLSampler): void;
     samplerParameteri(sampler: WebGLSampler, pname: GLenum, param: GLint): void;
     samplerParameterf(sampler: WebGLSampler, pname: GLenum, param: GLfloat): void;
-    getSamplerParameter(sampler: WebGLSampler, pname: GLenum);
+    getSamplerParameter(sampler: WebGLSampler, pname: GLenum): GLenum | GLfloat;
 
     /* Sync objects */
     fenceSync(condition: GLenum, flags: GLbitfield): WebGLSync;
@@ -467,7 +454,7 @@ interface WebGL2RenderingContext extends WebGLRenderingContext {
     deleteSync(sync: WebGLSync): void;
     clientWaitSync(sync: WebGLSync, flags: GLbitfield, timeout: GLint64): GLenum;
     waitSync(sync: WebGLSync, flags: GLbitfield, timeout: GLint64): void;
-    getSyncParameter(sync : WebGLSync, pname: GLenum);
+    getSyncParameter(sync : WebGLSync, pname: GLenum): GLenum | GLbitfield;
 
     /* Transform Feedback */
     createTransformFeedback(): WebGLTransformFeedback;
@@ -484,11 +471,11 @@ interface WebGL2RenderingContext extends WebGLRenderingContext {
     /* Uniform Buffer Objects and Transform Feedback Buffers */
     bindBufferBase(target: GLenum, index: GLuint, buffer: WebGLBuffer): void;
     bindBufferRange(target: GLenum, index: GLuint, buffer: WebGLBuffer, offset: GLintptr, size: GLsizeiptr): void;
-    getIndexedParameter(target: GLenum, index: GLuint);
+    getIndexedParameter(target: GLenum, index: GLuint): any;
     getUniformIndices(program: WebGLProgram, uniformNames: string[]): GLuint[];
-    getActiveUniforms(program: WebGLProgram, uniformIndices: GLuint[], pname: GLenum);
+    getActiveUniforms(program: WebGLProgram, uniformIndices: GLuint[], pname: GLenum): WebGLActiveInfo;
     getUniformBlockIndex(program: WebGLProgram, uniformBlockName: string): GLuint ;
-    getActiveUniformBlockParameter(program: WebGLProgram, uniformBlockIndex: GLuint, pname: GLenum);
+    getActiveUniformBlockParameter(program: WebGLProgram, uniformBlockIndex: GLuint, pname: GLenum): GLuint | GLboolean | Uint32Array;
     getActiveUniformBlockName(program: WebGLProgram, uniformBlockIndex: GLuint): string;
     uniformBlockBinding(program: WebGLProgram, uniformBlockIndex: GLuint, uniformBlockBinding: GLuint): void;
 
@@ -496,7 +483,7 @@ interface WebGL2RenderingContext extends WebGLRenderingContext {
     createVertexArray(): WebGLVertexArrayObject;
     deleteVertexArray(vao: WebGLVertexArrayObject): void;
     isVertexArray(vao: WebGLVertexArrayObject): GLboolean;
-    bindVertexArray(vao: WebGLVertexArrayObject);
+    bindVertexArray(vao: WebGLVertexArrayObject): void;
 }
 
 declare var WebGL2RenderingContext: WebGL2RenderingContext;
