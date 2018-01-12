@@ -1,6 +1,6 @@
 {
   "scenes": {
-    "test-scene-1": {
+    "test-scene": {
       "nodes": [
         "node001",
         "node002",

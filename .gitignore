@@ -6,3 +6,6 @@ obj/
 bin/
 .vs/
 gltf-schema/
+game-data/
+vertex-data/
+images/

@@ -4,7 +4,6 @@ import * as express from "express";
 import * as http from "http";
 import * as path from "path";
 import * as fs from "fs";
-import * as morgan from "morgan";
 import * as bodyparser from "body-parser";
 
 import { gltfBuilder } from "./glTF-builder";
@@ -43,12 +42,13 @@ gltf.initialiseGLTFObject("test-scene-1").subscribe(
 //});
 var app = express();
 
-
 app.use(express.static(path.join(__dirname, "..")));
 app.use("/scripts", express.static(path.join(__dirname, "..", "..", "node_modules")));
+app.use("/data", express.static(path.join(__dirname, "..", "..", "docs", "data")));
+
 //app.use("/textures", express.static(path.join(__dirname, "..", "textures")));
 
-app.use(morgan("dev"));
+//app.use(morgan("dev"));
 
 app.set("port", process.env.PORT || 3000);
 
@@ -104,7 +104,7 @@ app.get("*", (request, response) => {
     response.sendFile(path.join(__dirname, "..", "index.html"));
 });
 
-var server = http.createServer(app);
+const server = http.createServer(app);
 
 server.listen(app.get('port'), function () {
     console.log('Example app is listening on port ' + app.get('port'));

@@ -1,0 +1,79 @@
+﻿export enum gl {
+    // Mesh Primitives draw mode
+    POINTS = 0x0000,
+    LINES = 0x0001,
+    LINE_LOOP = 0x0002,
+    LINE_STRIP = 0x0003,
+    TRIANGLES = 0x0004,
+    TRIANGLE_STRIP = 0x0005,
+    TRIANGLE_FAN = 0x0006,
+
+    // Uniform types
+    FLOAT_VEC2 = 0x8B50, 	 
+    FLOAT_VEC3 = 0x8B51, 	 
+    FLOAT_VEC4 = 0x8B52, 	 
+    INT_VEC2 = 0x8B53, 	 
+    INT_VEC3 = 0x8B54, 	 
+    INT_VEC4 = 0x8B55, 	 
+    BOOL = 0x8B56, 	 
+    BOOL_VEC2 = 0x8B57, 	 
+    BOOL_VEC3 = 0x8B58, 	 
+    BOOL_VEC4 = 0x8B59, 	 
+    FLOAT_MAT2 = 0x8B5A, 	 
+    FLOAT_MAT3 = 0x8B5B, 	 
+    FLOAT_MAT4 = 0x8B5C, 	 
+    SAMPLER_2D = 0x8B5E, 	 
+    SAMPLER_CUBE = 0x8B60,
+
+    // Shaders
+    FRAGMENT_SHADER = 0x8B30,
+    VERTEX_SHADER = 0x8B31,
+
+    // BufferView
+    ARRAY_BUFFER = 0x8892,
+    ELEMENT_ARRAY_BUFFER = 0x8893,
+
+    // Textures: BindTexture Target
+    TEXTURE_2D = 0x0DE1,
+    TEXTURE_CUBE_MAP = 0x8513,
+    TEXTURE_3D = 0x806F,
+    TEXTURE_2D_ARRAY = 0x8C1A,
+
+    TEXTURE_CUBE_MAP_POSITIVE_X = 0x8515,
+    TEXTURE_CUBE_MAP_NEGATIVE_X = 0x8516,
+    TEXTURE_CUBE_MAP_POSITIVE_Y = 0x8517,
+    TEXTURE_CUBE_MAP_NEGATIVE_Y = 0x8518,
+    TEXTURE_CUBE_MAP_POSITIVE_Z = 0x8519,
+    TEXTURE_CUBE_MAP_NEGATIVE_Z = 0x851A,
+
+    // Sampler parameters
+    NEAREST = 0x2600,
+    LINEAR = 0x2601,
+    NEAREST_MIPMAP_NEAREST = 0x2700,
+    LINEAR_MIPMAP_NEAREST = 0x2701,
+    NEAREST_MIPMAP_LINEAR = 0x2702,
+    LINEAR_MIPMAP_LINEAR = 0x2703, 
+    REPEAT = 0x2901, 	 
+    CLAMP_TO_EDGE = 0x812F, 	 
+    MIRRORED_REPEAT = 0x8370,
+
+    // Assessor
+    FLOAT = 0x1406,
+    BYTE = 0x1400,
+    UNSIGNED_BYTE = 0x1401,
+    SHORT = 0x1402,
+    UNSIGNED_SHORT = 0x1403,
+    INT = 0x1404,
+    UNSIGNED_INT = 0x1405,
+
+    SRGB8_ALPHA8 = 0x8C43,
+    ALPHA = 0x1906,
+    RGB = 0x1907,
+    RGBA = 0x1908,
+    LUMINANCE = 0x1909,
+    LUMINANCE_ALPHA = 0x190A,
+
+    UNSIGNED_SHORT_4_4_4_4 = 0x8033,
+    UNSIGNED_SHORT_5_5_5_1 = 0x8034,
+    UNSIGNED_SHORT_5_6_5 = 0x8363
+}
