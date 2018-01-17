@@ -12,7 +12,11 @@ import { Sampler } from "./sampler";
 export type TextureData = ImageData | ImageBitmap | Uint8Array;
 
 @Injectable()
-export class TextureLoader {
+export class MaterialLoader {
+
+    getMaterial() {
+
+    };
 
     // index is from material
     getTexture(index: number) {
@@ -55,27 +59,44 @@ export class TextureLoader {
         this.createSamplers();
     };
 
-    loadAllTextures() {
-        this.clearCache();
-        return rxFrom(this.gltf_data_.images)
+    loadTexturesForMaterial(index: number) {
+        let material = this.gltf_data_.materials[index];
+        let texture_indices = [
+            material.pbrMetallicRoughness.baseColorTexture,
+            material.pbrMetallicRoughness.metallicRoughnessTexture,
+            material.normalTexture, material.occulsionTexture, material.emissiveTexture
+        ].filter(texture => !!texture).map(texture => texture.index);
+
+        return rxFrom(texture_indices)
             .pipe(
-                concatMap((source, index) => {
-                    return this.loadTexture(source, index);
-                }),
-                toArray(),
-                tap(textures => {
-                    this.texture_cache_ = textures;
+                map(texture_index => this.gltf_data_.textures[texture_index].source),
+                concatMap(source => {
+                    return this.loadTexture(source);
                 })
             );
     };
 
-    loadTexture(image_source: glTF.Image, index: number) {
-        //let texture = this.texture_cache_[index];
+    preloadAllTextures() {
+        this.clearCache();
+        return rxFrom(this.gltf_data_.images)
+            .pipe(
+                concatMap((source, index) => {
+                    return this.loadTexture(index);
+                })
+                //toArray(),
+                //tap(textures => {
+                //    this.texture_cache_ = textures;
+                //})
+            );
+    };
 
-        //if (texture) {
-        //    return rxOf(texture);
-        //}
+    loadTexture(index: number) {
+        let texture = this.texture_cache_[index];
+        if (texture) {
+            return rxOf(texture);
+        }
 
+        let image_source = this.gltf_data_.images[index];
         let uri = image_source.uri;
         if (typeof uri === "string") {
             let scheme = uri.split(";");
@@ -87,7 +108,7 @@ export class TextureLoader {
                 let texture = new Texture2d(this.gl_context_);
                 texture.uploadTextureData(array);
 
-                //this.texture_cache_[index] = texture;
+                this.texture_cache_[index] = texture;
 
                 return rxOf(texture);
             }
@@ -103,9 +124,9 @@ export class TextureLoader {
                                 texture.uploadTextureData(image);
                                 return texture;
                             }),
-                            //tap(texture => {
-                            //    this.texture_cache_[index] = texture;
-                            //}),
+                            tap(texture => {
+                                this.texture_cache_[index] = texture;
+                            }),
                             catchError(this.handleError)
                         );
                 }

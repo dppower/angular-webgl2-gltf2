@@ -1,4 +1,4 @@
-﻿import { TextureData } from "./texture-loader"
+﻿import { TextureData } from "./material-loader"
 
 export class Texture2d {
 

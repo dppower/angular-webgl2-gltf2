@@ -28,7 +28,13 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="main.ts" />
-    <TypeScriptCompile Include="render-objects\material.ts" />
+    <TypeScriptCompile Include="materials\image-decoder.ts" />
+    <TypeScriptCompile Include="materials\material-loader.ts" />
+    <TypeScriptCompile Include="materials\material.ts" />
+    <TypeScriptCompile Include="materials\sampler.ts" />
+    <TypeScriptCompile Include="materials\texture-2d.ts" />
+    <TypeScriptCompile Include="materials\texture-cube.ts" />
+    <TypeScriptCompile Include="materials\texture-set.ts" />
     <TypeScriptCompile Include="webgl2.d.ts" />
     <TypeScriptCompile Include="canvas\canvas-controller.component.ts" />
     <TypeScriptCompile Include="canvas\canvas-frame.directive.ts" />
@@ -67,21 +73,15 @@
     <TypeScriptCompile Include="shaders\shader-program.module.ts" />
     <TypeScriptCompile Include="shaders\shader-program.ts" />
     <TypeScriptCompile Include="shaders\shader-source.ts" />
-    <TypeScriptCompile Include="textures\image-decoder.ts" />
-    <TypeScriptCompile Include="textures\sampler.ts" />
-    <TypeScriptCompile Include="textures\texture-2d.ts" />
-    <TypeScriptCompile Include="textures\texture-cube.ts" />
-    <TypeScriptCompile Include="textures\texture-loader.ts" />
-    <TypeScriptCompile Include="textures\texture-set.ts" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="canvas" />
     <Folder Include="game-engine" />
+    <Folder Include="materials\" />
     <Folder Include="webgl2\" />
     <Folder Include="renderers" />
     <Folder Include="render-objects" />
     <Folder Include="shaders" />
-    <Folder Include="textures" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <!--Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them.-->

@@ -2,14 +2,14 @@
 
 import { Sampler } from "./sampler";
 import { ShaderProgram } from "../shaders/shader-program";
-import { TextureLoader } from "./texture-loader"
+//import { TextureLoader } from "./texture-loader"
 import { Texture2d } from "./texture-2d";
 //import { Observable } from "rxjs/Rx";
 
 @Injectable()
 export class TextureSet {
 
-    constructor(private gl: WebGL2RenderingContext, private loader_: TextureLoader, private texture_name: string, private textures: string[]) { };
+    constructor(private gl: WebGL2RenderingContext, /*private loader_: TextureLoader, */private texture_name: string, private textures: string[]) { };
 
     loadTextures() {
         //return Observable.from(this.textures).do(texture_name => { console.log(texture_name);}).mergeMap(texture_id => {

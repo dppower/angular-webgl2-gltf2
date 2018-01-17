@@ -1,7 +1,7 @@
-﻿import { Sampler } from "../textures/sampler";
+﻿import { Sampler } from "./sampler";
 import { ShaderProgram } from "../shaders/shader-program";
-import { TextureLoader } from "../textures/texture-loader"
-import { Texture2d } from "../textures/texture-2d";
+import { MaterialLoader } from "./material-loader"
+import { Texture2d } from "./texture-2d";
 
 export class Material {
 
@@ -17,25 +17,25 @@ export class Material {
     metallic_roughness_sampler: Sampler;
 
     constructor(private gl_context_: WebGL2RenderingContext,
-        private gltf_data_: glTF, private texture_loader_: TextureLoader,
-        private material_index_: number
+        private gltf_data_: glTF//, private material_loader_: MaterialLoader,
+        //private material_index_: number
     ) {
-        this.getTextures();
+        //this.getTextures();
     };
 
-    getTextures() {
-        let data = this.gltf_data_.materials[this.material_index_];
+    getTextures(data: glTF.Material) {
+        //let data = this.gltf_data_.materials[this.material_index_];
         // Base Color
         this.base_color_factor = data.pbrMetallicRoughness.baseColorFactor;
         let index = data.pbrMetallicRoughness.baseColorTexture.index;
-        this.base_color_texture = index && this.texture_loader_.getTexture(index);
-        this.base_color_sampler = this.base_color_texture && this.texture_loader_.getSampler(index);
+        this.base_color_texture = index && this.material_loader_.getTexture(index);
+        this.base_color_sampler = this.base_color_texture && this.material_loader_.getSampler(index);
         // Occlusion Metallic Roughness
         this.metallic_factor = data.pbrMetallicRoughness.metallicFactor;
         this.roughness_factor = data.pbrMetallicRoughness.roughnessFactor;
         index = data.pbrMetallicRoughness.metallicRoughnessTexture.index;
-        this.metallic_roughness_texture = index && this.texture_loader_.getTexture(index);
-        this.metallic_roughness_sampler = this.metallic_roughness_texture && this.texture_loader_.getSampler(index);
+        this.metallic_roughness_texture = index && this.material_loader_.getTexture(index);
+        this.metallic_roughness_sampler = this.metallic_roughness_texture && this.material_loader_.getSampler(index);
     };
 
     bindTextures(program: ShaderProgram) {
