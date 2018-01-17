@@ -14,8 +14,8 @@ const webgl2_extensions = ["OES_texture_float_linear"]
 @Directive({
     selector: "[canvas-context]"
 })
-export class Webgl2Context {   
-    get gl() { return this.render_context; };
+export class Webgl2Service {   
+    get context() { return this.render_context; };
     
     private supported_extensions: string[];
     private enabled_extensions = new Map<string, boolean>();

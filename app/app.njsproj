@@ -24,6 +24,9 @@
     <Content Include="tsconfig.json" />
     <TypeScriptCompile Include="app.component.ts" />
     <TypeScriptCompile Include="app.module.ts" />
+    <TypeScriptCompile Include="gltf.d.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="main.ts" />
     <TypeScriptCompile Include="webgl2.d.ts" />
     <TypeScriptCompile Include="canvas\canvas-controller.component.ts" />
@@ -35,10 +38,10 @@
     <TypeScriptCompile Include="canvas\skill-bar.component.ts" />
     <TypeScriptCompile Include="canvas\skill-button.component.ts" />
     <TypeScriptCompile Include="canvas\skill-log.component.ts" />
-    <TypeScriptCompile Include="canvas\webgl-resource-loader.ts" />
-    <TypeScriptCompile Include="canvas\webgl2-context.directive.ts" />
-    <TypeScriptCompile Include="canvas\webgl2-token.ts" />
-    <TypeScriptCompile Include="canvas\webgl2.module.ts" />
+    <TypeScriptCompile Include="webgl2\webgl-resource-loader.ts" />
+    <TypeScriptCompile Include="webgl2\webgl2-context.directive.ts" />
+    <TypeScriptCompile Include="webgl2\webgl2-token.ts" />
+    <TypeScriptCompile Include="webgl2\webgl2.module.ts" />
     <TypeScriptCompile Include="game-engine\character-controller.ts" />
     <TypeScriptCompile Include="game-engine\color.ts" />
     <TypeScriptCompile Include="game-engine\float32.ts" />
@@ -73,6 +76,7 @@
   <ItemGroup>
     <Folder Include="canvas" />
     <Folder Include="game-engine" />
+    <Folder Include="webgl2\" />
     <Folder Include="renderers" />
     <Folder Include="render-objects" />
     <Folder Include="shaders" />

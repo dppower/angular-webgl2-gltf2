@@ -1,6 +1,34 @@
 ﻿import { glBufferView } from "./gl-buffer-view";
-import { gltfObject } from "./gltf-object";
-import * as gl from "./gl-constants";
+import { glObject } from "../gl-object";
+import { gl } from "../gl-constants";
+
+const MeshAttributes: {[id:string /*in Attribute*/]: { componentType: number, type: AttributeType, stride: number } } = {
+    "POSITION": {
+        componentType: gl.FLOAT,
+        type: "VEC3",
+        stride: 12
+    },
+    "NORMAL": {
+        componentType: gl.FLOAT,
+        type: "VEC3",
+        stride: 12
+    },
+    "TANGENT": {
+        componentType: gl.FLOAT,
+        type: "VEC3",
+        stride: 12
+    },
+    "TEXCOORD_0": {
+        componentType: gl.FLOAT,
+        type: "VEC2",
+        stride: 8
+    },
+    "COLOR": {
+        componentType: gl.UNSIGNED_BYTE,
+        type: "SCALAR",
+        stride: 1
+    }
+};
 
 export type AttributeType = "SCALAR" | "VEC2" | "VEC3" | "VEC4" | "MAT2" | "MAT3" | "MAT4";
 export const AttributeSize: { [type in AttributeType]: number } = {
@@ -16,7 +44,7 @@ export const AttributeSize: { [type in AttributeType]: number } = {
 /**
  * Interface class for gl function, vertexAttribPointer (type, stride, offset).
  */
-export class glAccessor extends gltfObject {
+export class glAccessor extends glObject {
 
     get id() {
         return this.accessor_id;
@@ -25,9 +53,9 @@ export class glAccessor extends gltfObject {
     constructor(
         private accessor_id: string,
         private buffer_view: glBufferView,
-        private byteOffset,
+        private byteOffset: number,
         private byteStride = 0, // a value of 0 signifies tightly packed attribute data
-        private count, // equal to number of distinct vertices in mesh
+        private count: number, // equal to number of distinct vertices in mesh
         private type: AttributeType,       
         private componentType = gl.FLOAT,       
     ) {

@@ -1,5 +1,5 @@
 ﻿import * as fs from "fs";
-import { gltfObject } from "./gltf-object";
+import { glObject } from "../gl-object";
 
 type Material = "base_color" | "metallic" | "roughness" | "normal_map" | "ambient_occulsion" /*| "emission" | "height_map" | "displacement_map"*/;
 const Materials = {
@@ -9,8 +9,8 @@ const Materials = {
         normal_map: "normal_map"
     }
 };
-export class glMaterial extends gltfObject {
-    technique;
+export class glMaterial extends glObject {
+    //technique: number;
     values: {[type in Material]?: string} = {};
 
     constructor(private material_path: string, private primitive_id: string) {
@@ -39,7 +39,7 @@ export class glMaterial extends gltfObject {
 
     toGLTF() {
         return {
-            technique: this.technique,
+            //technique: this.technique,
             values: this.values
         };
     };

@@ -1,0 +1,335 @@
+{
+    "asset": {
+        "version": "2.0"
+    },
+    "scene": 0,
+    "scenes": [
+        {
+            "name": "test-scene",
+            "nodes": [ 0, 1, 2, 3, 4, 5, 6 ]
+        }
+    ],
+    "nodes": [
+        {
+            "name": "painted-cube",
+            "mesh": 0,
+            "camera": 0,
+            "translation": [ 4, 0.5, 0 ],
+            "rotation": [ 0, 0, 0, 1 ]
+        },
+        {
+            "name": "cube_low",
+            "mesh": 1,
+            "translation": [ 0, 1, 0 ],
+            "rotation": [ 0, 0, 0, 1 ]
+        },
+        {
+            "name": "ground",
+            "mesh": 2,
+            "translation": [ 0, 0, 0 ],
+            "rotation": [ 0, 0, 0, 1 ]
+        },
+        {
+            "name": "north-wall",
+            "mesh": 3,
+            "translation": [ 10, 0, -10 ],
+            "rotation": [ 0, 0.7071068, 0, 0.7071068 ]
+        },
+        {
+            "name": "south-wall",
+            "mesh": 3,
+            "translation": [ -10, 0, 10 ],
+            "rotation": [ 0, 0.7071068, 0, -0.7071068 ]
+        },
+        {
+            "name": "east-wall",
+            "mesh": 3,
+            "translation": [ 10, 0, 10 ],
+            "rotation": [ 0, 0, 0, 1 ]
+        },
+        {
+            "name": "west-wall",
+            "mesh": 3,
+            "translation": [ -10, 0, -10 ],
+            "rotation": [ 0, 1, 0, 0 ]
+        }
+    ],
+    "cameras": [
+        {
+            "name": "main-camera",
+            "type": "perspective",
+            "perspective": {
+                "zfar": 100,
+                "znear": 0.1,
+                "yfov": 1.05
+            }
+        }
+
+    ],
+    "meshes": [
+        {
+            "primitives": [
+                {
+                    "attributes": {
+                        "POSITION": 0,
+                        "NORMAL": 1,
+                        "TEXCOORD_0": 2,
+                        "COLOR_0": 3
+                    },
+                    "mode": 4
+                }
+            ],
+            "name": "cube"
+        },
+        {
+            "primitives": [
+                {
+                    "attributes": {
+                        "POSITION": 4,
+                        "NORMAL": 5,
+                        "TEXCOORD_0": 6
+                    },
+                    "material": 0,
+                    "mode": 4
+                }
+            ],
+            "name": "cube_low"
+        },
+        {
+            "primitives": [
+                {
+                    "attributes": {
+                        "POSITION": 7,
+                        "NORMAL": 8,
+                        "TEXCOORD_0": 9
+                    },
+                    "mode": 4
+                }
+            ],
+            "name": "plane"
+        },
+        {
+            "primitives": [
+                {
+                    "attributes": {
+                        "POSITION": 10,
+                        "NORMAL": 11,
+                        "TEXCOORD_0": 12
+                    },
+                    "mode": 4
+                }
+            ],
+            "name": "wall"
+        }
+    ],
+    "materials": [
+        {
+            "name": "cube",
+            "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                    "index": 0
+                },
+                "metallicRoughnessTexture": {
+                    "index": 1
+                }
+            }
+        },
+        {
+            "name": "wall",
+            "pbrMetallicRoughness": {
+                "baseColorTexture": {
+                    "index": 2
+                },
+                "metallicFactor": 1.0,
+                "roughnessFactor": 0.0
+            }
+        }
+    ],
+    "textures": [
+        {
+            "source": 0
+        },
+        {
+            "source": 1
+        },
+        {
+            "source": 2,
+            "name": "wall_base_texture"
+        }
+    ],
+    "images": [
+        {
+            "uri": "./images/rough_cube_base_color.jpg"
+        },
+        {
+            "uri": "./images/rough_cube_metal_rough.jpg"
+        },
+        {
+            "uri": "./images/wall.jpg"
+        }
+    ],
+    "buffers": [
+        {
+            "name": "cube",
+            "uri": "./vertex-data/cube.bin",
+            "byteLength": 1584
+        },
+        {
+            "name": "cube_low",
+            "uri": "./vertex-data/cube_low.bin",
+            "byteLength": 4224
+        },
+        {
+            "name": "plane",
+            "uri": "./vertex-data/plane.bin",
+            "byteLength": 192
+        },
+        {
+            "name": "wall",
+            "uri": "./vertex-data/wall.bin",
+            "byteLength": 1152
+        }
+    ],
+    "bufferViews": [
+        {
+            "name": "cube",
+            "buffer": 0,
+            "byteOffset": 0,
+            "byteStride": 44,
+            "byteLength": 1188,
+            "target": 34962
+        },
+        {
+            "name": "cube_low",
+            "buffer": 1,
+            "byteOffset": 0,
+            "byteStride": 32,
+            "byteLength": 4224,
+            "target": 34962
+        },
+        {
+            "name": "plane",
+            "buffer": 2,
+            "byteOffset": 0,
+            "byteStride": 32,
+            "byteLength": 192,
+            "target": 34962
+        },
+        {
+            "name": "wall",
+            "buffer": 3,
+            "byteOffset": 0,
+            "byteStride": 32,
+            "byteLength": 1152,
+            "target": 34962
+        }
+    ],
+    "accessors": [
+        {
+            "name": "cube_POSITION",
+            "bufferView": 0,
+            "byteOffset": 0,            
+            "componentType": 5126,
+            "count": 36,
+            "type": "VEC3"
+        },
+        {
+            "name": "cube_NORMAL",
+            "bufferView": 0,
+            "byteOffset": 12,
+            "componentType": 5126,
+            "count": 36,
+            "type": "VEC3"
+        },
+        {
+            "name": "cube_TEXCOORD_0",
+            "bufferView": 0,
+            "byteOffset": 24,
+            "componentType": 5126,
+            "count": 36,
+            "type": "VEC2"
+        },
+        {
+            "name": "cube_COLOR_0",
+            "bufferView": 0,
+            "byteOffset": 32,
+            "componentType": 5126,
+            "count": 36,
+            "type": "VEC3"
+        },
+        {
+            "name": "cube_low_POSITION",
+            "bufferView": 1,
+            "byteOffset": 0,
+            "componentType": 5126,
+            "min": [-1, -1, -1],
+            "max":  [1, 1, 1],
+            "count": 132,
+            "type": "VEC3"
+        },
+        {
+            "name": "cube_low_NORMAL",
+            "bufferView": 1,
+            "byteOffset": 12,
+            "componentType": 5126,
+            "count": 132,
+            "type": "VEC3"
+        },
+        {
+            "name": "cube_low_TEXCOORD_0",
+            "bufferView": 1,
+            "byteOffset": 24,
+            "componentType": 5126,
+            "count": 132,
+            "type": "VEC2"
+        },
+        {
+            "name": "plane_POSITION",
+            "bufferView": 2,
+            "byteOffset": 0,
+            "componentType": 5126,
+            "count": 6,
+            "type": "VEC3"
+        },
+        {
+            "name": "plane_NORMAL",
+            "bufferView": 2,
+            "byteOffset": 12,
+            "componentType": 5126,
+            "count": 6,
+            "type": "VEC3"
+        },
+        {
+            "name": "plane_TEXCOORD_0",
+            "bufferView": 2,
+            "byteOffset": 24,
+            "componentType": 5126,
+            "count": 6,
+            "type": "VEC2"
+        },
+        {
+            "name": "wall_POSITION",
+            "bufferView": 3,
+            "byteOffset": 0,
+            "componentType": 5126,
+            "count": 36,
+            "type": "VEC3"
+        },
+        {
+            "name": "wall_NORMAL",
+            "bufferView": 3,
+            "byteOffset": 12,
+            "componentType": 5126,
+            "count": 36,
+            "type": "VEC3"
+        },
+        {
+            "name": "wall_TEXCOORD_0",
+            "bufferView": 3,
+            "byteOffset": 24,
+            "componentType": 5126,
+            "count": 36,
+            "type": "VEC2"
+        }
+    ]
+}

@@ -22,15 +22,18 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
   <ItemGroup>
     <Content Include="tsconfig.json" />
+    <TypeScriptCompile Include="data\gl-accessor.ts" />
+    <TypeScriptCompile Include="data\gl-buffer-view.ts" />
+    <TypeScriptCompile Include="data\gl-buffer.ts" />
+    <TypeScriptCompile Include="geometry\gl-mesh.ts" />
+    <TypeScriptCompile Include="geometry\gl-primitive.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="gl-constants.ts" />
     <TypeScriptCompile Include="gl-object.ts" />
     <TypeScriptCompile Include="gltf-builder.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-accessor.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-buffer-view.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-buffer.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-material.ts" />
-    <TypeScriptCompile Include="gl-objects\gl-mesh.ts" />
     <TypeScriptCompile Include="main.ts" />
+    <TypeScriptCompile Include="material\gl-material.ts" />
     <TypeScriptCompile Include="texture\gl-image.ts" />
     <TypeScriptCompile Include="texture\gl-sampler.ts" />
     <TypeScriptCompile Include="texture\gl-texture.ts" />
@@ -39,7 +42,9 @@
     </TypeScriptCompile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="gl-objects" />
+    <Folder Include="data\" />
+    <Folder Include="material\" />
+    <Folder Include="geometry\" />
     <Folder Include="texture\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />

@@ -1,4 +1,4 @@
-﻿import { TextureLoader } from "./texture-loader"
+﻿import { TextureData } from "./texture-loader"
 
 export class Texture2d {
 
@@ -16,9 +16,9 @@ export class Texture2d {
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.texture_id);
     };
 
-    uploadTextureData(image_data: ImageData) {
+    uploadTextureData(data: TextureData) {
         this.bindTexture();
-        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, image_data);
+        this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, this.gl.RGBA, this.gl.UNSIGNED_BYTE, data);
         this.gl.generateMipmap(this.gl.TEXTURE_2D);
     };
 

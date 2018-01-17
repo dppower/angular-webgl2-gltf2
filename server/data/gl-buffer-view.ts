@@ -1,12 +1,12 @@
-﻿import * as gl from "./gl-constants";
+﻿import { gl } from "../gl-constants";
 import { glBuffer } from "./gl-buffer";
-import { gltfObject } from "./gltf-object";
+import { glObject } from "../gl-object";
 
 /**
  * Provides the interface for gl functions, bindBuffer (target) and
  * bufferData, which uses a Float32Array (offset, length).
  */
-export class glBufferView extends gltfObject {
+export class glBufferView extends glObject {
 
     get id() {
         return this.buffer_view_id;
@@ -34,7 +34,7 @@ export class glBufferView extends gltfObject {
         //let glTF = {};
         /*glTF[this.buffer_view_id] = */
         return {
-            buffer: this.buffer.id,
+            buffer: this.id,
             byteOffset: this.byteOffset,
             byteLength: this.byteLength,
             target: this.target

@@ -1,16 +1,16 @@
 ﻿import * as fs from "fs";
 import * as path from "path";
 import { Observable, Observer } from "rxjs/Rx";
-import { gltfObject } from "./gltf-object";
+//import { gltfObject } from "./gltf-object";
 
 /**
  * The binary data for a mesh primitive.
  */
-export class glBuffer extends gltfObject {
+export class glBuffer /*extends gltfObject*/ {
 
-    get id() {
-        return this.buffer_id;
-    };
+    //get id() {
+    //    return this.buffer_id;
+    //};
 
     get buffer() {
         return this.buffer_.buffer;
@@ -20,8 +20,8 @@ export class glBuffer extends gltfObject {
     type = "arraybuffer";
 
     private buffer_: Buffer;
-    constructor(private buffer_id, private uri: string) {
-        super();
+    constructor(name: string, private uri: string) {
+        //super(name);
     };
 
     loadBinaryData() {
