@@ -1,4 +1,7 @@
-import { Directive, ElementRef, Host, OpaqueToken, HostListener, OnInit, ReflectiveInjector, Injector, Inject, Provider } from "@angular/core";
+import {
+    Directive, ElementRef, Host, OpaqueToken, HostListener,
+    OnInit, ReflectiveInjector, Injector, Inject, Provider
+} from "@angular/core";
 
 import { MainCanvas } from "./main-canvas.component";
 import { MainCamera } from "../game-engine/main-camera";
@@ -11,9 +14,9 @@ import { webgl2 } from "./webgl2-token";
 
 const webgl2_extensions = ["OES_texture_float_linear"]
 
-@Directive({
-    selector: "[canvas-context]"
-})
+//@Directive({
+//    selector: "[canvas-context]"
+//})
 export class Webgl2Service {   
     get context() { return this.render_context; };
     

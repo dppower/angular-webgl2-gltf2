@@ -28,6 +28,7 @@
       <SubType>Code</SubType>
     </TypeScriptCompile>
     <TypeScriptCompile Include="main.ts" />
+    <TypeScriptCompile Include="render-objects\material.ts" />
     <TypeScriptCompile Include="webgl2.d.ts" />
     <TypeScriptCompile Include="canvas\canvas-controller.component.ts" />
     <TypeScriptCompile Include="canvas\canvas-frame.directive.ts" />
@@ -38,8 +39,8 @@
     <TypeScriptCompile Include="canvas\skill-bar.component.ts" />
     <TypeScriptCompile Include="canvas\skill-button.component.ts" />
     <TypeScriptCompile Include="canvas\skill-log.component.ts" />
-    <TypeScriptCompile Include="webgl2\webgl-resource-loader.ts" />
-    <TypeScriptCompile Include="webgl2\webgl2-context.directive.ts" />
+    <TypeScriptCompile Include="webgl2\gltf-loader.ts" />
+    <TypeScriptCompile Include="webgl2\webgl2-service.ts" />
     <TypeScriptCompile Include="webgl2\webgl2-token.ts" />
     <TypeScriptCompile Include="webgl2\webgl2.module.ts" />
     <TypeScriptCompile Include="game-engine\character-controller.ts" />

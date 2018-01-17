@@ -6,7 +6,7 @@
     "scenes": [
         {
             "name": "test-scene",
-            "nodes": [ 0, 1, 2, 3, 4, 5, 6 ]
+            "nodes": [ 1 ]
         }
     ],
     "nodes": [
@@ -128,9 +128,6 @@
             "pbrMetallicRoughness": {
                 "baseColorTexture": {
                     "index": 0
-                },
-                "metallicRoughnessTexture": {
-                    "index": 1
                 }
             }
         },
@@ -159,34 +156,34 @@
     ],
     "images": [
         {
-            "uri": "./images/rough_cube_base_color.jpg"
+            "uri": "images/rough_cube_base_color.jpg"
         },
         {
-            "uri": "./images/rough_cube_metal_rough.jpg"
+            "uri": "images/rough_cube_metal_rough.jpg"
         },
         {
-            "uri": "./images/wall.jpg"
+            "uri": "images/wall.jpg"
         }
     ],
     "buffers": [
         {
             "name": "cube",
-            "uri": "./vertex-data/cube.bin",
+            "uri": "vertex-data/cube.bin",
             "byteLength": 1584
         },
         {
             "name": "cube_low",
-            "uri": "./vertex-data/cube_low.bin",
+            "uri": "vertex-data/cube_low.bin",
             "byteLength": 4224
         },
         {
             "name": "plane",
-            "uri": "./vertex-data/plane.bin",
+            "uri": "vertex-data/plane.bin",
             "byteLength": 192
         },
         {
             "name": "wall",
-            "uri": "./vertex-data/wall.bin",
+            "uri": "vertex-data/wall.bin",
             "byteLength": 1152
         }
     ],
