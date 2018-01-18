@@ -63,21 +63,21 @@ export class RenderObject {
         this.inverse_view_matrix_.transpose(this.normal_matrix);
     };
 
-    beginDraw() {
-        this.vertex_buffer.bindVertexArray();
-    };
+    //beginDraw() {
+    //    this.vertex_buffer.bindVertexArray();
+    //};
 
-    finishDraw() {
-        this.vertex_buffer.unbindVertexArray();
-    };
+    //finishDraw() {
+    //    this.vertex_buffer.unbindVertexArray();
+    //};
 
-    drawObject(program: ShaderProgram) {
-        if (!this.textures_ || this.texture_loaded) {
-            this.setTextureUnits(program);
-            this.setUniforms(program);
-            this.gl.drawArrays(this.gl.TRIANGLES, 0, this.vertex_buffer.vertex_count);
-        }
-    };
+    //drawObject(program: ShaderProgram) {
+    //    if (!this.textures_ || this.texture_loaded) {
+    //        this.setTextureUnits(program);
+    //        this.setUniforms(program);
+    //        this.gl.drawArrays(this.gl.TRIANGLES, 0, this.vertex_buffer.vertex_count);
+    //    }
+    //};
 
     setTextureUnits(shader_program: ShaderProgram) {
         if (this.textures_ && this.texture_loaded) {

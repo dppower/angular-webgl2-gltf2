@@ -24,6 +24,14 @@
     <Content Include="tsconfig.json" />
     <TypeScriptCompile Include="app.component.ts" />
     <TypeScriptCompile Include="app.module.ts" />
+    <TypeScriptCompile Include="buffers\binary-loader.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="geometry\cubes.ts" />
+    <TypeScriptCompile Include="geometry\primitive.ts" />
+    <TypeScriptCompile Include="geometry\render-object-data.ts" />
+    <TypeScriptCompile Include="geometry\render-object.ts" />
+    <TypeScriptCompile Include="geometry\vertex-data.ts" />
     <TypeScriptCompile Include="gltf.d.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
@@ -61,11 +69,6 @@
     <TypeScriptCompile Include="game-engine\uint32.ts" />
     <TypeScriptCompile Include="game-engine\vec2.ts" />
     <TypeScriptCompile Include="game-engine\vec3.ts" />
-    <TypeScriptCompile Include="render-objects\cubes.ts" />
-    <TypeScriptCompile Include="render-objects\object-buffer.ts" />
-    <TypeScriptCompile Include="render-objects\render-object-data.ts" />
-    <TypeScriptCompile Include="render-objects\render-object.ts" />
-    <TypeScriptCompile Include="render-objects\vertex-data.ts" />
     <TypeScriptCompile Include="renderers\atmosphere-model.ts" />
     <TypeScriptCompile Include="renderers\pixel-target-renderer.ts" />
     <TypeScriptCompile Include="renderers\scene-renderer.ts" />
@@ -77,10 +80,11 @@
   <ItemGroup>
     <Folder Include="canvas" />
     <Folder Include="game-engine" />
+    <Folder Include="geometry\" />
     <Folder Include="materials\" />
+    <Folder Include="buffers\" />
     <Folder Include="webgl2\" />
     <Folder Include="renderers" />
-    <Folder Include="render-objects" />
     <Folder Include="shaders" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
