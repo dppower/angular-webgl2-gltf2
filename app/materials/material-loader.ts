@@ -3,8 +3,9 @@ import { HttpClient } from "@angular/common/http";
 
 import { of as rxOf } from "rxjs/observable/of";
 import { from as rxFrom } from "rxjs/observable/from";
-import { concatMap, catchError, tap, map, toArray } from "rxjs/operators";
+import { concatMap, catchError, tap, map, toArray, take } from "rxjs/operators";
 
+import { Material } from "./material";
 import { Texture2d } from "./texture-2d";
 import { Sampler } from "./sampler";
 //import { ImageDecoder } from "./image-decoder";
@@ -14,35 +15,41 @@ export type TextureData = ImageData | ImageBitmap | Uint8Array;
 @Injectable()
 export class MaterialLoader {
 
-    getMaterial() {
-
+    getMaterial(material_index: number) {
+        return this.loadTexturesForMaterial(material_index)
+            .pipe(
+                take(1),
+                map(textures => {
+                    let material = new Material(this.gl_context_, this.gltf_data_, this);
+                    material.setTextures(material_index);
+                    return material;
+                })
+            );
     };
 
     // index is from material
-    getTexture(index: number) {
-        let texture = this.gltf_data_.textures[index];
+    getTexture(texture_index: number) {
+        let texture = this.gltf_data_.textures[texture_index];
         if (texture) {
-            let source = texture.source;
-            return this.texture_cache_[source];
+            let source_index = texture.source;            
+            return this.texture_cache_[source_index];
         }
         return this.default_texture_;
     };
 
-    getSampler(index: number) {
-        let texture = this.gltf_data_.textures[index];
+    getSampler(texture_index: number) {
+        let texture = this.gltf_data_.textures[texture_index];
         if (texture) {
             let sampler_index = texture.sampler;
-            return this.samplers_[sampler_index];
+            if (sampler_index) {
+                return this.samplers_[sampler_index];
+            }
         }
         return this.default_sampler_;
     };
 
     //readonly date_uri_regex = /^data:([^;]*)(;base64)?,(.*)$/;
     readonly relative_path_regex = /^([^.]*)(?:\.)(?:jpeg|png)/;
-
-    //private texture_data_: glTF.Texture[] = [];
-    //private image_data_: glTF.Image[] = [];
-    //private sampler_data_: glTF.Sampler[] = [];
 
     private samplers_: Sampler[];
     private default_sampler_: Sampler;
@@ -59,11 +66,11 @@ export class MaterialLoader {
         this.createSamplers();
     };
 
-    loadTexturesForMaterial(index: number) {
-        let material = this.gltf_data_.materials[index];
+    loadTexturesForMaterial(material_index: number) {
+        let material = this.gltf_data_.materials[material_index];
         let texture_indices = [
-            material.pbrMetallicRoughness.baseColorTexture,
-            material.pbrMetallicRoughness.metallicRoughnessTexture,
+            material.pbrMetallicRoughness && material.pbrMetallicRoughness.baseColorTexture,
+            material.pbrMetallicRoughness && material.pbrMetallicRoughness.metallicRoughnessTexture,
             material.normalTexture, material.occulsionTexture, material.emissiveTexture
         ].filter(texture => !!texture).map(texture => texture.index);
 
@@ -72,7 +79,8 @@ export class MaterialLoader {
                 map(texture_index => this.gltf_data_.textures[texture_index].source),
                 concatMap(source => {
                     return this.loadTexture(source);
-                })
+                }),
+                toArray()
             );
     };
 

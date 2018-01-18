@@ -34,7 +34,7 @@
     }
 
     interface pbrMetallicRoughness {
-        baseColorFactor: number[]; // default [1, 1, 1, 1]
+        baseColorFactor?: number[]; // default [1, 1, 1, 1]
         baseColorTexture?: TextureInfo;
         metallicFactor?: number; // 0 is dielectric, 1 is metal, default: 1
         roughnessFactor?: number; // 0 is smooth, 1 is rough, default: 1
@@ -42,7 +42,7 @@
     }
 
     interface Material {
-        pbrMetallicRoughness: pbrMetallicRoughness;
+        pbrMetallicRoughness?: pbrMetallicRoughness;
         normalTexture?: NormalTextureInfo;
         occulsionTexture?: OcclusionTextureInfo; // Read from R channel
         emissiveTexture?: TextureInfo;

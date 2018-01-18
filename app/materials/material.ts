@@ -6,36 +6,39 @@ import { Texture2d } from "./texture-2d";
 export class Material {
 
     // Base Color
-    base_color_factor = [1, 1, 1, 1];
+    base_color_factor: number[];
     base_color_texture: Texture2d;
     base_color_sampler: Sampler;
 
     // Occlusion (R) Metal (B) Roughness (G)
-    metallic_factor = 1;
-    roughness_factor = 1;
+    metallic_factor: number;
+    roughness_factor: number;
     metallic_roughness_texture: Texture2d;
     metallic_roughness_sampler: Sampler;
 
     constructor(private gl_context_: WebGL2RenderingContext,
-        private gltf_data_: glTF//, private material_loader_: MaterialLoader,
-        //private material_index_: number
-    ) {
-        //this.getTextures();
-    };
+        private gltf_data_: glTF, private material_loader_: MaterialLoader
+    ) { };
 
-    getTextures(data: glTF.Material) {
-        //let data = this.gltf_data_.materials[this.material_index_];
-        // Base Color
-        this.base_color_factor = data.pbrMetallicRoughness.baseColorFactor;
-        let index = data.pbrMetallicRoughness.baseColorTexture.index;
-        this.base_color_texture = index && this.material_loader_.getTexture(index);
-        this.base_color_sampler = this.base_color_texture && this.material_loader_.getSampler(index);
-        // Occlusion Metallic Roughness
-        this.metallic_factor = data.pbrMetallicRoughness.metallicFactor;
-        this.roughness_factor = data.pbrMetallicRoughness.roughnessFactor;
-        index = data.pbrMetallicRoughness.metallicRoughnessTexture.index;
-        this.metallic_roughness_texture = index && this.material_loader_.getTexture(index);
-        this.metallic_roughness_sampler = this.metallic_roughness_texture && this.material_loader_.getSampler(index);
+    setTextures(material_index: number) {
+        let data = this.gltf_data_.materials[material_index];
+        if (data.pbrMetallicRoughness) {
+            // Base Color
+            this.base_color_factor = data.pbrMetallicRoughness.baseColorFactor || [1, 1, 1, 1];
+            if (data.pbrMetallicRoughness.baseColorTexture) {
+                let texture_index = data.pbrMetallicRoughness.baseColorTexture.index;
+                this.base_color_texture = this.material_loader_.getTexture(texture_index);
+                this.base_color_sampler = this.material_loader_.getSampler(texture_index);
+            }
+            // Occlusion Metallic Roughness
+            this.metallic_factor = data.pbrMetallicRoughness.metallicFactor || 1;
+            this.roughness_factor = data.pbrMetallicRoughness.roughnessFactor || 1;
+            if (data.pbrMetallicRoughness.metallicRoughnessTexture) {
+                let texture_index = data.pbrMetallicRoughness.metallicRoughnessTexture.index;
+                this.metallic_roughness_texture = this.material_loader_.getTexture(texture_index);
+                this.metallic_roughness_sampler = this.material_loader_.getSampler(texture_index);
+            }
+        }
     };
 
     bindTextures(program: ShaderProgram) {
