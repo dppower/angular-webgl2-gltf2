@@ -1,4 +1,4 @@
-import {Vec3} from "./vec3";
+import { Vec3 } from "./vec3";
 
 export class Quaternion {
 
@@ -19,7 +19,7 @@ export class Quaternion {
         this.v_.copy(v);
     };
 
-    constructor(w = 1.0, x = 0.0, y = 0.0, z = 0.0) {
+    constructor(x = 0.0, y = 0.0, z = 0.0, w = 1.0) {
         this.v_ = new Vec3(x, y, z);
         this.w_ = w;
     };
@@ -38,15 +38,15 @@ export class Quaternion {
     };
 
     /**
-     * Create a new quaternion from an array, [w, x, y, z]
+     * Create a new quaternion from an array, [x, y, z, w]
      * @param array
      */
     static fromArray(array: number[]) {
-        let q = new Quaternion();
-        q.w = array[0] || 1.0;
-        q.v.x = array[1] || 0.0;
-        q.v.y = array[2] || 0.0;
-        q.v.z = array[3] || 0.0;
+        let q = new Quaternion();       
+        q.v.x = array[0] || 0.0;
+        q.v.y = array[1] || 0.0;
+        q.v.z = array[2] || 0.0;
+        q.w = array[3] || 1.0;
         return q;
     };
 
@@ -68,7 +68,7 @@ export class Quaternion {
         else {
             p = u.cross(v);
         }
-        let q = new Quaternion(w, p.x, p.y, p.z);
+        let q = new Quaternion(p.x, p.y, p.z, w);
         q.normalise();
         return q;
     };
@@ -76,7 +76,7 @@ export class Quaternion {
     conjugate() {
         let c = new Quaternion();
         c.v = this.v_.scale(-1.0);
-        c.w = this.w_
+        c.w = this.w_;
         return c;
     };
 

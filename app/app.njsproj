@@ -24,10 +24,10 @@
     <Content Include="tsconfig.json" />
     <TypeScriptCompile Include="app.component.ts" />
     <TypeScriptCompile Include="app.module.ts" />
-    <TypeScriptCompile Include="buffers\binary-loader.ts">
+    <TypeScriptCompile Include="geometry\cubes.ts" />
+    <TypeScriptCompile Include="geometry\mesh.ts">
       <SubType>Code</SubType>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="geometry\cubes.ts" />
     <TypeScriptCompile Include="geometry\primitive.ts" />
     <TypeScriptCompile Include="geometry\render-object-data.ts" />
     <TypeScriptCompile Include="geometry\render-object.ts" />
@@ -53,9 +53,13 @@
     <TypeScriptCompile Include="canvas\skill-bar.component.ts" />
     <TypeScriptCompile Include="canvas\skill-button.component.ts" />
     <TypeScriptCompile Include="canvas\skill-log.component.ts" />
+    <TypeScriptCompile Include="webgl2\buffer-loader.ts" />
     <TypeScriptCompile Include="webgl2\gltf-loader.ts" />
-    <TypeScriptCompile Include="webgl2\webgl2-service.ts" />
+    <TypeScriptCompile Include="webgl2\scene-loader.ts">
+      <SubType>Code</SubType>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="webgl2\webgl2-token.ts" />
+    <TypeScriptCompile Include="webgl2\webgl2.directive.ts" />
     <TypeScriptCompile Include="webgl2\webgl2.module.ts" />
     <TypeScriptCompile Include="game-engine\character-controller.ts" />
     <TypeScriptCompile Include="game-engine\color.ts" />
@@ -82,7 +86,6 @@
     <Folder Include="game-engine" />
     <Folder Include="geometry\" />
     <Folder Include="materials\" />
-    <Folder Include="buffers\" />
     <Folder Include="webgl2\" />
     <Folder Include="renderers" />
     <Folder Include="shaders" />

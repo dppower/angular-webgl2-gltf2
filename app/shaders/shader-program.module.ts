@@ -1,8 +1,8 @@
-﻿import { NgModule, Inject, Injectable, Injector, OpaqueToken } from "@angular/core";
+﻿//import { NgModule, Inject, Injectable, Injector, OpaqueToken } from "@angular/core";
 
-import { webgl2 } from "../canvas/webgl2-token";
-import { VertexShaderSource, FragmentShaderSource } from "./shader-source";
-import { ShaderProgram } from "./shader-program";
+//import { webgl2 } from "../canvas/webgl2-token";
+//import { VertexShaderSource, FragmentShaderSource } from "./shader-source";
+//import { ShaderProgram } from "./shader-program";
 
 //import diffuse_uniform_color_fs from "./diffuse-uniform-color.fs";
 //import diffuse_uniform_color_vs from "./diffuse-uniform-color.vs";
@@ -23,24 +23,24 @@ import { ShaderProgram } from "./shader-program";
 //import per_vertex_vs from "./per-vertex-color.vs";
 
 
-const shader_program_factory = (vertex_source: VertexShaderSource, fragment_source: FragmentShaderSource) => {
-    return (injector: Injector) => {
-        let gl = injector.get(webgl2);
-        let shader_program = new ShaderProgram(gl, vertex_source, fragment_source);
-        return shader_program;
-    }
-};
+//const shader_program_factory = (vertex_source: VertexShaderSource, fragment_source: FragmentShaderSource) => {
+//    return (injector: Injector) => {
+//        let gl = injector.get(webgl2);
+//        let shader_program = new ShaderProgram(gl, vertex_source, fragment_source);
+//        return shader_program;
+//    }
+//};
 
-export const diffuse_uniform_shader = new OpaqueToken("diffuse-uniform-color-shader");
-export const diffuse_texture_shader = new OpaqueToken("diffuse-texture-shader");
-export const diffuse_oren_nayar_shader = new OpaqueToken("diffuse-oren-nayar-shader");
-export const uniform_color_shader = new OpaqueToken("uniform-color-shader");
-export const pbr_ggx_shader = new OpaqueToken("pbr-ggx-shader");
-export const transmittance_shader = new OpaqueToken("transmittance-shader");
-export const inscatter_shader = new OpaqueToken("inscatter-shader");
-export const inscatter_3d_shader = new OpaqueToken("inscatter-3d-shader");
-export const skyquad_shader = new OpaqueToken("skyquad-shader");
-export const per_vertex_color_shader = new OpaqueToken("per-vertex-color-shader");
+//export const diffuse_uniform_shader = new OpaqueToken("diffuse-uniform-color-shader");
+//export const diffuse_texture_shader = new OpaqueToken("diffuse-texture-shader");
+//export const diffuse_oren_nayar_shader = new OpaqueToken("diffuse-oren-nayar-shader");
+//export const uniform_color_shader = new OpaqueToken("uniform-color-shader");
+//export const pbr_ggx_shader = new OpaqueToken("pbr-ggx-shader");
+//export const transmittance_shader = new OpaqueToken("transmittance-shader");
+//export const inscatter_shader = new OpaqueToken("inscatter-shader");
+//export const inscatter_3d_shader = new OpaqueToken("inscatter-3d-shader");
+//export const skyquad_shader = new OpaqueToken("skyquad-shader");
+//export const per_vertex_color_shader = new OpaqueToken("per-vertex-color-shader");
 
 //export const shader_providers = [
 //    { provide: uniform_color_shader, useFactory: shader_program_factory(uniform_color_vs, uniform_color_fs), deps: [Injector, webgl2] },

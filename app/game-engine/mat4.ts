@@ -1,5 +1,5 @@
-import {Vec3} from "./vec3";
-import {Quaternion} from "./quaternion";
+import { Vec3 } from "./vec3";
+import { Quaternion } from "./quaternion";
 
 export class Mat4 {
 
@@ -30,6 +30,10 @@ export class Mat4 {
         this.matrix_[15] = 1.0;
     };
 
+    setArray(value: ArrayLike<number>) {
+        this.matrix_.set(value);
+    };
+
     static multiply(a: Mat4, b: Mat4, out: Mat4) {
         
         let a11 = a.array[0], a21 = a.array[1], a31 = a.array[2], a41 = a.array[3],
@@ -46,6 +50,11 @@ export class Mat4 {
         }
     };
 
+    /**
+     * Creates Rotation matrix from identity Mat4
+     * @param q
+     * @param out
+     */
     static fromQuaternion(q: Quaternion, out: Mat4) {
         q.normalise();
         const n = 2;
@@ -62,7 +71,7 @@ export class Mat4 {
         out.array[0] = 1.0 - (yy + zz);
         out.array[1] = xy + wz;
         out.array[2] = xz - wy;
-
+        
         out.array[4] = xy - wz;
         out.array[5] = 1.0 - (xx + zz);
         out.array[6] = yz + wx;
@@ -71,16 +80,33 @@ export class Mat4 {
         out.array[9] = yz - wx;
         out.array[10] = 1.0 - (xx + yy);
 
-        out.array[3] = 0;
-        out.array[7] = 0;
-        out.array[11] = 0;
-        out.array[15] = 1;
+        //out.array[3] = 0;
+        //out.array[7] = 0;
+        //out.array[11] = 0;
+        //out.array[15] = 1;
     };
 
+    /**
+     * Creates translation matrix from identity Mat4
+     * @param translation
+     * @param out
+     */
     static fromTranslation(translation: Vec3, out: Mat4) {
         out.array[12] = translation.x;
         out.array[13] = translation.y;
         out.array[14] = translation.z;
+    };
+
+    /**
+     * Creates scale matrix from zero-filled Mat4
+     * @param scale
+     * @param out
+     */
+    static fromScale(scale: Vec3, out: Mat4) {
+        out.array[0] = scale.x;
+        out.array[5] = scale.y;
+        out.array[10] = scale.z;
+        out.array[15] = 1;
     };
 
     transpose(out: Mat4) {

@@ -1,7 +1,7 @@
-﻿import { OpaqueToken } from "@angular/core";
+﻿import { InjectionToken } from "@angular/core";
 
-export const webgl2 = new OpaqueToken("webgl2");
+export const WEBGL2 = new InjectionToken<WebGL2RenderingContext>("webgl2");
 
-export const static_objects = new OpaqueToken("static-objects");
-export const scene_provider_token = new OpaqueToken("scene-objects");
-export const buffer_dictionary = new OpaqueToken("buffer-dictionary");
+//export const static_objects = new InjectionToken("static-objects");
+//export const scene_provider_token = new InjectionToken("scene-objects");
+//export const buffer_dictionary = new InjectionToken("buffer-dictionary");

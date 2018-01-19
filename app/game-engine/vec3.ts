@@ -1,4 +1,3 @@
-
 export class Vec3 {
 
     get x() { return this.vector_[0]; };

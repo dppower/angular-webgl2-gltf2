@@ -1,23 +1,21 @@
-import {
-    Directive, ElementRef, Host, OpaqueToken, HostListener,
-    OnInit, ReflectiveInjector, Injector, Inject, Provider
-} from "@angular/core";
+import { Directive, ElementRef, HostListener, Injector, StaticProvider } from "@angular/core";
 
-import { MainCanvas } from "./main-canvas.component";
+import { MainCanvas } from "../canvas/main-canvas.component";
 import { MainCamera } from "../game-engine/main-camera";
-import { ResourceLoader } from "./webgl-resource-loader";
+//import { ResourceLoader } from "./webgl-resource-loader";
 import { InputManager } from "../game-engine/input-manager";
 import { SceneRenderer } from "../renderers/scene-renderer";
-import { PixelTargetRenderer } from "../renderers/pixel-target-renderer";
-import { AtmosphereModel } from "../renderers/atmosphere-model";
-import { webgl2 } from "./webgl2-token";
+//import { PixelTargetRenderer } from "../renderers/pixel-target-renderer";
+//import { AtmosphereModel } from "../renderers/atmosphere-model";
+import { WEBGL2 } from "./webgl2-token";
 
 const webgl2_extensions = ["OES_texture_float_linear"]
 
-//@Directive({
-//    selector: "[canvas-context]"
-//})
-export class Webgl2Service {   
+@Directive({
+    selector: "[wegl2]"
+})
+export class Webgl2Directive {
+    
     get context() { return this.render_context; };
     
     private supported_extensions: string[];
@@ -25,13 +23,13 @@ export class Webgl2Service {
 
     private render_context: WebGL2RenderingContext;
 
-    private context_injector: ReflectiveInjector;
+    //private context_injector: ReflectiveInjector;
 
-    private resource_loader_: ResourceLoader;
+    //private resource_loader_: ResourceLoader;
 
     private scene_renderer: SceneRenderer;
-    private pixel_target_renderer: PixelTargetRenderer;
-    private atmosphere_model: AtmosphereModel;
+    //private pixel_target_renderer: PixelTargetRenderer;
+    //private atmosphere_model: AtmosphereModel;
 
     constructor(private canvas_ref: ElementRef, private injector_: Injector) { };
 
@@ -45,19 +43,12 @@ export class Webgl2Service {
                 this.enableExtension(extension);
             });
 
-            this.gl.clearColor(0.7, 0.7, 0.7, 1.0);
-            this.gl.clearDepth(1.0);
-            this.gl.enable(this.gl.DEPTH_TEST);
-            this.gl.depthFunc(this.gl.LEQUAL);
+            this.render_context.clearColor(0.7, 0.7, 0.7, 1.0);
+            this.render_context.clearDepth(1.0);
+            this.render_context.enable(this.render_context.DEPTH_TEST);
+            this.render_context.depthFunc(this.render_context.LEQUAL);
 
-            let gl_provider = { provide: webgl2, useValue: this.gl };
-            this.context_injector = ReflectiveInjector.resolveAndCreate([gl_provider, ResourceLoader], this.injector_);
-            this.resource_loader_ = this.context_injector.get(ResourceLoader);
-
-            this.resource_loader_.loadResources().subscribe((object) => { }, error => { }, () => {
-                this.scene_renderer = this.resource_loader_.getResource(SceneRenderer);
-                this.scene_renderer.start();
-            });
+            
             
             //this.pixel_target_renderer.createFramebuffer();
             //this.atmosphere_model.preRenderTextures();
@@ -67,6 +58,22 @@ export class Webgl2Service {
             console.log("Unable to initialise Webgl2.");
             return false;
         }
+    };
+
+    createWebGLResources() {
+        let providers: StaticProvider[] = [
+                { provide: WEBGL2, useValue: this.render_context },
+                {
+            ];
+
+        let injector = Injector.create([gl_provider, ResourceLoader], this.injector_);
+        
+        //this.resource_loader_ = this.context_injector.get(ResourceLoader);
+
+        //this.resource_loader_.loadResources().subscribe((object) => { }, error => { }, () => {
+        //    this.scene_renderer = this.resource_loader_.getResource(SceneRenderer);
+        //    this.scene_renderer.start();
+        //});
     };
 
     @HostListener("webglcontextlost", ["$event"])
@@ -86,23 +93,23 @@ export class Webgl2Service {
         return false;
     };
 
-    update(dt: number, camera: MainCamera, canvas_width, canvas_height) {
+    //update(dt: number, camera: MainCamera, canvas_width, canvas_height) {
 
-        //this.pixel_target_renderer.getMouseTarget(canvas_width, canvas_height);
-        if (this.scene_renderer) {
-            this.scene_renderer.updateScene(dt, camera);
-        }
-    };
+    //    //this.pixel_target_renderer.getMouseTarget(canvas_width, canvas_height);
+    //    if (this.scene_renderer) {
+    //        this.scene_renderer.updateScene(dt, camera);
+    //    }
+    //};
 
-    draw(camera: MainCamera) {
-        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-        this.gl.viewport(0, 0, this.gl.drawingBufferWidth, this.gl.drawingBufferHeight);
+    //draw(camera: MainCamera) {
+    //    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    //    this.gl.viewport(0, 0, this.gl.drawingBufferWidth, this.gl.drawingBufferHeight);
 
-        //this.atmosphere_model.renderSky(camera);
-        if (this.scene_renderer) {
-            this.scene_renderer.drawObjects();
-        }
-    };
+    //    //this.atmosphere_model.renderSky(camera);
+    //    if (this.scene_renderer) {
+    //        this.scene_renderer.drawObjects();
+    //    }
+    //};
 
     isExtensionEnabled(extension: string): boolean {
         return this.enabled_extensions.get(extension);

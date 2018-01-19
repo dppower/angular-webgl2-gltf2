@@ -1,8 +1,11 @@
 ﻿//import { webgl2 } from "../canvas/webgl2-token";
+import { from as rxFrom } from "rxjs/observable/from";
+import { tap, mergeMap, toArray } from "rxjs/operators";
 import { ShaderProgram } from "../shaders/shader-program";
 import { AttributeLayout } from "../shaders/attribute-layout";
 import { MaterialLoader } from "../materials/material-loader";
-import { BinaryLoader } from "../buffers/binary-loader";
+import { Material } from "../materials/material";
+import { BufferLoader } from "../webgl2/buffer-loader";
 //import { VertexData } from "./vertex-data";
 
 const Size = {
@@ -35,13 +38,40 @@ export class Primitive {
     //private texcoord_0_buffer_: WebGLBuffer;
     //private texcoord_1_buffer_: WebGLBuffer;
     //private color_0_buffer_: WebGLBuffer;
-
+    private material_: Material;
     private drawing_mode_: number;
 
     //constructor(@Inject(webgl2) private gl: WebGL2RenderingContext, private buffer_id_: OpaqueToken) { };
     constructor(private gl_context_: WebGL2RenderingContext, private gltf_data_: glTF,
-        private material_loader_: MaterialLoader, private binary_loader_: BinaryLoader
+        private material_loader_: MaterialLoader, private buffer_loader_: BufferLoader,
+        private primitive_data_: glTF.Primitive
     ) { };
+
+    loadVertexData() {
+        let buffer_indices: number[] = [];
+        for (let name in this.primitive_data_.attributes) {
+            let accessor_index = this.primitive_data_.attributes[name];
+            let accessor = this.gltf_data_.accessors[accessor_index];
+            let buffer_view_index = accessor.bufferView;
+            let buffer_index = this.gltf_data_.bufferViews[buffer_view_index].buffer;
+            buffer_indices.push(buffer_index);
+        }
+        let unique_buffer_indices = Array.from(new Set(buffer_indices));
+
+        return rxFrom(unique_buffer_indices)
+            .pipe(
+                mergeMap(buffer_index => this.buffer_loader_.loadBuffer(buffer_index)),
+                toArray(),
+                tap(buffers => this.initVertexArray(this.primitive_data_))
+            );
+    };
+
+    loadMaterial() {
+        return this.material_loader_.getMaterial(this.primitive_data_.material)
+            .pipe(
+                tap(material => this.material_ = material)
+            );
+    };
 
     initVertexArray(primitive: glTF.Primitive/*vertex_data: VertexData*/) {
         this.drawing_mode_ = primitive.mode || 4;
@@ -54,6 +84,8 @@ export class Primitive {
         //this.createBuffer(primitive.attributes["POSITION"]);
         //this.bufferData(this.vertex_buffers_[layout_index], vertex_data.vertex_positions);
         //this.enableAttribute(AttributeLayout["POSITION"], primitive.attributes["POSITION"]);
+        let accessor = this.gltf_data_.accessors[primitive.attributes["POSITION"]];
+        this.vertex_count_ = accessor.count;
 
         for (let attribute in primitive.attributes) {
             this.createBuffer(primitive.attributes[attribute]);
@@ -105,7 +137,7 @@ export class Primitive {
     
     createBufferView(buffer_view_index: number) {
         let buffer_view = this.gltf_data_.bufferViews[buffer_view_index];
-        let buffer = this.binary_loader_.getBuffer(buffer_view.buffer);
+        let buffer = this.buffer_loader_.getBuffer(buffer_view.buffer);
         return buffer.slice(buffer_view.byteOffset, buffer_view.byteOffset + buffer_view.byteLength);
     };
 
@@ -119,8 +151,10 @@ export class Primitive {
     //};
 
     draw() {
-        let mode
         this.gl_context_.bindVertexArray(this.vertex_array_object_);
+        //set texture units
+        this.material_.bindTextures();
+        //set other uniforms
         this.gl_context_.drawArrays(this.drawing_mode_, 0, this.vertex_count_);
         this.gl_context_.bindVertexArray(null);
     };

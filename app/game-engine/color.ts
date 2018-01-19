@@ -1,5 +1,4 @@
-﻿
-export class Color {
+﻿export class Color {
 
     get length() { return 4; };
     get r() { return this.color_[0]; };
