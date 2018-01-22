@@ -1,4 +1,30 @@
-﻿//import { NgModule, Inject, Injectable, Injector, OpaqueToken } from "@angular/core";
+﻿//import { NgModule, InjectionToken } from "@angular/core";
+import { StaticProvider, InjectionToken } from "@angular/core";
+
+import { WEBGL2 } from "../webgl2/webgl2-token";
+import { VertexShaderSource, FragmentShaderSource } from "./shader-source";
+import { ShaderProgram } from "./shader-program";
+
+const VERTEX_SHADER = new InjectionToken<VertexShaderSource>("vertex-shader");
+const FRAGMENT_SHADER = new InjectionToken<FragmentShaderSource>("fragment-shader");
+
+export const shader_providers: StaticProvider[] = [
+    {
+        provide: VERTEX_SHADER, useValue: {
+            attributes: ["vertex_position", "vertex_normal"],
+            uniforms: ["projection_matrix", "view_matrix", "transform_matrix", "normal_matrix"],
+            source: "#version 300 es\nlayout(location = 0) in vec3 vertex_position;\nlayout(location = 1) in vec3 vertex_normal;\nuniform mat4 projection_matrix;\nuniform mat4 view_matrix;\nuniform mat4 transform_matrix;\nuniform mat4 normal_matrix;\nout vec3 position;\nout vec3 normal;\nvoid main() {\ngl_Position = projection_matrix * vec4(vertex_position, 1.0);\nposition = vec3(view_matrix * vec4(vertex_position, 1.0));\nnormal = mat3(normal_matrix) * vertex_normal;\n}\n"
+        }
+    },
+    {
+        provide: FRAGMENT_SHADER, useValue: {
+            attributes: ["position", "normal"],
+            uniforms: ["light_direction", "uniform_color"],
+            source: "#version 300 es\nprecision mediump float;\nconst float ambient_color = 0.1;\nin vec3 position;\nin vec3 normal;\nuniform vec3 light_direction;\nuniform vec4 uniform_color;\nout vec4 fragment_color;\nvoid main() {\nvec3 N = normalize(normal);\nvec3 L = normalize(light_direction);\nfloat NoL = max(dot(N, L), 0.0);\nfragment_color = vec4(uniform_color.rgb * (ambient_color + NoL), 1.0);\n}\n"
+        }
+    },
+    { provide: ShaderProgram, useClass: ShaderProgram, deps: [WEBGL2, VERTEX_SHADER, FRAGMENT_SHADER] }
+];
 
 //import { webgl2 } from "../canvas/webgl2-token";
 //import { VertexShaderSource, FragmentShaderSource } from "./shader-source";

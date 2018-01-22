@@ -1,13 +1,13 @@
-//import { Injectable } from "@angular/core";
+import { Injectable, Inject } from "@angular/core";
 
 import { ShaderType, compileShader, VertexShaderSource, FragmentShaderSource } from "./shader-source";
 import { Uint32 } from "../game-engine/uint32";
 import { Float32 } from "../game-engine/float32";
 import { Vec3, Mat4 } from "../game-engine/transform";
 import { Color } from "../game-engine/color";
-//import { webgl2 } from "../canvas/webgl2-token";
+import { WEBGL2 } from "../webgl2/webgl2-token";
 
-//@Injectable()
+@Injectable()
 export class ShaderProgram {
 
     get attribute_count() { return this.attribute_count_; };
@@ -20,7 +20,7 @@ export class ShaderProgram {
     private program_: WebGLProgram;
 
     constructor(
-        private gl: WebGL2RenderingContext,
+        @Inject(WEBGL2) private gl: WebGL2RenderingContext,
         private vertex_shader_source: VertexShaderSource,
         private fragment_shader_source: FragmentShaderSource
     ) { };
@@ -101,7 +101,7 @@ export class ShaderProgram {
         this.gl.deleteShader(compiled_vertex_shader);
         this.gl.deleteShader(fragShader);
 
-        this.setAttributeIds(this.gl);
+        //this.setAttributeIds(this.gl);
         this.locateUniforms(this.gl);
     };
 

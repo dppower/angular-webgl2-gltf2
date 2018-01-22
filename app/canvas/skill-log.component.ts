@@ -27,14 +27,14 @@ export class SkillLog {
     current_move = "";
 
     constructor(private input_manager_: InputManager) {
-        this.input_manager_.character_actions_inputs.subscribe((action) => {
-            this.current_action = actions[action];
-            console.log("action: " + actions[action]);
-        });
+        //this.input_manager_.character_actions_inputs.subscribe((action) => {
+        //    this.current_action = actions[action];
+        //    console.log("action: " + actions[action]);
+        //});
 
-        this.input_manager_.character_movement_inputs.subscribe((move) => {
-            this.current_move = actions[move];
-            console.log("move: " + actions[move]);
-        });
+        //this.input_manager_.character_movement_inputs.subscribe((move) => {
+        //    this.current_move = actions[move];
+        //    console.log("move: " + actions[move]);
+        //});
     };
 };

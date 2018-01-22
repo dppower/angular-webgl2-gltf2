@@ -222,7 +222,7 @@
     }
 }
 
-interface glTF {
+interface glTFData {
     samplers?: glTF.Sampler[];
     images?: glTF.Image[];
     textures?: glTF.Texture[];

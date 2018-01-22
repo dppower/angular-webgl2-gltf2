@@ -1,19 +1,29 @@
 ﻿import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 
-import { Webgl2Module } from "./webgl2.module";
-import { CanvasController } from "./canvas-controller.component";
+// Modules
+import { Webgl2Module } from "../webgl2/webgl2.module";
+// Components
 import { MainCanvas } from "./main-canvas.component";
-import { CanvasFrame } from "./canvas-frame.directive";
 import { SkillBar } from "./skill-bar.component";
 import { SkillButton } from "./skill-button.component";
 import { MenuButton} from "./menu-button.component";
 import { MenuDisplay } from "./menu-display.component";
 import { SkillLog } from "./skill-log.component";
+// Directives
+import { CanvasController } from "./canvas-controller.directive";
+//import { CanvasFrame } from "./canvas-frame.directive";
+// providers
+import { InputManager } from "../game-engine/input-manager";
+import { RenderLoop } from "../game-engine/render-loop";
 
 @NgModule({
-    imports: [Webgl2Module, CommonModule],
-    declarations: [ MainCanvas, CanvasController, CanvasFrame, SkillBar, SkillButton, MenuButton, MenuDisplay, SkillLog ],
-    exports: [ MainCanvas, CanvasController ]
+    imports: [ CommonModule, Webgl2Module ],
+    declarations: [
+        MainCanvas, CanvasController, /*CanvasFrame,*/
+        SkillBar, SkillButton, MenuButton, MenuDisplay, SkillLog
+    ],
+    providers: [ InputManager, RenderLoop ],
+    exports: [ MainCanvas ]
 })
 export class CanvasModule { };

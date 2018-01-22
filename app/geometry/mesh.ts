@@ -17,7 +17,7 @@ export class Mesh {
     private mesh_creation_subscription: Subscription;
 
     constructor(private gl_context_: WebGL2RenderingContext,
-        private gltf_data_: glTF, private mesh_index_: number, private transform_: Transform,
+        private gltf_data_: glTFData, private mesh_index_: number, private transform_: Transform,
         private material_loader_: MaterialLoader, private buffer_loader_: BufferLoader
     ) { };
 
@@ -44,10 +44,15 @@ export class Mesh {
                     this.can_draw_primitives_ = true;
                 }
             );
-    }
+    };
+
+    updateObject(dt: number) {
+    };
 
     drawMesh(shader_program: ShaderProgram) {
         if (!this.can_draw_primitives_) return;
         //draw all primitives for this mesh
-    }
+        // TODO Set uniforms
+        this.primitives_.forEach(primitive => primitive.draw(shader_program));
+    };
 }

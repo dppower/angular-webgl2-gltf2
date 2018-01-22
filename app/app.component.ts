@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 
 @Component({
-    selector: "app-component",
+    selector: "app-main",
     template: `
         <main-canvas></main-canvas>
     `

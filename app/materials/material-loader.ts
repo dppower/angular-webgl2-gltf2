@@ -59,7 +59,7 @@ export class MaterialLoader {
 
     constructor(private http_client_: HttpClient,
         private gl_context_: WebGL2RenderingContext,
-        private gltf_data_: glTF
+        private gltf_data_: glTFData
     ) {
         this.createDefaultTexture();
         this.createDefaultSampler();

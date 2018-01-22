@@ -47,6 +47,7 @@ app.use("/scripts", express.static(path.join(__dirname, "..", "..", "node_module
 app.use("/vertex-data", express.static(path.join(__dirname, "..", "..", "docs", "vertex-data")));
 app.use("/images", express.static(path.join(__dirname, "..", "..", "docs", "images")));
 app.use("/shaders", express.static(path.join(__dirname, "..", "..", "docs", "shaders")));
+app.use("/test-scene.gltf", express.static(path.join(__dirname, "..", "..", "docs", "test-scene.gltf")));
 
 //app.use("/textures", express.static(path.join(__dirname, "..", "textures")));
 

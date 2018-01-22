@@ -12,7 +12,7 @@ export class BufferLoader {
 
     private buffer_cache_: ArrayBuffer[];
 
-    constructor(private http_client_: HttpClient, private gltf_data_: glTF) { };
+    constructor(private http_client_: HttpClient, private gltf_data_: glTFData) { };
 
     loadBuffer(buffer_index: number) {
         let buffer = this.buffer_cache_[buffer_index];

@@ -24,6 +24,8 @@
     <Content Include="tsconfig.json" />
     <TypeScriptCompile Include="app.component.ts" />
     <TypeScriptCompile Include="app.module.ts" />
+    <TypeScriptCompile Include="canvas\canvas-controller.directive.ts" />
+    <TypeScriptCompile Include="game-engine\render-loop.ts" />
     <TypeScriptCompile Include="geometry\cubes.ts" />
     <TypeScriptCompile Include="geometry\mesh.ts">
       <SubType>Code</SubType>
@@ -44,8 +46,6 @@
     <TypeScriptCompile Include="materials\texture-cube.ts" />
     <TypeScriptCompile Include="materials\texture-set.ts" />
     <TypeScriptCompile Include="webgl2.d.ts" />
-    <TypeScriptCompile Include="canvas\canvas-controller.component.ts" />
-    <TypeScriptCompile Include="canvas\canvas-frame.directive.ts" />
     <TypeScriptCompile Include="canvas\canvas.module.ts" />
     <TypeScriptCompile Include="canvas\main-canvas.component.ts" />
     <TypeScriptCompile Include="canvas\menu-button.component.ts" />

@@ -42,7 +42,7 @@ export class Primitive {
     private drawing_mode_: number;
 
     //constructor(@Inject(webgl2) private gl: WebGL2RenderingContext, private buffer_id_: OpaqueToken) { };
-    constructor(private gl_context_: WebGL2RenderingContext, private gltf_data_: glTF,
+    constructor(private gl_context_: WebGL2RenderingContext, private gltf_data_: glTFData,
         private material_loader_: MaterialLoader, private buffer_loader_: BufferLoader,
         private primitive_data_: glTF.Primitive
     ) { };
@@ -150,10 +150,10 @@ export class Primitive {
     //    this.gl_context_.bindVertexArray(null);
     //};
 
-    draw() {
+    draw(shader: ShaderProgram) {
         this.gl_context_.bindVertexArray(this.vertex_array_object_);
         //set texture units
-        this.material_.bindTextures();
+        this.material_.bindTextures(shader);
         //set other uniforms
         this.gl_context_.drawArrays(this.drawing_mode_, 0, this.vertex_count_);
         this.gl_context_.bindVertexArray(null);

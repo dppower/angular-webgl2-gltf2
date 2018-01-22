@@ -17,7 +17,7 @@ export class Material {
     metallic_roughness_sampler: Sampler;
 
     constructor(private gl_context_: WebGL2RenderingContext,
-        private gltf_data_: glTF, private material_loader_: MaterialLoader
+        private gltf_data_: glTFData, private material_loader_: MaterialLoader
     ) { };
 
     setTextures(material_index: number) {

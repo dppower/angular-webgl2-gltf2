@@ -1,6 +1,6 @@
 ﻿import { Component, Input } from "@angular/core";
 
-import { InputManager, Actions } from "../game-engine/input-manager";
+import { InputManager/*, Actions*/ } from "../game-engine/input-manager";
 
 @Component({
     selector: "skill-button",
@@ -33,9 +33,9 @@ export class SkillButton {
         let div = (<HTMLDivElement>event.target);
         console.log(`skill button: ${this.keybind}, event target: ${div.id}`);
 
-        let action = Actions[`action_${this.keybind}`];
-        console.log(`action_id: ${action}.`);
+        //let action = Actions[`action_${this.keybind}`];
+        //console.log(`action_id: ${action}.`);
 
-        this.input_manager_.character_actions_inputs.next(action);
+        //this.input_manager_.character_actions_inputs.next(action);
     }
 };
