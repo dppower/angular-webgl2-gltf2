@@ -2,6 +2,5 @@
 
 export const WEBGL2 = new InjectionToken<WebGL2RenderingContext>("webgl2");
 export const GLTF = new InjectionToken<glTFData>("gltf data");
-//export const static_objects = new InjectionToken("static-objects");
-//export const scene_provider_token = new InjectionToken("scene-objects");
-//export const buffer_dictionary = new InjectionToken("buffer-dictionary");
+export const GLSL_VERSION = new InjectionToken<string>("glsl version");
+export const SHADER_DEFINITIONS = new InjectionToken<string[]>("#define to add to beginning of shader source");

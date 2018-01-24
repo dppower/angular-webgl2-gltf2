@@ -30,7 +30,7 @@ export class Primitive {
     private vertex_array_object_: WebGLVertexArrayObject;
 
     /**The index is bufferView.index, and a new WebGLBuffer is created for each view*/
-    private vertex_buffers_: { [index: number]: WebGLBuffer };
+    private vertex_buffers_: { [index: number]: WebGLBuffer } = {};
 
     //private position_buffer_: WebGLBuffer;
     //private normal_buffer_: WebGLBuffer;
@@ -153,7 +153,7 @@ export class Primitive {
     draw(shader: ShaderProgram) {
         this.gl_context_.bindVertexArray(this.vertex_array_object_);
         //set texture units
-        this.material_.bindTextures(shader);
+        this.material_.setMaterialUniforms(shader);
         //set other uniforms
         this.gl_context_.drawArrays(this.drawing_mode_, 0, this.vertex_count_);
         this.gl_context_.bindVertexArray(null);

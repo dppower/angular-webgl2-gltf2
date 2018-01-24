@@ -6,47 +6,12 @@ import {
 import { distinctUntilChanged, debounceTime } from "rxjs/operators";
 import { Subject } from "rxjs/Subject";
 import { Subscription } from "rxjs/Subscription";
-//import { CanvasFrame } from "./canvas-frame.directive";
-//import { MainCanvas } from "./main-canvas.component";
 import { InputManager } from "../game-engine/input-manager";
 
-//@Component({
-//    selector: "canvas-controller",
-//    template: `
-//    <div #frame id="frame" tabindex="0" canvas-frame
-//        [frameHeight]="frame.offsetHeight"
-//        [frameWidth]="frame.offsetWidth"
-//        [frameTop]="frame.offsetTop"
-//        [frameLeft]="frame.offsetLeft"
-//        (mousemove)="setMouseMovement($event)"
-//        (mouseup) = "setMouseUp($event)"
-//        (mousedown) = "setMouseDown($event)" 
-//        (wheel)="onMouseWheel($event)" 
-//        (mouseover)="setFocus($event)"
-//        (keydown)="onKeyDown($event)" 
-//        (keyup)="onKeyUp($event)" 
-//        (contextmenu)="false"  
-//    ><menu-button></menu-button>
-//    <menu-display *ngIf="should_display_menu"></menu-display>
-//    <skill-bar></skill-bar>
-//    <skill-log></skill-log>
-//    </div>
-//    `,
-//    styles: [`
-//    #frame {
-//        height: 100%;
-//        width: 100%;
-//        position: relative;
-//        z-index: 5;
-//        border: 0.25em dashed white;
-//    }
-//    `]
-//})
 @Directive({
-    selector: "canvas-controller"
+    selector: "[canvas-controller]"
 })
 export class CanvasController implements OnInit, DoCheck, OnDestroy {
-    //@ViewChild(CanvasFrame) canvas_frame: CanvasFrame;
 
     @HostBinding("width") canvas_width;
     @HostBinding("height") canvas_height;
@@ -70,7 +35,7 @@ export class CanvasController implements OnInit, DoCheck, OnDestroy {
     ngOnInit() {
         this.resize_sub_ = this.resize_events.pipe(
             distinctUntilChanged((x, y) => x.width === y.width && x.height === y.height),
-            debounceTime(50)
+            debounceTime(100)
         )
         .subscribe((changes) => {
             this.input_manager_.aspect = changes.width / changes.height;
@@ -97,21 +62,6 @@ export class CanvasController implements OnInit, DoCheck, OnDestroy {
     hideContextMenu() {
         return false;
     };
-
-    //updateCanvasDimensions(canvas: MainCanvas) {
-    //    canvas.canvasHeight = this.canvas_frame.frameHeight;
-    //    canvas.canvasWidth = this.canvas_frame.frameWidth;
-    //    canvas.canvasTop = this.canvas_frame.frameTop;
-    //    canvas.canvasLeft = this.canvas_frame.frameLeft;
-    //};
-
-    //isCanvasResizing() {
-    //    if (this.canvas_frame.resizing) {
-    //        this.canvas_frame.resizing = false;
-    //        return true;
-    //    }
-    //    return false;
-    //};
 
     @HostListener("wheel", ["$event"])
     onMouseWheel(event: WheelEvent) {

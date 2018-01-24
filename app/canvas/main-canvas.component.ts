@@ -1,12 +1,9 @@
 import { Component, AfterViewInit, ViewChild } from "@angular/core";
 
 import { Webgl2Directive } from "../webgl2/webgl2.directive";
-//import { MainCamera } from "../game-engine/main-camera";
-//import { InputManager } from "../game-engine/input-manager";
-//import { CanvasController } from "./canvas-controller.directive";
 
 @Component({
-    selector: 'main-canvas',
+    selector: "main-canvas",
     template: `
     <canvas webgl2 canvas-controller><p>{{fallback_text}}</p></canvas>
     `,

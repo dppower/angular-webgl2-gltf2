@@ -42,11 +42,14 @@ import * as bodyparser from "body-parser";
 //});
 var app = express();
 
-app.use(express.static(path.join(__dirname, "..")));
+//app.use(express.static(path.join(__dirname, "..")));
+app.use("/app", express.static(path.join(__dirname, "..", "..", "build", "app"))); 
 app.use("/scripts", express.static(path.join(__dirname, "..", "..", "node_modules")));
 app.use("/vertex-data", express.static(path.join(__dirname, "..", "..", "docs", "vertex-data")));
 app.use("/images", express.static(path.join(__dirname, "..", "..", "docs", "images")));
-app.use("/shaders", express.static(path.join(__dirname, "..", "..", "docs", "shaders")));
+app.use("/css", express.static(path.join(__dirname, "..", "..", "docs", "css")));
+app.use("/js", express.static(path.join(__dirname, "..", "..", "docs", "js")));
+//app.use("/shaders", express.static(path.join(__dirname, "..", "..", "docs", "shaders")));
 app.use("/test-scene.gltf", express.static(path.join(__dirname, "..", "..", "docs", "test-scene.gltf")));
 
 //app.use("/textures", express.static(path.join(__dirname, "..", "textures")));
@@ -104,7 +107,7 @@ app.set("port", process.env.PORT || 3000);
 
 app.get("*", (request, response) => {
     console.log(__dirname);
-    response.sendFile(path.join(__dirname, "..", "index.html"));
+    response.sendFile(path.join(__dirname, "..", "..", "docs", "html", "index.html"));
 });
 
 const server = http.createServer(app);

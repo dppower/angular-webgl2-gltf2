@@ -4,7 +4,13 @@ export class Vec3 {
     get y() { return this.vector_[1]; };
     get z() { return this.vector_[2]; };
 
-    get array() { return this.vector_; };
+    get array() {
+        return this.vector_;
+    };
+
+    get from_array() {
+        return Array.from(this.vector_);
+    };
 
     get length() {
         return Math.sqrt(this.squared_length);

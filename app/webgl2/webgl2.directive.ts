@@ -1,7 +1,7 @@
 import { Directive, ElementRef, HostListener/*, Injector, StaticProvider*/ } from "@angular/core";
 
 import { Subscription } from "rxjs/Subscription";
-import { SceneLoader } from "./scene-loader";
+import { GLTFLoader } from "./scene-loader";
 import { MainCamera } from "../game-engine/main-camera";
 //import { ResourceLoader } from "./webgl-resource-loader";
 import { InputManager } from "../game-engine/input-manager";
@@ -14,7 +14,7 @@ import { SceneRenderer } from "../renderers/scene-renderer";
 const WEBGL2_EXTENSIONS = ["OES_texture_float_linear"]
 
 @Directive({
-    selector: "[wegl2]"
+    selector: "[webgl2]"
 })
 export class Webgl2Directive {
     
@@ -35,7 +35,7 @@ export class Webgl2Directive {
     private update_sub_: Subscription;
     private render_sub_: Subscription;
 
-    constructor(private canvas_ref_: ElementRef, private scene_loader_: SceneLoader,
+    constructor(private canvas_ref_: ElementRef, private gltf_loader_: GLTFLoader,
         private render_loop_: RenderLoop/*, private injector_: Injector*/
     ) { };
 
@@ -73,9 +73,9 @@ export class Webgl2Directive {
            
             //this.pixel_target_renderer.createFramebuffer();
             //this.atmosphere_model.preRenderTextures();
-            this.scene_loader_.fetchGLTFData("test-scene.gltf", this.render_context).subscribe(
+            this.gltf_loader_.fetchGLTFData("test-scene.gltf", this.render_context).subscribe(
                 (result) => {
-                    this.scene_renderer_ = this.scene_loader_.getItem(SceneRenderer);
+                    this.scene_renderer_ = this.gltf_loader_.getItem(SceneRenderer);
                     this.begin();
                 }
             )
@@ -88,6 +88,7 @@ export class Webgl2Directive {
     };
 
     begin() {
+        this.scene_renderer_.constructScene();
         this.update_sub_ = this.render_loop_.update_events
             .subscribe((dt) => {
                 this.update(dt);

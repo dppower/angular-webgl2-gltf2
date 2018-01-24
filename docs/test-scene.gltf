@@ -6,7 +6,7 @@
     "scenes": [
         {
             "name": "test-scene",
-            "nodes": [ 1 ]
+            "nodes": [ 0, 1, 2 ]
         }
     ],
     "nodes": [
@@ -64,7 +64,6 @@
                 "yfov": 1.05
             }
         }
-
     ],
     "meshes": [
         {
@@ -156,13 +155,13 @@
     ],
     "images": [
         {
-            "uri": "images/rough_cube_base_color.jpg"
+            "uri": "images/rough_cube_base_color.jpeg"
         },
         {
-            "uri": "images/rough_cube_metal_rough.jpg"
+            "uri": "images/rough_cube_metal_rough.jpeg"
         },
         {
-            "uri": "images/wall.jpg"
+            "uri": "images/wall.jpeg"
         }
     ],
     "buffers": [
@@ -193,7 +192,7 @@
             "buffer": 0,
             "byteOffset": 0,
             "byteStride": 44,
-            "byteLength": 1188,
+            "byteLength": 1584,
             "target": 34962
         },
         {

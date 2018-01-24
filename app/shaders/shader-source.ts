@@ -15,7 +15,9 @@ export interface FragmentShaderSource {
     source: string
 }
 
-export function compileShader(gl: WebGL2RenderingContext, type: ShaderType, source: string) {
+export function compileShader(gl: WebGL2RenderingContext, type: ShaderType,
+    source: string, version: string, definitions: string[]
+) {
 
     let shader: WebGLShader;
 
@@ -32,13 +34,18 @@ export function compileShader(gl: WebGL2RenderingContext, type: ShaderType, sour
             return null
         }
     }
-        
-    gl.shaderSource(shader, source);
+
+    let definition = definitions.reduce((acc, next) => {
+        return acc + next + "\n";
+    }, "");
+
+    let full_source = version + "\n" + definition + source;
+    gl.shaderSource(shader, full_source);
     gl.compileShader(shader);
 
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
         let shader_type = (type == 0) ? "Vertex" : "Fragment";
-        console.log(shader_type + ", name: " + source + ", shader compilation error: " + gl.getShaderInfoLog(shader));
+        console.log(shader_type + ", name: " + full_source + ", shader compilation error: " + gl.getShaderInfoLog(shader));
         return null;
     }
 

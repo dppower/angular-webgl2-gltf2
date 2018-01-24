@@ -1,8 +1,8 @@
-import { Injectable, Inject/*, OpaqueToken*/ } from "@angular/core";
+import { Injectable, Inject } from "@angular/core";
 
 //import { RenderObject } from "../render-objects/render-object";
 import { ShaderProgram } from "../shaders/shader-program";
-//import { diffuse_uniform_shader, diffuse_oren_nayar_shader, pbr_ggx_shader, per_vertex_color_shader, diffuse_texture_shader } from "../shaders/shader-program.module";
+import { PBR_SHADER } from "../shaders/shader-program.module";
 import { WEBGL2, GLTF } from "../webgl2/webgl2-token";
 import { MainCamera } from "../game-engine/main-camera";
 import { Vec3, Mat4, Transform } from "../game-engine/transform";
@@ -10,34 +10,31 @@ import { Mesh } from "../geometry/mesh";
 import { MaterialLoader } from "../materials/material-loader";
 import { BufferLoader } from "../webgl2/buffer-loader";
 import { InputManager } from "../game-engine/input-manager";
-//import { ObjectBuffer } from "../render-objects/object-buffer";
 
 @Injectable()
 export class SceneRenderer {
 
     //private scene_objects = new Map<OpaqueToken, RenderObject[]>();
-    private light_direction = new Vec3(0.4, 0.4, 1.0);
+    //private light_direction = new Vec3(0.4, 0.4, 1.0);
     //private current_direction = new Vec3();
 
     private main_camera_: MainCamera;
-    private meshes: Mesh[];
+    private meshes: Mesh[] = [];
 
     constructor(
         @Inject(WEBGL2) private gl_context_: WebGL2RenderingContext,
         @Inject(GLTF) private gltf_data_: glTFData,
         private input_manager_: InputManager,
-        //@Inject(diffuse_uniform_shader) private diffuse_uniform_shader_: ShaderProgram,
-        //@Inject(diffuse_texture_shader) private diffuse_texture_shader_: ShaderProgram,
-        //@Inject(diffuse_oren_nayar_shader) private diffuse_oren_nayar_shader_: ShaderProgram,
-        @Inject(ShaderProgram) private pbr_ggx_shader_: ShaderProgram,
+        @Inject(PBR_SHADER) private pbr_shader_: ShaderProgram,
         private material_loader_: MaterialLoader,
         private buffer_loader_: BufferLoader
-        //@Inject(per_vertex_color_shader) private per_vertex_shader_: ShaderProgram,
-        //@Inject(static_objects) private static_objects: RenderObject[]
     ) { };
 
     constructScene() {
-        this.gltf_data_.nodes.forEach(node => {
+        let index = this.gltf_data_.scene;
+        if (typeof index !== "number") return;
+        this.gltf_data_.scenes[index].nodes.forEach(index => {
+            let node = this.gltf_data_.nodes[index];
             // Construct Transform
             let node_transform: Transform;
             if (node.matrix) {
@@ -47,15 +44,17 @@ export class SceneRenderer {
                 node_transform = new Transform(node.translation, node.rotation, node.scale);
             }
 
-            if (node.camera) {
+            if (node.camera > -1) {
                 this.main_camera_ = new MainCamera(this.input_manager_);
+                console.log(this.main_camera_);
             }
 
-            if (node.mesh) {
+            if (node.mesh > -1) {
                 let mesh = new Mesh(this.gl_context_, this.gltf_data_,
                     node.mesh, node_transform,
                     this.material_loader_, this.buffer_loader_
                 );
+                console.log(mesh);
                 this.meshes.push(mesh);
             }
         });
@@ -69,11 +68,8 @@ export class SceneRenderer {
 
     start() {
         this.main_camera_.initialiseCamera(this.gltf_data_.cameras[0].perspective);
-        //this.diffuse_uniform_shader_.initProgram();
-        //this.diffuse_texture_shader_.initProgram();
-        //this.diffuse_oren_nayar_shader_.initProgram();
-        this.pbr_ggx_shader_.initProgram();
-        //this.per_vertex_shader_.initProgram();
+
+        this.pbr_shader_.initProgram();
 
         // Sort RenderObjects
         //this.static_objects.forEach(render_object => {
@@ -100,6 +96,9 @@ export class SceneRenderer {
         //        mesh.update(this.main_camera_.view, this.main_camera_.projection);
         //    //});
         //});
+        this.meshes.forEach(mesh => {
+            mesh.preMultiplyMatrices(this.main_camera_.view, this.main_camera_.projection);
+        });
     };
 
 
@@ -124,8 +123,9 @@ export class SceneRenderer {
         //        array[0].finishDraw();
         //    }
         //});
-        this.pbr_ggx_shader_.useProgram();
-        this.gl_context_.uniform3fv(this.pbr_ggx_shader_.getUniform("light_direction"), this.light_direction.array);
-        this.meshes.forEach(mesh => mesh.drawMesh(this.pbr_ggx_shader_));
+        this.pbr_shader_.useProgram();
+        this.gl_context_.uniform3fv(this.pbr_shader_.getUniform("u_light_direction"), [0.0, 0.0, -1.0]);
+        this.gl_context_.uniform3fv(this.pbr_shader_.getUniform("u_light_color"), [1.0, 1.0, 1.0]);
+        this.meshes.forEach(mesh => mesh.drawMesh(this.pbr_shader_));
     };
 }

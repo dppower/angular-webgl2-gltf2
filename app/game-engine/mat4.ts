@@ -5,6 +5,20 @@ export class Mat4 {
 
     get array() { return this.matrix_; };
 
+    get mat3() {
+        return [
+            this.matrix_[0],
+            this.matrix_[1],
+            this.matrix_[2],
+            this.matrix_[4],
+            this.matrix_[5],
+            this.matrix_[6],
+            this.matrix_[8],
+            this.matrix_[9],
+            this.matrix_[10]
+        ]
+    };
+
     get length() { return this.matrix_.length; };
 
     private matrix_ = new Float32Array(16);

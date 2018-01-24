@@ -5,22 +5,24 @@ import { Uint32 } from "../game-engine/uint32";
 import { Float32 } from "../game-engine/float32";
 import { Vec3, Mat4 } from "../game-engine/transform";
 import { Color } from "../game-engine/color";
-import { WEBGL2 } from "../webgl2/webgl2-token";
+import { WEBGL2, GLSL_VERSION, SHADER_DEFINITIONS } from "../webgl2/webgl2-token";
 
 @Injectable()
 export class ShaderProgram {
 
-    get attribute_count() { return this.attribute_count_; };
+    //get attribute_count() { return this.attribute_count_; };
 
     get uniform_map() { return this.uniforms_; };
 
-    private attribute_count_: number;
-    private attributes_= new Map<string, number>();
+    //private attribute_count_: number;
+    //private attributes_= new Map<string, number>();
     private uniforms_ = new Map<string, WebGLUniformLocation>();
     private program_: WebGLProgram;
 
     constructor(
         @Inject(WEBGL2) private gl: WebGL2RenderingContext,
+        @Inject(GLSL_VERSION) private glsl_version_: string,
+        @Inject(SHADER_DEFINITIONS) private shader_definitions: string[],
         private vertex_shader_source: VertexShaderSource,
         private fragment_shader_source: FragmentShaderSource
     ) { };
@@ -29,9 +31,9 @@ export class ShaderProgram {
         this.gl.deleteProgram(this.program_);
     };
 
-    getAttribute(name: string): number {
-        return this.attributes_.get(name);
-    };
+    //getAttribute(name: string): number {
+    //    return this.attributes_.get(name);
+    //};
 
     getUniform(name: string): WebGLUniformLocation {
         return this.uniforms_.get(name);
@@ -76,12 +78,16 @@ export class ShaderProgram {
     };
 
     initProgram() {
-        let compiled_vertex_shader = compileShader(this.gl, ShaderType.Vertex, this.vertex_shader_source.source);
-        let fragShader = compileShader(this.gl, ShaderType.Fragment, this.fragment_shader_source.source);
+        let vertex_shader = compileShader(this.gl, ShaderType.Vertex, this.vertex_shader_source.source,
+            this.glsl_version_, this.shader_definitions
+        );
+        let fragment_shader = compileShader(this.gl, ShaderType.Fragment, this.fragment_shader_source.source,
+            this.glsl_version_, this.shader_definitions
+        );
 
         this.program_ = this.gl.createProgram();
-        this.gl.attachShader(this.program_, compiled_vertex_shader);
-        this.gl.attachShader(this.program_, fragShader);
+        this.gl.attachShader(this.program_, vertex_shader);
+        this.gl.attachShader(this.program_, fragment_shader);
         this.gl.linkProgram(this.program_);
 
         if (!this.gl.getProgramParameter(this.program_, this.gl.LINK_STATUS)) {
@@ -89,20 +95,21 @@ export class ShaderProgram {
 
             this.gl.deleteProgram(this.program_);
 
-            this.gl.deleteShader(compiled_vertex_shader);
-            this.gl.deleteShader(fragShader);
+            this.gl.deleteShader(vertex_shader);
+            this.gl.deleteShader(fragment_shader);
 
-            alert("Unable to initialize the shader program."); 
+            alert("Unable to initialize the shader program.");
         }
+        else {
+            this.gl.detachShader(this.program_, vertex_shader);
+            this.gl.detachShader(this.program_, fragment_shader);
 
-        this.gl.detachShader(this.program_, compiled_vertex_shader);
-        this.gl.detachShader(this.program_, fragShader);
+            this.gl.deleteShader(vertex_shader);
+            this.gl.deleteShader(fragment_shader);
 
-        this.gl.deleteShader(compiled_vertex_shader);
-        this.gl.deleteShader(fragShader);
-
-        //this.setAttributeIds(this.gl);
-        this.locateUniforms(this.gl);
+            //this.setAttributeIds(this.gl);
+            this.locateUniforms(this.gl);
+        }
     };
 
     useProgram() {
@@ -122,16 +129,16 @@ export class ShaderProgram {
         });
     };
 
-    private setAttributeCount() {       
-        this.attribute_count_ = this.vertex_shader_source.attributes.length;
-    };
+    //private setAttributeCount() {       
+    //    this.attribute_count_ = this.vertex_shader_source.attributes.length;
+    //};
 
-    private setAttributeIds(gl: WebGLRenderingContext) {
-        this.vertex_shader_source.attributes.forEach((attribute_name) => {
-            let attrib_id = this.gl.getAttribLocation(this.program_, attribute_name);
-            this.attributes_.set(attribute_name, attrib_id);
+    //private setAttributeIds(gl: WebGLRenderingContext) {
+    //    this.vertex_shader_source.attributes.forEach((attribute_name) => {
+    //        let attrib_id = this.gl.getAttribLocation(this.program_, attribute_name);
+    //        this.attributes_.set(attribute_name, attrib_id);
 
-            this.attribute_count_ = this.attributes_.size;
-        });
-    };
+    //        this.attribute_count_ = this.attributes_.size;
+    //    });
+    //};
 }

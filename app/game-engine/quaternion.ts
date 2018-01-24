@@ -2,6 +2,10 @@ import { Vec3 } from "./vec3";
 
 export class Quaternion {
 
+    get array() {
+        return [this.x, this.y, this.z, this.w];
+    };
+
     get w() { return this.w_; };
     get x() { return this.v_.x; };
     get y() { return this.v_.y; };

@@ -12,15 +12,14 @@ import { MenuDisplay } from "./menu-display.component";
 import { SkillLog } from "./skill-log.component";
 // Directives
 import { CanvasController } from "./canvas-controller.directive";
-//import { CanvasFrame } from "./canvas-frame.directive";
-// providers
+// Providers
 import { InputManager } from "../game-engine/input-manager";
 import { RenderLoop } from "../game-engine/render-loop";
 
 @NgModule({
     imports: [ CommonModule, Webgl2Module ],
     declarations: [
-        MainCanvas, CanvasController, /*CanvasFrame,*/
+        MainCanvas, CanvasController,
         SkillBar, SkillButton, MenuButton, MenuDisplay, SkillLog
     ],
     providers: [ InputManager, RenderLoop ],

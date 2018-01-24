@@ -1,10 +1,12 @@
-import { Injectable } from "@angular/core";
+import { Injectable, Inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 
 import { of as rxOf } from "rxjs/observable/of";
 import { from as rxFrom } from "rxjs/observable/from";
+//import { empty as rxEmpty } from "rxjs/observable/empty";
 import { concatMap, catchError, tap, map, toArray, take } from "rxjs/operators";
 
+import { WEBGL2, GLTF } from "../webgl2/webgl2-token";
 import { Material } from "./material";
 import { Texture2d } from "./texture-2d";
 import { Sampler } from "./sampler";
@@ -58,16 +60,23 @@ export class MaterialLoader {
     private default_texture_: Texture2d;
 
     constructor(private http_client_: HttpClient,
-        private gl_context_: WebGL2RenderingContext,
-        private gltf_data_: glTFData
+        @Inject(WEBGL2) private gl_context_: WebGL2RenderingContext,
+        @Inject(GLTF) private gltf_data_: glTFData
     ) {
         this.createDefaultTexture();
         this.createDefaultSampler();
         this.createSamplers();
     };
 
-    loadTexturesForMaterial(material_index: number) {
+    loadTexturesForMaterial(material_index: number) {      
+        if (!(this.gltf_data_.materials instanceof Array)) {
+            return rxOf<Texture2d[]>([]);
+        }
         let material = this.gltf_data_.materials[material_index];
+        if (!material) {
+            return rxOf<Texture2d[]>([]);
+        }
+
         let texture_indices = [
             material.pbrMetallicRoughness && material.pbrMetallicRoughness.baseColorTexture,
             material.pbrMetallicRoughness && material.pbrMetallicRoughness.metallicRoughnessTexture,
@@ -91,10 +100,6 @@ export class MaterialLoader {
                 concatMap((source, index) => {
                     return this.loadTexture(index);
                 })
-                //toArray(),
-                //tap(textures => {
-                //    this.texture_cache_ = textures;
-                //})
             );
     };
 
@@ -157,6 +162,7 @@ export class MaterialLoader {
     };
 
     createSamplers() {
+        if (!(this.gltf_data_.samplers instanceof Array)) return;
         this.samplers_ = this.gltf_data_.samplers.map((data, index) => {
             let sampler = new Sampler(this.gl_context_);
             sampler.setParametersFromData(data);

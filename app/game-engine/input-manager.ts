@@ -155,7 +155,7 @@ export class InputManager {
         //if (this.isButtonDown("right")) {
         //    this.pointer_movement_ = this.pointer_movement_.add(updated_coords.subtract(this.current_pointer_position_));
         //}
-        //this.current_pointer_position_.copy(updated_coords);
+        //this.current_pointer_position_.copy(updated_coords);       
         let current_delta = Vec2.subtract(position, this.previous_pointer_state_.position);
         this.current_pointer_state_.position.copy(position);
         this.current_pointer_state_.delta.copy(current_delta);

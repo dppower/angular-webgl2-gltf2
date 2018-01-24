@@ -29,9 +29,9 @@ export class MainCamera {
     // TODO Should the FoV be adjustable by user?
     private yfov: number;
 
-    private mouse_sensitivity_x = 0.005;
-    private mouse_sensitivity_y = 0.005;
-    private camera_orbit_velocity = 0.002;
+    //private mouse_sensitivity_x = 0.005;
+    //private mouse_sensitivity_y = 0.005;
+    private camera_orbit_velocity = 1.2;
     
     private view_ = new Mat4();
     private projection_ = new Mat4();
@@ -42,32 +42,16 @@ export class MainCamera {
     private view_up: Vec3;
     private view_right: Vec3;
 
-    private lerp_duration = 500;
+    private lerp_duration = 0.4;
     private current_lerp_time = 0;
     private start_distance: number;
     private end_distance: number;
 
     // Transform relative to origin
-    private transform_ = new Transform();
+    private transform_: Transform;
     private target_position_ = new Vec3(0.0, 0.0, 0.0);
 
-    //private camera_inputs_: CameraInputs = {
-    //    wheel_direction: 0,
-    //    screen_movement: new Vec2(0.0, 0.0)
-    //};
-
-    //private control_inputs_: Actions;
-
-    constructor(private input_manager_: InputManager) {
-
-        //this.input_manager_.camera_inputs.subscribe((inputs) => {
-        //    this.camera_inputs_ = inputs;
-        //});
-
-        //this.input_manager_.character_actions_inputs.subscribe((action) => {
-        //    this.control_inputs_ = action;
-        //});
-    };
+    constructor(private input_manager_: InputManager) { };
 
     initialiseCamera(camera_data: glTF.Perspective) {
         this.zfar = camera_data.zfar || 100;
@@ -80,14 +64,14 @@ export class MainCamera {
 
         this.updateOrthoNormalVectors(initial_camera_offset.normalise());
 
-        let initial_camera_position = this.target_position_.add(initial_camera_offset);
-        this.transform_.setTranslation(initial_camera_position);
+        let initial_camera_position = this.target_position_.add(initial_camera_offset).from_array;
+        //this.transform_.setTranslation(initial_camera_position);
 
         let initial_angle = Math.acos(initial_camera_offset.normalise().scale(-1.0).dot(vec3_forward));
-        let initial_rotation = Quaternion.fromAxisAngle(new Vec3(-1.0, 0.0, 0.0), initial_angle);
-        this.transform_.setOrientation(initial_rotation);
-
-        this.transform_.updateTransform();
+        let initial_rotation = Quaternion.fromAxisAngle(new Vec3(-1.0, 0.0, 0.0), initial_angle).array;
+        //this.transform_.setOrientation(initial_rotation);
+        this.transform_ = new Transform(initial_camera_position, initial_rotation);
+        //this.transform_.updateTransform();
     };
 
     updateOrthoNormalVectors(view_normal: Vec3) {
@@ -122,7 +106,7 @@ export class MainCamera {
 
     };
 
-    updateCamera(dt: number, /*canvas_width: number, canvas_height: number,*/ /*aspect: number*/) {
+    updateCamera(dt: number) {
 
         let from_target = this.transform_.position.subtract(this.target_position_);
         this.updateOrthoNormalVectors(from_target.normalise());
@@ -139,15 +123,15 @@ export class MainCamera {
         this.transform_.setTranslation(updated_position);
 
         // Rotate camera to face target
-        let look_at_rotation = this.transform_.lookAt(this.target_position_);
-        this.transform_.setOrientation(look_at_rotation);
+        //let look_at_rotation = this.transform_.lookAt(this.target_position_);
+        //this.transform_.setOrientation(look_at_rotation);
         
         // Update matrices after transformations
         this.transform_.updateTransform();
 
         this.transform_matrix_ = this.transform_.transform;
         this.view_ = this.transform_.inverse;
-        this.setProjection(/*aspect*/);
+        this.setProjection();
         this.setInverseProjection();
     };
 
@@ -181,17 +165,18 @@ export class MainCamera {
     };
 
     updateCameraOrbitPosition(/*canvas_width: number, canvas_height: number, */dt: number) {
-        
+
+        if (!this.input_manager_.isButtonDown("right")) return new Quaternion();
         //let input_x = this.camera_inputs_.screen_movement.x / canvas_width;
         //let input_y = this.camera_inputs_.screen_movement.y / canvas_height;
         let input_x = this.input_manager_.delta.x;
         let input_y = this.input_manager_.delta.y;
 
-        let length = Math.sqrt(input_x * input_x + input_y * input_y);
-        input_x *= length;
-        input_y *= length;
+        //let length = Math.sqrt(input_x * input_x + input_y * input_y);
+        //input_x *= length;
+        //input_y *= length;
 
-        if (!!input_x && !!input_y) {
+        if (input_x !== 0 || input_y !== 0) {
             let input_rotation = this.getInputRotation(input_x, input_y);
 
             let rotation_angle = this.camera_orbit_velocity * dt;
@@ -203,7 +188,7 @@ export class MainCamera {
         return new Quaternion();
     };
 
-    setProjection(/*aspect: number*/) {
+    setProjection() {
         let aspect = this.input_manager_.aspect;
         let f = Math.tan(0.5 * (Math.PI - this.yfov));
         let depth = 1.0 / (this.znear - this.zfar);

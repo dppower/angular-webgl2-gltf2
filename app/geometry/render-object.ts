@@ -29,7 +29,6 @@ export class RenderObject {
     private view_matrix = new Mat4();
     private projection_matrix = new Mat4();
     private normal_matrix = new Mat4();
-
     private inverse_view_matrix_ = new Mat4();
 
     //private id_: string;

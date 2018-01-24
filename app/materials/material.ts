@@ -22,7 +22,7 @@ export class Material {
 
     setTextures(material_index: number) {
         let data = this.gltf_data_.materials[material_index];
-        if (data.pbrMetallicRoughness) {
+        if (data && data.pbrMetallicRoughness) {
             // Base Color
             this.base_color_factor = data.pbrMetallicRoughness.baseColorFactor || [1, 1, 1, 1];
             if (data.pbrMetallicRoughness.baseColorTexture) {
@@ -39,26 +39,30 @@ export class Material {
                 this.metallic_roughness_sampler = this.material_loader_.getSampler(texture_index);
             }
         }
+        else {
+            this.base_color_factor = [1, 1, 1, 1];
+            this.metallic_factor = 1;
+            this.roughness_factor = 1;
+        }
     };
 
-    bindTextures(program: ShaderProgram) {
+    setMaterialUniforms(program: ShaderProgram) {
         // Base Color
-        this.gl_context_.uniform4fv(program.getUniform("base_color_factor"), this.base_color_factor);
+        this.gl_context_.uniform4fv(program.getUniform("u_base_color_factor"), this.base_color_factor);
         if (this.base_color_texture) {
             this.gl_context_.activeTexture(this.gl_context_.TEXTURE0);
             this.base_color_texture.bindTexture();
             this.base_color_sampler.bindSampler(0);
-            this.gl_context_.uniform1i(program.getUniform("base_color_texture"), 0);
+            this.gl_context_.uniform1i(program.getUniform("u_base_color_texture"), 0);
         }
 
-        // Occlusion Metallic Roughness
-        this.gl_context_.uniform1f(program.getUniform("metallic_factor"), this.metallic_factor);
-        this.gl_context_.uniform1f(program.getUniform("roughness_factor"), this.roughness_factor);
+        // Metallic Roughness
+        this.gl_context_.uniform2fv(program.getUniform("u_metallic_roughness_factors"), [this.metallic_factor, this.roughness_factor]);
         if (this.metallic_roughness_texture) {
             this.gl_context_.activeTexture(this.gl_context_.TEXTURE1);
             this.metallic_roughness_texture.bindTexture();
             this.metallic_roughness_sampler.bindSampler(1);
-            this.gl_context_.uniform1i(program.getUniform("metal_rough_texture"), 1);
+            this.gl_context_.uniform1i(program.getUniform("u_metal_rough_texture"), 1);
         }
     };
 };
