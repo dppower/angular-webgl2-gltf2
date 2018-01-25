@@ -75,6 +75,7 @@
                         "TEXCOORD_0": 2,
                         "COLOR_0": 3
                     },
+                    "material": 0,
                     "mode": 4
                 }
             ],
@@ -88,7 +89,7 @@
                         "NORMAL": 5,
                         "TEXCOORD_0": 6
                     },
-                    "material": 0,
+                    "material": 1,
                     "mode": 4
                 }
             ],
@@ -125,9 +126,20 @@
         {
             "name": "cube",
             "pbrMetallicRoughness": {
+                "baseColorFactor": [ 0.0, 0.0, 1.0, 1.0 ],
+                "metallicFactor": 0.4,
+                "roughnessFactor": 0.7
+            }
+        },
+        {
+            "name": "cube_low",
+            "pbrMetallicRoughness": {
+                "baseColorFactor": [ 1.0, 0.0, 1.0, 1.0 ],
                 "baseColorTexture": {
                     "index": 0
-                }
+                },
+                "metallicFactor": 0.1,
+                "roughnessFactor": 0.4
             }
         },
         {
@@ -136,8 +148,8 @@
                 "baseColorTexture": {
                     "index": 2
                 },
-                "metallicFactor": 1.0,
-                "roughnessFactor": 0.0
+                "metallicFactor": 0.0,
+                "roughnessFactor": 0.2
             }
         }
     ],

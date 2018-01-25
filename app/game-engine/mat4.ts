@@ -94,10 +94,10 @@ export class Mat4 {
         out.array[9] = yz - wx;
         out.array[10] = 1.0 - (xx + yy);
 
-        //out.array[3] = 0;
-        //out.array[7] = 0;
-        //out.array[11] = 0;
-        //out.array[15] = 1;
+        out.array[3] = 0;
+        out.array[7] = 0;
+        out.array[11] = 0;
+        out.array[15] = 1;
     };
 
     /**

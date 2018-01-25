@@ -15,8 +15,8 @@ import { InputManager } from "../game-engine/input-manager";
 export class SceneRenderer {
 
     //private scene_objects = new Map<OpaqueToken, RenderObject[]>();
-    //private light_direction = new Vec3(0.4, 0.4, 1.0);
-    //private current_direction = new Vec3();
+    private light_direction = new Vec3(0.4, 0.4, 1.0);
+    private current_direction = new Vec3();
 
     private main_camera_: MainCamera;
     private meshes: Mesh[] = [];
@@ -85,11 +85,12 @@ export class SceneRenderer {
 
     updateScene(dt: number) {
         this.main_camera_.updateCamera(dt);
-        //let view = this.main_camera_.view.array;
 
-        //this.current_direction.x = view[0] * this.light_direction.x + view[4] * this.light_direction.y + view[8] * this.light_direction.z;
-        //this.current_direction.y = view[1] * this.light_direction.x + view[5] * this.light_direction.y + view[9] * this.light_direction.z;
-        //this.current_direction.z = view[2] * this.light_direction.x + view[6] * this.light_direction.y + view[10] * this.light_direction.z;
+        let view = this.main_camera_.view.array;
+
+        this.current_direction.x = view[0] * this.light_direction.x + view[4] * this.light_direction.y + view[8] * this.light_direction.z;
+        this.current_direction.y = view[1] * this.light_direction.x + view[5] * this.light_direction.y + view[9] * this.light_direction.z;
+        this.current_direction.z = view[2] * this.light_direction.x + view[6] * this.light_direction.y + view[10] * this.light_direction.z;
 
         //this.meshes.forEach(mesh => {
         //    //object_array.forEach(object => {
@@ -124,7 +125,7 @@ export class SceneRenderer {
         //    }
         //});
         this.pbr_shader_.useProgram();
-        this.gl_context_.uniform3fv(this.pbr_shader_.getUniform("u_light_direction"), [0.0, 0.0, -1.0]);
+        this.gl_context_.uniform3fv(this.pbr_shader_.getUniform("u_light_direction"), this.current_direction.array);
         this.gl_context_.uniform3fv(this.pbr_shader_.getUniform("u_light_color"), [1.0, 1.0, 1.0]);
         this.meshes.forEach(mesh => mesh.drawMesh(this.pbr_shader_));
     };

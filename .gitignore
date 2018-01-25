@@ -7,3 +7,4 @@ bin/
 .vs/
 gltf-schema/
 images/
+test-gltf/

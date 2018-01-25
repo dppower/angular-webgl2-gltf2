@@ -97,12 +97,12 @@ export class Transform {
 
         if (this.orientation_) {
             Mat4.fromQuaternion(this.orientation_, this.rotation_matrix_);
-            Mat4.multiply(this.transform_matrix_, this.rotation_matrix_, this.transform_matrix_);
+            Mat4.multiply(this.rotation_matrix_, this.transform_matrix_, this.transform_matrix_);
         }
 
         if (this.position_) {
             Mat4.fromTranslation(this.position_, this.translation_matrix_);
-            Mat4.multiply(this.transform_matrix_, this.translation_matrix_, this.transform_matrix_);
+            Mat4.multiply(this.translation_matrix_, this.transform_matrix_, this.transform_matrix_);
         }
 
         this.transform_matrix_.inverse(this.inverse_matrix_);

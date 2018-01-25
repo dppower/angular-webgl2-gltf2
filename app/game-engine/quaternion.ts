@@ -55,16 +55,11 @@ export class Quaternion {
     };
 
     static fromAngleBetweenVectors(u: Vec3, v: Vec3, normalized = false) {
-        //let cos_theta = u.normalise().dot(v.normalise());
-        //let angle = -1.0 * Math.acos(cos_theta);
-        //let axis = u.cross(v).normalise();
-        //let q = Quaternion.fromAxisAngle(axis, angle);
-
         let norm_u_norm_v = normalized ? 1.0 : Math.sqrt(u.squared_length * v.squared_length);
         let w = norm_u_norm_v + u.dot(v);
         let p: Vec3;
 
-        if (w < 0.000001 * norm_u_norm_v) {
+        if (w < 1e-6 * norm_u_norm_v) {
             // Checking if u and v are exactly opposite
             w = 0;
             p = u.orthogonal;
