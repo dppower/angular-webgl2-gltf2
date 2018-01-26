@@ -13,8 +13,8 @@ import { InputManager } from "../game-engine/input-manager";
 })
 export class CanvasController implements OnInit, DoCheck, OnDestroy {
 
-    @HostBinding("width") canvas_width;
-    @HostBinding("height") canvas_height;
+    @HostBinding("width") canvas_width: number;
+    @HostBinding("height") canvas_height: number;
 
     get client_width() {
         let width = (<HTMLCanvasElement>this.canvas_ref_.nativeElement).clientWidth;

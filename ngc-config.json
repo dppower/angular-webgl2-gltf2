@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "lib": [ "es2015", "dom" ],
+        "lib": [ "es2015", "dom", "dom.iterable" ],
         "module": "es2015",
         "moduleResolution": "node",
         "sourceMap": true,
@@ -13,7 +13,9 @@
         "outDir": "./build-aot"
     },
   "files": [
-      "./app/main.ts"
+      "./app/main.ts",
+      "./app/gltf.d.ts",
+      "./app/webgl2.d.ts"
   ],
   "angularCompilerOptions": {
    "skipMetadataEmit": true
